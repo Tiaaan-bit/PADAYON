@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Padayon Massage Center - Transactions')
 
-    <title>Admin Transactions</title>
+@section('content')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+    <div class=" min-h-screen flex flex-col ">
 
-<body class="bg-gray-50 font-sans">
-
-    @include('components.sidebar')
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- ====================================================== --}}
             {{-- PAGE HEADER --}}
@@ -40,25 +30,16 @@
             {{-- ====================================================== --}}
 
             @if (session('success'))
-
                 <div
-                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2"
-                >
+                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
 
-                    <svg
-                        class="w-4 h-4 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M5 13l4 4L19 7" />
                     </svg>
 
                     {{ session('success') }}
 
                 </div>
-
             @endif
 
 
@@ -67,25 +48,16 @@
             {{-- ====================================================== --}}
 
             @if (session('error'))
-
                 <div
-                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2"
-                >
+                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
 
-                    <svg
-                        class="w-4 h-4 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M6 18L18 6M6 6l12 12" />
                     </svg>
 
                     {{ session('error') }}
 
                 </div>
-
             @endif
 
 
@@ -98,8 +70,7 @@
                 {{-- Total Service Price --}}
 
                 <div
-                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center"
-                >
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                     <div class="text-center">
 
@@ -123,8 +94,7 @@
                 {{-- Total Add-on Price --}}
 
                 <div
-                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center"
-                >
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                     <div class="text-center">
 
@@ -148,8 +118,7 @@
                 {{-- Total Amount Paid --}}
 
                 <div
-                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center"
-                >
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                     <div class="text-center">
 
@@ -178,11 +147,8 @@
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
 
-                <form
-                    method="GET"
-                    action="{{ route('admin.transactions') }}"
-                    class="grid grid-cols-1 md:grid-cols-4 gap-4"
-                >
+                <form method="GET" action="{{ route('admin.transactions') }}"
+                    class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
                     {{-- Date --}}
 
@@ -192,12 +158,8 @@
                             Date
                         </label>
 
-                        <input
-                            type="date"
-                            name="date"
-                            value="{{ request('date') }}"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                        >
+                        <input type="date" name="date" value="{{ request('date') }}"
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
                     </div>
 
@@ -210,26 +172,18 @@
                             Payment Method
                         </label>
 
-                        <select
-                            name="payment_method"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                        >
+                        <select name="payment_method"
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
                             <option value="">
                                 All Methods
                             </option>
 
-                            <option
-                                value="branch"
-                                {{ request('payment_method') === 'branch' ? 'selected' : '' }}
-                            >
+                            <option value="branch" {{ request('payment_method') === 'branch' ? 'selected' : '' }}>
                                 Pay at Counter
                             </option>
 
-                            <option
-                                value="gcash"
-                                {{ request('payment_method') === 'gcash' ? 'selected' : '' }}
-                            >
+                            <option value="gcash" {{ request('payment_method') === 'gcash' ? 'selected' : '' }}>
                                 GCash
                             </option>
 
@@ -246,14 +200,9 @@
                             Amount
                         </label>
 
-                        <input
-                            type="number"
-                            name="amount"
-                            step="0.01"
-                            value="{{ request('amount') }}"
+                        <input type="number" name="amount" step="0.01" value="{{ request('amount') }}"
                             placeholder="0.00"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                        >
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
                     </div>
 
@@ -262,17 +211,13 @@
 
                     <div class="flex items-center gap-3">
 
-                        <button
-                            type="submit"
-                            class="rounded-lg bg-[#849753] px-6 py-2 text-white hover:bg-[#6F4E37] text-sm w-40"
-                        >
+                        <button type="submit"
+                            class="rounded-lg bg-[#849753] px-6 py-2 text-white hover:bg-[#6F4E37] text-sm w-40">
                             Filter
                         </button>
 
-                        <a
-                            href="{{ route('admin.transactions') }}"
-                            class="rounded-lg border border-gray-300 px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 w-40 text-center"
-                        >
+                        <a href="{{ route('admin.transactions') }}"
+                            class="rounded-lg border border-gray-300 px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 w-40 text-center">
                             Reset
                         </a>
 
@@ -312,17 +257,10 @@
 
                     <div class="py-16 text-center text-gray-400">
 
-                        <svg
-                            class="w-12 h-12 mx-auto mb-3 text-gray-300"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            viewBox="0 0 24 24"
-                        >
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor"
+                            stroke-width="1.5" viewBox="0 0 24 24">
 
-                            <path
-                                d="M9 14l2-2 4 4m5 0V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2h11l5-5z"
-                            />
+                            <path d="M9 14l2-2 4 4m5 0V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2h11l5-5z" />
 
                         </svg>
 
@@ -331,9 +269,7 @@
                         </p>
 
                     </div>
-
                 @else
-
                     <div class="overflow-x-auto">
 
                         <table class="w-full text-sm">
@@ -345,8 +281,7 @@
                                     {{-- ID --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         #
                                     </th>
 
@@ -354,8 +289,7 @@
                                     {{-- User --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         User
                                     </th>
 
@@ -363,8 +297,7 @@
                                     {{-- Service --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Service Details
                                     </th>
 
@@ -372,8 +305,7 @@
                                     {{-- Add-on --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Add-on Details
                                     </th>
 
@@ -381,8 +313,7 @@
                                     {{-- Therapist --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Therapist
                                     </th>
 
@@ -390,8 +321,7 @@
                                     {{-- Appointment --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Appointment Time
                                     </th>
 
@@ -399,8 +329,7 @@
                                     {{-- Payment Details --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Payment Details
                                     </th>
 
@@ -408,8 +337,7 @@
                                     {{-- Status --}}
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap"
-                                    >
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Status
                                     </th>
 
@@ -421,52 +349,29 @@
                             <tbody class="divide-y divide-gray-100">
 
                                 @forelse ($transactions as $transaction)
-
                                     {{-- ================================================= --}}
                                     {{-- CLICKABLE TRANSACTION ROW --}}
                                     {{-- ================================================= --}}
 
-                                    <tr
-                                        class="transaction-row hover:bg-gray-50 transition align-top cursor-pointer"
-
-                                        onclick="openTransactionModal(this)"
-
-                                        data-id="{{ $transaction->id }}"
-
+                                    <tr class="transaction-row hover:bg-gray-50 transition align-top cursor-pointer"
+                                        onclick="openTransactionModal(this)" data-id="{{ $transaction->id }}"
                                         data-user-name="{{ $transaction->user->name ?? 'N/A' }}"
-
                                         data-user-email="{{ $transaction->user->email ?? 'N/A' }}"
-
                                         data-service-name="{{ $transaction->service->name ?? 'N/A' }}"
-
                                         data-service-description="{{ $transaction->service->description ?? 'N/A' }}"
-
                                         data-service-duration="{{ $transaction->service->duration_minutes ?? 'N/A' }}"
-
                                         data-service-price="{{ number_format($transaction->service->price ?? 0, 2) }}"
-
                                         data-level="{{ $transaction->level ?? 'N/A' }}"
-
                                         data-addon-name="{{ $transaction->addOn->name ?? 'None' }}"
-
                                         data-addon-duration="{{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}"
-
                                         data-addon-price="{{ number_format($transaction->addons_price ?? 0, 2) }}"
-
                                         data-therapist="{{ $transaction->therapist->name ?? 'N/A' }}"
-
                                         data-date="{{ $transaction->appointment_date ? $transaction->appointment_date->format('Y-m-d') : 'N/A' }}"
-
                                         data-time-start="{{ $transaction->appointment_time ? \Carbon\Carbon::parse($transaction->appointment_time)->format('h:i A') : 'N/A' }}"
-
                                         data-time-end="{{ $transaction->appointment_end_time ? \Carbon\Carbon::parse($transaction->appointment_end_time)->format('h:i A') : 'N/A' }}"
-
                                         data-payment-method="{{ $transaction->payment_method === 'branch' ? 'Pay at Counter' : ($transaction->payment_method === 'gcash' ? 'GCash' : ucfirst($transaction->payment_method ?? 'N/A')) }}"
-
                                         data-amount-paid="{{ number_format($transaction->amount_paid ?? 0, 2) }}"
-
-                                        data-status="{{ ucfirst($transaction->status ?? 'N/A') }}"
-                                    >
+                                        data-status="{{ ucfirst($transaction->status ?? 'N/A') }}">
 
 
                                         {{-- ================================================= --}}
@@ -489,8 +394,7 @@
                                             <div class="flex items-center gap-3">
 
                                                 <div
-                                                    class="w-9 h-9 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-sm shrink-0"
-                                                >
+                                                    class="w-9 h-9 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-sm shrink-0">
 
                                                     {{ strtoupper(substr($transaction->user->name ?? 'N', 0, 1)) }}
 
@@ -580,10 +484,7 @@
 
                                                 <p class="text-xs text-gray-500">
 
-                                                    {{ $transaction->addOn
-                                                        ? $transaction->addOn->duration_minutes . ' mins'
-                                                        : 'No add-on selected'
-                                                    }}
+                                                    {{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
 
                                                 </p>
 
@@ -608,8 +509,7 @@
                                             <div class="flex items-center gap-3">
 
                                                 <div
-                                                    class="w-9 h-9 rounded-full bg-[#6F4E37] flex items-center justify-center text-white font-bold text-sm shrink-0"
-                                                >
+                                                    class="w-9 h-9 rounded-full bg-[#6F4E37] flex items-center justify-center text-white font-bold text-sm shrink-0">
 
                                                     {{ strtoupper(substr($transaction->therapist->name ?? 'N', 0, 1)) }}
 
@@ -640,10 +540,7 @@
 
                                                 <p class="text-sm font-semibold text-gray-800">
 
-                                                    {{ $transaction->appointment_date
-                                                        ? $transaction->appointment_date->format('Y-m-d')
-                                                        : 'N/A'
-                                                    }}
+                                                    {{ $transaction->appointment_date ? $transaction->appointment_date->format('Y-m-d') : 'N/A' }}
 
                                                 </p>
 
@@ -651,15 +548,13 @@
 
                                                     {{ $transaction->appointment_time
                                                         ? \Carbon\Carbon::parse($transaction->appointment_time)->format('h:i A')
-                                                        : 'N/A'
-                                                    }}
+                                                        : 'N/A' }}
 
                                                     -
 
                                                     {{ $transaction->appointment_end_time
                                                         ? \Carbon\Carbon::parse($transaction->appointment_end_time)->format('h:i A')
-                                                        : 'N/A'
-                                                    }}
+                                                        : 'N/A' }}
 
                                                 </p>
 
@@ -677,35 +572,26 @@
                                             <div class="space-y-2">
 
                                                 @if ($transaction->payment_method === 'branch')
-
                                                     <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                    >
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                         Pay at Counter
 
                                                     </span>
-
                                                 @elseif($transaction->payment_method === 'gcash')
-
                                                     <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                    >
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                         GCash
 
                                                     </span>
-
                                                 @else
-
                                                     <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                    >
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                         {{ ucfirst($transaction->payment_method ?? 'N/A') }}
 
                                                     </span>
-
                                                 @endif
 
 
@@ -727,51 +613,39 @@
                                         <td class="px-5 py-4">
 
                                             @if ($transaction->status === 'confirm')
-
                                                 <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                >
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
 
                                                     Confirm
 
                                                 </span>
-
                                             @elseif($transaction->status === 'pending')
-
                                                 <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                >
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                     <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
 
                                                     Pending
 
                                                 </span>
-
                                             @elseif($transaction->status === 'rejected')
-
                                                 <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                >
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                     <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
 
                                                     Rejected
 
                                                 </span>
-
                                             @else
-
                                                 <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap"
-                                                >
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                     {{ ucfirst($transaction->status ?? 'N/A') }}
 
                                                 </span>
-
                                             @endif
 
                                         </td>
@@ -782,17 +656,13 @@
 
                                     <tr>
 
-                                        <td
-                                            colspan="9"
-                                            class="px-5 py-10 text-center text-gray-400"
-                                        >
+                                        <td colspan="9" class="px-5 py-10 text-center text-gray-400">
 
                                             No transactions found.
 
                                         </td>
 
                                     </tr>
-
                                 @endforelse
 
                             </tbody>
@@ -807,20 +677,18 @@
                     {{-- ====================================================== --}}
 
                     @if ($transactions->hasPages())
-
                         <div class="px-5 py-4 border-t border-gray-100">
 
                             {{ $transactions->links() }}
 
                         </div>
-
                     @endif
 
                 @endif
 
             </div>
 
-        </main>
+    </div>
 
     </div>
 
@@ -829,22 +697,14 @@
     {{-- TRANSACTION DETAILS MODAL --}}
     {{-- ================================================================ --}}
 
-    <div
-        id="transactionModal"
-        class="hidden fixed inset-0 z-50 overflow-y-auto"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="transactionModalTitle"
-    >
+    <div id="transactionModal" class="hidden fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true"
+        aria-labelledby="transactionModalTitle">
 
         {{-- ============================================================ --}}
         {{-- DARK OVERLAY --}}
         {{-- ============================================================ --}}
 
-        <div
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onclick="closeTransactionModal()"
-        ></div>
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeTransactionModal()"></div>
 
 
         {{-- ============================================================ --}}
@@ -857,10 +717,8 @@
             {{-- MODAL BOX --}}
             {{-- ======================================================== --}}
 
-            <div
-                class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
-                onclick="event.stopPropagation()"
-            >
+            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
+                onclick="event.stopPropagation()">
 
                 {{-- ==================================================== --}}
                 {{-- MODAL HEADER --}}
@@ -878,10 +736,7 @@
 
                             </p>
 
-                            <h2
-                                id="transactionModalTitle"
-                                class="text-2xl font-bold text-gray-800 mt-1"
-                            >
+                            <h2 id="transactionModalTitle" class="text-2xl font-bold text-gray-800 mt-1">
 
                                 Transaction #--
 
@@ -892,12 +747,9 @@
 
                         {{-- Close --}}
 
-                        <button
-                            type="button"
-                            onclick="closeTransactionModal()"
+                        <button type="button" onclick="closeTransactionModal()"
                             class="text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none ml-4"
-                            aria-label="Close"
-                        >
+                            aria-label="Close">
 
                             &times;
 
@@ -931,10 +783,8 @@
 
                             <div class="flex items-center gap-4">
 
-                                <div
-                                    id="modalUserInitial"
-                                    class="w-12 h-12 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-lg shrink-0"
-                                >
+                                <div id="modalUserInitial"
+                                    class="w-12 h-12 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-lg shrink-0">
 
                                     N
 
@@ -942,19 +792,13 @@
 
                                 <div>
 
-                                    <p
-                                        id="modalUserName"
-                                        class="font-bold text-gray-800"
-                                    >
+                                    <p id="modalUserName" class="font-bold text-gray-800">
 
                                         N/A
 
                                     </p>
 
-                                    <p
-                                        id="modalUserEmail"
-                                        class="text-sm text-gray-500"
-                                    >
+                                    <p id="modalUserEmail" class="text-sm text-gray-500">
 
                                         N/A
 
@@ -994,10 +838,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalDate"
-                                    class="mt-1 font-semibold text-gray-800"
-                                >
+                                <p id="modalDate" class="mt-1 font-semibold text-gray-800">
 
                                     N/A
 
@@ -1016,10 +857,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalTime"
-                                    class="mt-1 font-semibold text-gray-800"
-                                >
+                                <p id="modalTime" class="mt-1 font-semibold text-gray-800">
 
                                     N/A
 
@@ -1038,10 +876,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalTherapist"
-                                    class="mt-1 font-semibold text-gray-800"
-                                >
+                                <p id="modalTherapist" class="mt-1 font-semibold text-gray-800">
 
                                     N/A
 
@@ -1060,10 +895,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalStatus"
-                                    class="mt-1 font-semibold text-gray-800"
-                                >
+                                <p id="modalStatus" class="mt-1 font-semibold text-gray-800">
 
                                     N/A
 
@@ -1101,10 +933,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalServiceName"
-                                    class="mt-1 font-semibold text-gray-800"
-                                >
+                                <p id="modalServiceName" class="mt-1 font-semibold text-gray-800">
 
                                     N/A
 
@@ -1123,10 +952,7 @@
 
                                 </p>
 
-                                <p
-                                    id="modalServiceDescription"
-                                    class="mt-1 text-sm text-gray-600"
-                                >
+                                <p id="modalServiceDescription" class="mt-1 text-sm text-gray-600">
 
                                     N/A
 
@@ -1148,10 +974,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalServiceDuration"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalServiceDuration" class="mt-1 font-semibold text-gray-800">
 
                                         N/A
 
@@ -1170,10 +993,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalServicePrice"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalServicePrice" class="mt-1 font-semibold text-gray-800">
 
                                         ₱0.00
 
@@ -1192,10 +1012,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalLevel"
-                                        class="mt-1 font-semibold text-gray-800 capitalize"
-                                    >
+                                    <p id="modalLevel" class="mt-1 font-semibold text-gray-800 capitalize">
 
                                         N/A
 
@@ -1237,10 +1054,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalAddonName"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalAddonName" class="mt-1 font-semibold text-gray-800">
 
                                         None
 
@@ -1259,10 +1073,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalAddonDuration"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalAddonDuration" class="mt-1 font-semibold text-gray-800">
 
                                         N/A
 
@@ -1281,10 +1092,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalAddonPrice"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalAddonPrice" class="mt-1 font-semibold text-gray-800">
 
                                         ₱0.00
 
@@ -1326,10 +1134,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalPaymentMethod"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalPaymentMethod" class="mt-1 font-semibold text-gray-800">
 
                                         N/A
 
@@ -1348,10 +1153,7 @@
 
                                     </p>
 
-                                    <p
-                                        id="modalAmountPaid"
-                                        class="mt-1 font-semibold text-gray-800"
-                                    >
+                                    <p id="modalAmountPaid" class="mt-1 font-semibold text-gray-800">
 
                                         ₱0.00
 
@@ -1372,15 +1174,10 @@
                 {{-- MODAL FOOTER --}}
                 {{-- ==================================================== --}}
 
-                <div
-                    class="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex justify-end"
-                >
+                <div class="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex justify-end">
 
-                    <button
-                        type="button"
-                        onclick="closeTransactionModal()"
-                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
-                    >
+                    <button type="button" onclick="closeTransactionModal()"
+                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition">
 
                         Close
 
@@ -1394,13 +1191,11 @@
 
     </div>
 
+@endsection
 
-    {{-- ================================================================ --}}
-    {{-- JAVASCRIPT --}}
-    {{-- ================================================================ --}}
 
+@push('scripts')
     <script>
-
         // ============================================================
         // GET MODAL
         // ============================================================
@@ -1503,9 +1298,9 @@
             // User initial
 
             const initial =
-                userName !== 'N/A'
-                    ? userName.charAt(0).toUpperCase()
-                    : 'N';
+                userName !== 'N/A' ?
+                userName.charAt(0).toUpperCase() :
+                'N';
 
 
             document.getElementById('modalUserInitial').textContent =
@@ -1612,9 +1407,5 @@
                 closeTransactionModal();
             }
         });
-
     </script>
-
-</body>
-
-</html>
+@endpush

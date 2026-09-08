@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Padayon Massage Center - Appointments')
 
-    <title>Admin Appointments</title>
+@section('content')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+    <div class="min-h-screen flex flex-col">
 
-<body class="bg-gray-50 font-sans">
-
-    @include('components.sidebar')
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- ====================================================== --}}
             {{-- PAGE HEADER --}}
@@ -42,7 +32,8 @@
             @if (session('success'))
 
                 <div
-                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2"
+                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200
+                    text-green-700 text-sm rounded-lg flex items-center gap-2"
                 >
 
                     <svg
@@ -69,7 +60,8 @@
             @if (session('error'))
 
                 <div
-                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2"
+                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200
+                    text-red-700 text-sm rounded-lg flex items-center gap-2"
                 >
 
                     <svg
@@ -96,7 +88,8 @@
             @if ($errors->any())
 
                 <div
-                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg"
+                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200
+                    text-red-700 text-sm rounded-lg"
                 >
 
                     <ul class="list-disc pl-5 space-y-1">
@@ -123,8 +116,10 @@
             <div class="flex flex-wrap items-center gap-4 mb-8">
 
                 {{-- Total Appointments --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -142,8 +137,10 @@
 
 
                 {{-- Confirmed --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -161,8 +158,10 @@
 
 
                 {{-- Rejected --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -180,8 +179,10 @@
 
 
                 {{-- Pending --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -199,8 +200,10 @@
 
 
                 {{-- Cancelled --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -218,8 +221,10 @@
 
 
                 {{-- No Show --}}
-
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+                <div
+                    class="bg-white rounded-xl border border-gray-200
+                    shadow-sm p-4 sm:p-5 flex-1 min-w-35"
+                >
 
                     <div class="text-center">
 
@@ -242,7 +247,10 @@
             {{-- FILTERS --}}
             {{-- ====================================================== --}}
 
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
+            <div
+                class="bg-white rounded-2xl border border-gray-200
+                shadow-sm p-4 sm:p-5 mb-6"
+            >
 
                 <form
                     method="GET"
@@ -251,10 +259,12 @@
                 >
 
                     {{-- Appointment Date --}}
-
                     <div>
 
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                            class="block text-sm font-medium
+                            text-gray-700 mb-1"
+                        >
                             Appointment Date
                         </label>
 
@@ -262,23 +272,27 @@
                             type="date"
                             name="appointment_date"
                             value="{{ request('appointment_date') }}"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-lg border-gray-300
+                            focus:border-indigo-500 focus:ring-indigo-500"
                         >
 
                     </div>
 
 
                     {{-- Status --}}
-
                     <div>
 
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                            class="block text-sm font-medium
+                            text-gray-700 mb-1"
+                        >
                             Status
                         </label>
 
                         <select
                             name="status"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-lg border-gray-300
+                            focus:border-indigo-500 focus:ring-indigo-500"
                         >
 
                             <option value="">
@@ -326,16 +340,19 @@
 
 
                     {{-- Service --}}
-
                     <div>
 
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                            class="block text-sm font-medium
+                            text-gray-700 mb-1"
+                        >
                             Service
                         </label>
 
                         <select
                             name="service"
-                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-lg border-gray-300
+                            focus:border-indigo-500 focus:ring-indigo-500"
                         >
 
                             <option value="">
@@ -365,19 +382,23 @@
 
 
                     {{-- Filter Buttons --}}
-
                     <div class="flex items-center gap-3">
 
                         <button
                             type="submit"
-                            class="rounded-lg bg-[#849753] px-6 py-2 text-white hover:bg-[#6F4E37] text-sm w-40"
+                            class="rounded-lg bg-[#849753] px-6 py-2
+                            text-white hover:bg-[#6F4E37]
+                            text-sm w-40"
                         >
                             Filter
                         </button>
 
+
                         <a
                             href="{{ route('admin.appointments') }}"
-                            class="rounded-lg border border-gray-300 px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 w-40 text-center"
+                            class="rounded-lg border border-gray-300
+                            px-6 py-2 text-sm text-gray-700
+                            hover:bg-gray-50 w-40 text-center"
                         >
                             Reset
                         </a>
@@ -393,11 +414,16 @@
             {{-- APPOINTMENT TABLE --}}
             {{-- ====================================================== --}}
 
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div
+                class="bg-white rounded-2xl border border-gray-200
+                shadow-sm overflow-hidden"
+            >
 
                 {{-- Table Header --}}
-
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div
+                    class="px-5 py-4 border-b border-gray-100
+                    flex items-center justify-between"
+                >
 
                     <h3 class="font-semibold text-gray-800">
                         Appointment List
@@ -423,9 +449,11 @@
                             stroke-width="1.5"
                             viewBox="0 0 24 24"
                         >
+
                             <path
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
+
                         </svg>
 
                         <p class="text-sm">
@@ -444,39 +472,75 @@
 
                                 <tr class="bg-gray-50 text-left">
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         #
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         User
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Service Details
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Add-on Details
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Condition
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Therapist
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Appointment Time
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Status
                                     </th>
 
-                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    <th
+                                        class="px-5 py-3 text-xs font-semibold
+                                        text-gray-400 uppercase tracking-wide
+                                        whitespace-nowrap"
+                                    >
                                         Action
                                     </th>
 
@@ -494,34 +558,56 @@
                                     {{-- ================================================= --}}
 
                                     <tr
-                                        class="appointment-row hover:bg-gray-50 transition align-top cursor-pointer"
+                                        class="appointment-row hover:bg-gray-50
+                                        transition align-top cursor-pointer"
+
                                         onclick="openAppointmentModal(this)"
+
                                         data-id="{{ $appointment->id }}"
+
                                         data-user-name="{{ $appointment->user->name ?? 'N/A' }}"
+
                                         data-user-email="{{ $appointment->user->email ?? 'N/A' }}"
+
                                         data-service-name="{{ $appointment->service->name ?? 'N/A' }}"
+
                                         data-service-description="{{ $appointment->service->description ?? 'N/A' }}"
+
                                         data-service-duration="{{ $appointment->service->duration_minutes ?? 'N/A' }}"
+
                                         data-service-price="{{ number_format($appointment->service->price ?? 0, 2) }}"
+
                                         data-level="{{ $appointment->level ?? 'N/A' }}"
+
                                         data-addon-name="{{ $appointment->addOn->name ?? 'None' }}"
+
                                         data-addon-duration="{{ $appointment->addOn ? $appointment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}"
+
                                         data-addon-price="{{ number_format($appointment->addons_price ?? 0, 2) }}"
+
                                         data-previous-operations="{{ $appointment->has_previous_operations ?? 'N/A' }}"
+
                                         data-body-problem="{{ $appointment->body_problem ?? 'N/A' }}"
+
                                         data-therapist="{{ $appointment->therapist->name ?? 'N/A' }}"
+
                                         data-date="{{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}"
+
                                         data-time-start="{{ $appointment->appointment_time ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') : 'N/A' }}"
+
                                         data-time-end="{{ $appointment->appointment_end_time ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A') : 'N/A' }}"
+
                                         data-status="{{ ucfirst($appointment->status ?? 'N/A') }}"
                                     >
 
+
                                         {{-- ID --}}
 
-                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
-
+                                        <td
+                                            class="px-5 py-4 text-gray-600
+                                            whitespace-nowrap"
+                                        >
                                             {{ $appointment->id }}
-
                                         </td>
 
 
@@ -532,25 +618,28 @@
                                             <div class="flex items-center gap-3">
 
                                                 <div
-                                                    class="w-9 h-9 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-sm shrink-0"
+                                                    class="w-9 h-9 rounded-full
+                                                    bg-[#849753] flex items-center
+                                                    justify-center text-white
+                                                    font-bold text-sm shrink-0"
                                                 >
 
                                                     {{ strtoupper(substr($appointment->user->name ?? 'N', 0, 1)) }}
 
                                                 </div>
 
+
                                                 <div>
 
-                                                    <p class="font-semibold text-gray-800 whitespace-nowrap">
-
+                                                    <p
+                                                        class="font-semibold
+                                                        text-gray-800 whitespace-nowrap"
+                                                    >
                                                         {{ $appointment->user->name ?? 'N/A' }}
-
                                                     </p>
 
                                                     <p class="text-xs text-gray-400">
-
                                                         {{ $appointment->user->email ?? '' }}
-
                                                     </p>
 
                                                 </div>
@@ -567,21 +656,19 @@
                                             <div class="space-y-1">
 
                                                 <p class="font-semibold text-gray-800">
-
                                                     {{ $appointment->service->name ?? 'N/A' }}
-
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
-
                                                     {{ $appointment->service->description ?? 'N/A' }}
-
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
 
                                                     Duration:
+
                                                     {{ $appointment->service->duration_minutes ?? 'N/A' }}
+
                                                     mins
 
                                                 </p>
@@ -589,13 +676,18 @@
                                                 <p class="text-xs font-medium text-gray-500">
 
                                                     Price:
+
                                                     ₱{{ number_format($appointment->service->price ?? 0, 2) }}
 
                                                 </p>
 
-                                                <p class="text-xs font-medium text-gray-500 capitalize">
+                                                <p
+                                                    class="text-xs font-medium
+                                                    text-gray-500 capitalize"
+                                                >
 
                                                     Level:
+
                                                     {{ $appointment->level ?? 'N/A' }}
 
                                                 </p>
@@ -612,23 +704,21 @@
                                             <div class="space-y-1">
 
                                                 <p class="font-semibold text-gray-800">
-
                                                     {{ $appointment->addOn->name ?? 'None' }}
-
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
 
                                                     {{ $appointment->addOn
                                                         ? $appointment->addOn->duration_minutes . ' mins'
-                                                        : 'No add-on selected'
-                                                    }}
+                                                        : 'No add-on selected' }}
 
                                                 </p>
 
                                                 <p class="text-xs font-medium text-gray-500">
 
                                                     Price:
+
                                                     ₱{{ number_format($appointment->addons_price ?? 0, 2) }}
 
                                                 </p>
@@ -644,10 +734,12 @@
 
                                             <div class="space-y-1">
 
-                                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-
+                                                <p
+                                                    class="text-xs font-semibold
+                                                    text-gray-500 uppercase
+                                                    tracking-wide"
+                                                >
                                                     Previous Operations
-
                                                 </p>
 
                                                 <p class="text-sm capitalize text-gray-800">
@@ -656,15 +748,20 @@
 
                                                 </p>
 
-                                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-2">
-
+                                                <p
+                                                    class="text-xs font-semibold
+                                                    text-gray-500 uppercase
+                                                    tracking-wide mt-2"
+                                                >
                                                     Body Problem
-
                                                 </p>
 
                                                 <p class="text-sm text-gray-700">
 
-                                                    {{ \Illuminate\Support\Str::limit($appointment->body_problem ?? 'N/A', 60) }}
+                                                    {{ \Illuminate\Support\Str::limit(
+                                                        $appointment->body_problem ?? 'N/A',
+                                                        60
+                                                    ) }}
 
                                                 </p>
 
@@ -675,16 +772,20 @@
 
                                         {{-- THERAPIST --}}
 
-                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
-
+                                        <td
+                                            class="px-5 py-4 text-gray-600
+                                            whitespace-nowrap"
+                                        >
                                             {{ $appointment->therapist->name ?? 'N/A' }}
-
                                         </td>
 
 
                                         {{-- APPOINTMENT TIME --}}
 
-                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                        <td
+                                            class="px-5 py-4 text-gray-600
+                                            whitespace-nowrap"
+                                        >
 
                                             <div class="space-y-1">
 
@@ -692,8 +793,7 @@
 
                                                     {{ $appointment->appointment_date
                                                         ? $appointment->appointment_date->format('Y-m-d')
-                                                        : 'N/A'
-                                                    }}
+                                                        : 'N/A' }}
 
                                                 </p>
 
@@ -701,15 +801,13 @@
 
                                                     {{ $appointment->appointment_time
                                                         ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
-                                                        : 'N/A'
-                                                    }}
+                                                        : 'N/A' }}
 
                                                     -
 
                                                     {{ $appointment->appointment_end_time
                                                         ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
-                                                        : 'N/A'
-                                                    }}
+                                                        : 'N/A' }}
 
                                                 </p>
 
@@ -724,9 +822,19 @@
 
                                             @if ($appointment->status === 'confirm')
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-green-50
+                                                    border border-green-200
+                                                    text-green-700 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-green-500"
+                                                    ></span>
 
                                                     Confirm
 
@@ -734,9 +842,19 @@
 
                                             @elseif($appointment->status === 'rejected')
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-red-50
+                                                    border border-red-200
+                                                    text-red-700 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-red-500"
+                                                    ></span>
 
                                                     Rejected
 
@@ -744,9 +862,19 @@
 
                                             @elseif($appointment->status === 'pending')
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-yellow-50
+                                                    border border-yellow-200
+                                                    text-yellow-700 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-yellow-400"
+                                                    ></span>
 
                                                     Pending
 
@@ -754,9 +882,19 @@
 
                                             @elseif($appointment->status === 'cancelled')
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-gray-100
+                                                    border border-gray-200
+                                                    text-gray-600 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-gray-500"
+                                                    ></span>
 
                                                     Cancelled
 
@@ -764,9 +902,19 @@
 
                                             @elseif($appointment->status === 'no show')
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-gray-100
+                                                    border border-gray-200
+                                                    text-gray-600 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-gray-500"
+                                                    ></span>
 
                                                     No Show
 
@@ -774,7 +922,14 @@
 
                                             @else
 
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-gray-100
+                                                    border border-gray-200
+                                                    text-gray-500 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap"
+                                                >
 
                                                     {{ ucfirst($appointment->status ?? 'N/A') }}
 
@@ -793,7 +948,10 @@
                                         >
 
                                             <form
-                                                action="{{ route('admin.appointments.updateStatus', $appointment->id) }}"
+                                                action="{{ route(
+                                                    'admin.appointments.updateStatus',
+                                                    $appointment->id
+                                                ) }}"
                                                 method="POST"
                                                 class="flex flex-col gap-2 w-full max-w-35"
                                             >
@@ -805,8 +963,12 @@
 
                                                 <select
                                                     name="status"
-                                                    class="rounded-lg border-gray-300 text-sm focus:border-[#6F4E37] focus:ring-[#6F4E37] w-full"
-                                                    @if ($appointment->status === 'cancelled') disabled @endif
+                                                    class="rounded-lg border-gray-300
+                                                    text-sm focus:border-[#6F4E37]
+                                                    focus:ring-[#6F4E37] w-full"
+                                                    @if ($appointment->status === 'cancelled')
+                                                        disabled
+                                                    @endif
                                                 >
 
                                                     <option
@@ -849,8 +1011,14 @@
 
                                                 <button
                                                     type="submit"
-                                                    class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm disabled:opacity-50 w-full"
-                                                    @if ($appointment->status === 'cancelled') disabled @endif
+                                                    class="rounded-lg bg-[#849753]
+                                                    px-4 py-2 text-white
+                                                    hover:bg-[#6F4E37]
+                                                    text-sm disabled:opacity-50
+                                                    w-full"
+                                                    @if ($appointment->status === 'cancelled')
+                                                        disabled
+                                                    @endif
                                                 >
                                                     Update
                                                 </button>
@@ -867,7 +1035,8 @@
 
                                         <td
                                             colspan="9"
-                                            class="px-5 py-10 text-center text-gray-400"
+                                            class="px-5 py-10 text-center
+                                            text-gray-400"
                                         >
                                             No appointments found.
                                         </td>
@@ -901,9 +1070,10 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
+
 
 
     {{-- ================================================================ --}}
@@ -939,7 +1109,8 @@
             {{-- ======================================================== --}}
 
             <div
-                class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
+                class="relative w-full max-w-3xl bg-white rounded-2xl
+                shadow-2xl max-h-[90vh] overflow-y-auto"
                 onclick="event.stopPropagation()"
             >
 
@@ -947,13 +1118,19 @@
                 {{-- MODAL HEADER --}}
                 {{-- ==================================================== --}}
 
-                <div class="sticky top-0 bg-white z-10 px-6 py-5 border-b border-gray-100">
+                <div
+                    class="sticky top-0 bg-white z-10 px-6 py-5
+                    border-b border-gray-100"
+                >
 
                     <div class="flex items-start justify-between">
 
                         <div>
 
-                            <p class="text-xs font-semibold text-[#849753] uppercase tracking-wide">
+                            <p
+                                class="text-xs font-semibold text-[#849753]
+                                uppercase tracking-wide"
+                            >
                                 Appointment Details
                             </p>
 
@@ -972,7 +1149,8 @@
                         <button
                             type="button"
                             onclick="closeAppointmentModal()"
-                            class="text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none ml-4"
+                            class="text-gray-400 hover:text-gray-700
+                            text-3xl font-bold leading-none ml-4"
                             aria-label="Close"
                         >
                             &times;
@@ -996,7 +1174,10 @@
 
                     <div>
 
-                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                            uppercase tracking-wide mb-3"
+                        >
                             Customer Information
                         </h3>
 
@@ -1006,7 +1187,10 @@
 
                                 <div
                                     id="modalUserInitial"
-                                    class="w-12 h-12 rounded-full bg-[#849753] flex items-center justify-center text-white font-bold text-lg shrink-0"
+                                    class="w-12 h-12 rounded-full
+                                    bg-[#849753] flex items-center
+                                    justify-center text-white
+                                    font-bold text-lg shrink-0"
                                 >
                                     N
                                 </div>
@@ -1042,7 +1226,10 @@
 
                     <div>
 
-                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                            uppercase tracking-wide mb-3"
+                        >
                             Appointment Information
                         </h3>
 
@@ -1053,7 +1240,10 @@
 
                             <div class="bg-gray-50 rounded-xl p-4">
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Date
                                 </p>
 
@@ -1071,7 +1261,10 @@
 
                             <div class="bg-gray-50 rounded-xl p-4">
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Time
                                 </p>
 
@@ -1089,7 +1282,10 @@
 
                             <div class="bg-gray-50 rounded-xl p-4">
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Therapist
                                 </p>
 
@@ -1107,7 +1303,10 @@
 
                             <div class="bg-gray-50 rounded-xl p-4">
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Status
                                 </p>
 
@@ -1131,7 +1330,10 @@
 
                     <div>
 
-                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                            uppercase tracking-wide mb-3"
+                        >
                             Service Information
                         </h3>
 
@@ -1139,7 +1341,10 @@
 
                             <div>
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Service
                                 </p>
 
@@ -1155,7 +1360,10 @@
 
                             <div>
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Description
                                 </p>
 
@@ -1173,7 +1381,10 @@
 
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Duration
                                     </p>
 
@@ -1189,7 +1400,10 @@
 
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Price
                                     </p>
 
@@ -1205,13 +1419,17 @@
 
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Level
                                     </p>
 
                                     <p
                                         id="modalLevel"
-                                        class="mt-1 font-semibold text-gray-800 capitalize"
+                                        class="mt-1 font-semibold
+                                        text-gray-800 capitalize"
                                     >
                                         N/A
                                     </p>
@@ -1231,7 +1449,10 @@
 
                     <div>
 
-                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                            uppercase tracking-wide mb-3"
+                        >
                             Add-on Information
                         </h3>
 
@@ -1239,9 +1460,13 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
+
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Add-on
                                     </p>
 
@@ -1257,7 +1482,10 @@
 
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Duration
                                     </p>
 
@@ -1273,7 +1501,10 @@
 
                                 <div>
 
-                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    <p
+                                        class="text-xs text-gray-400
+                                        uppercase font-semibold"
+                                    >
                                         Price
                                     </p>
 
@@ -1299,15 +1530,23 @@
 
                     <div>
 
-                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                            uppercase tracking-wide mb-3"
+                        >
                             Customer Condition
                         </h3>
 
-                        <div class="bg-gray-50 rounded-xl p-4 space-y-4">
+                        <div
+                            class="bg-gray-50 rounded-xl p-4 space-y-4"
+                        >
 
                             <div>
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Previous Operations
                                 </p>
 
@@ -1323,13 +1562,17 @@
 
                             <div>
 
-                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                <p
+                                    class="text-xs text-gray-400
+                                    uppercase font-semibold"
+                                >
                                     Body Problem
                                 </p>
 
                                 <p
                                     id="modalBodyProblem"
-                                    class="mt-1 text-gray-700 whitespace-pre-line"
+                                    class="mt-1 text-gray-700
+                                    whitespace-pre-line"
                                 >
                                     N/A
                                 </p>
@@ -1347,12 +1590,17 @@
                 {{-- MODAL FOOTER --}}
                 {{-- ==================================================== --}}
 
-                <div class="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex justify-end">
+                <div
+                    class="sticky bottom-0 bg-white border-t
+                    border-gray-100 px-6 py-4 flex justify-end"
+                >
 
                     <button
                         type="button"
                         onclick="closeAppointmentModal()"
-                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
+                        class="px-6 py-2.5 bg-gray-200
+                        hover:bg-gray-300 text-gray-700
+                        font-semibold rounded-lg transition"
                     >
                         Close
                     </button>
@@ -1365,169 +1613,246 @@
 
     </div>
 
-
-    {{-- ================================================================ --}}
-    {{-- JAVASCRIPT --}}
-    {{-- ================================================================ --}}
-
-    <script>
-
-        // ============================================================
-        // GET MODAL
-        // ============================================================
-
-        const appointmentModal = document.getElementById('appointmentModal');
+@endsection
 
 
-        // ============================================================
-        // OPEN APPOINTMENT MODAL
-        // ============================================================
+@push('scripts')
 
-        function openAppointmentModal(row) {
+<script>
 
-            // Get appointment data from the clicked row
+    // ============================================================
+    // GET MODAL
+    // ============================================================
 
-            const id = row.dataset.id;
-            const userName = row.dataset.userName;
-            const userEmail = row.dataset.userEmail;
-
-            const serviceName = row.dataset.serviceName;
-            const serviceDescription = row.dataset.serviceDescription;
-            const serviceDuration = row.dataset.serviceDuration;
-            const servicePrice = row.dataset.servicePrice;
-
-            const level = row.dataset.level;
-
-            const addonName = row.dataset.addonName;
-            const addonDuration = row.dataset.addonDuration;
-            const addonPrice = row.dataset.addonPrice;
-
-            const previousOperations = row.dataset.previousOperations;
-            const bodyProblem = row.dataset.bodyProblem;
-
-            const therapist = row.dataset.therapist;
-
-            const date = row.dataset.date;
-            const timeStart = row.dataset.timeStart;
-            const timeEnd = row.dataset.timeEnd;
-
-            const status = row.dataset.status;
+    const appointmentModal =
+        document.getElementById('appointmentModal');
 
 
-            // ========================================================
-            // PUT DATA INTO MODAL
-            // ========================================================
+    // ============================================================
+    // OPEN APPOINTMENT MODAL
+    // ============================================================
 
-            document.getElementById('appointmentModalTitle').textContent =
-                'Appointment #' + id;
+    function openAppointmentModal(row) {
+
+        // Get appointment data from the clicked row
+
+        const id =
+            row.dataset.id;
+
+        const userName =
+            row.dataset.userName;
+
+        const userEmail =
+            row.dataset.userEmail;
+
+        const serviceName =
+            row.dataset.serviceName;
+
+        const serviceDescription =
+            row.dataset.serviceDescription;
+
+        const serviceDuration =
+            row.dataset.serviceDuration;
+
+        const servicePrice =
+            row.dataset.servicePrice;
+
+        const level =
+            row.dataset.level;
+
+        const addonName =
+            row.dataset.addonName;
+
+        const addonDuration =
+            row.dataset.addonDuration;
+
+        const addonPrice =
+            row.dataset.addonPrice;
+
+        const previousOperations =
+            row.dataset.previousOperations;
+
+        const bodyProblem =
+            row.dataset.bodyProblem;
+
+        const therapist =
+            row.dataset.therapist;
+
+        const date =
+            row.dataset.date;
+
+        const timeStart =
+            row.dataset.timeStart;
+
+        const timeEnd =
+            row.dataset.timeEnd;
+
+        const status =
+            row.dataset.status;
 
 
-            // User
+        // ========================================================
+        // PUT DATA INTO MODAL
+        // ========================================================
 
-            document.getElementById('modalUserName').textContent =
-                userName;
+        document.getElementById(
+            'appointmentModalTitle'
+        ).textContent =
+            'Appointment #' + id;
 
-            document.getElementById('modalUserEmail').textContent =
-                userEmail;
+
+        // User
+
+        document.getElementById(
+            'modalUserName'
+        ).textContent =
+            userName;
+
+        document.getElementById(
+            'modalUserEmail'
+        ).textContent =
+            userEmail;
 
 
-            // User initial
+        // User initial
 
-            const initial = userName !== 'N/A'
+        const initial =
+            userName !== 'N/A'
                 ? userName.charAt(0).toUpperCase()
                 : 'N';
 
-            document.getElementById('modalUserInitial').textContent =
-                initial;
+
+        document.getElementById(
+            'modalUserInitial'
+        ).textContent =
+            initial;
 
 
-            // Appointment
+        // Appointment
 
-            document.getElementById('modalDate').textContent =
-                date;
+        document.getElementById(
+            'modalDate'
+        ).textContent =
+            date;
 
-            document.getElementById('modalTime').textContent =
-                timeStart + ' - ' + timeEnd;
+        document.getElementById(
+            'modalTime'
+        ).textContent =
+            timeStart + ' - ' + timeEnd;
 
-            document.getElementById('modalTherapist').textContent =
-                therapist;
+        document.getElementById(
+            'modalTherapist'
+        ).textContent =
+            therapist;
 
-            document.getElementById('modalStatus').textContent =
-                status;
-
-
-            // Service
-
-            document.getElementById('modalServiceName').textContent =
-                serviceName;
-
-            document.getElementById('modalServiceDescription').textContent =
-                serviceDescription;
-
-            document.getElementById('modalServiceDuration').textContent =
-                serviceDuration + ' mins';
-
-            document.getElementById('modalServicePrice').textContent =
-                '₱' + servicePrice;
-
-            document.getElementById('modalLevel').textContent =
-                level;
+        document.getElementById(
+            'modalStatus'
+        ).textContent =
+            status;
 
 
-            // Add-on
+        // Service
 
-            document.getElementById('modalAddonName').textContent =
-                addonName;
+        document.getElementById(
+            'modalServiceName'
+        ).textContent =
+            serviceName;
 
-            document.getElementById('modalAddonDuration').textContent =
-                addonDuration;
+        document.getElementById(
+            'modalServiceDescription'
+        ).textContent =
+            serviceDescription;
 
-            document.getElementById('modalAddonPrice').textContent =
-                '₱' + addonPrice;
+        document.getElementById(
+            'modalServiceDuration'
+        ).textContent =
+            serviceDuration + ' mins';
 
+        document.getElementById(
+            'modalServicePrice'
+        ).textContent =
+            '₱' + servicePrice;
 
-            // Condition
-
-            document.getElementById('modalPreviousOperations').textContent =
-                previousOperations;
-
-            document.getElementById('modalBodyProblem').textContent =
-                bodyProblem;
-
-
-            // ========================================================
-            // SHOW MODAL
-            // ========================================================
-
-            appointmentModal.classList.remove('hidden');
-
-            // Prevent background page scrolling
-
-            document.body.classList.add('overflow-hidden');
-
-        }
+        document.getElementById(
+            'modalLevel'
+        ).textContent =
+            level;
 
 
-        // ============================================================
-        // CLOSE MODAL
-        // ============================================================
+        // Add-on
 
-        function closeAppointmentModal() {
+        document.getElementById(
+            'modalAddonName'
+        ).textContent =
+            addonName;
 
-            appointmentModal.classList.add('hidden');
+        document.getElementById(
+            'modalAddonDuration'
+        ).textContent =
+            addonDuration;
 
-            // Allow page scrolling again
+        document.getElementById(
+            'modalAddonPrice'
+        ).textContent =
+            '₱' + addonPrice;
 
-            document.body.classList.remove('overflow-hidden');
 
-        }
+        // Condition
+
+        document.getElementById(
+            'modalPreviousOperations'
+        ).textContent =
+            previousOperations;
+
+        document.getElementById(
+            'modalBodyProblem'
+        ).textContent =
+            bodyProblem;
 
 
-        // ============================================================
-        // ESCAPE KEY CLOSE
-        // ============================================================
+        // ========================================================
+        // SHOW MODAL
+        // ========================================================
 
-        document.addEventListener('keydown', function(event) {
+        appointmentModal.classList.remove('hidden');
+
+
+        // Prevent background page scrolling
+
+        document.body.classList.add(
+            'overflow-hidden'
+        );
+
+    }
+
+
+    // ============================================================
+    // CLOSE MODAL
+    // ============================================================
+
+    function closeAppointmentModal() {
+
+        appointmentModal.classList.add(
+            'hidden'
+        );
+
+
+        // Allow page scrolling again
+
+        document.body.classList.remove(
+            'overflow-hidden'
+        );
+
+    }
+
+
+    // ============================================================
+    // ESCAPE KEY CLOSE
+    // ============================================================
+
+    document.addEventListener(
+        'keydown',
+        function(event) {
 
             if (event.key === 'Escape') {
 
@@ -1535,10 +1860,9 @@
 
             }
 
-        });
+        }
+    );
 
-    </script>
+</script>
 
-</body>
-
-</html>
+@endpush

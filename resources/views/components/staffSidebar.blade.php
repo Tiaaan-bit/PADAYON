@@ -22,7 +22,7 @@
     {{-- Nav links --}}
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
 
-        <a href="{{ route('staff.dashboard') }}"
+        <a href="{{ route('staff.dashboard') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('staff.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -36,7 +36,7 @@
 
 
 
-        <a href="{{ route('staff.appointments') }}"
+        <a href="{{ route('staff.appointments') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('staff.appointments*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
             Appointments
         </a>
 
-        <a href="{{ route('staff.transactions') }}"
+        <a href="{{ route('staff.transactions') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('staff.transactions*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -57,7 +57,7 @@
         </a>
 
 
-        <a href="{{ route('staff.therapists') }}"
+        <a href="{{ route('staff.therapists') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('staff.therapist*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">

@@ -15,7 +15,11 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        // Padayon uses Manila time
+        /*
+        |--------------------------------------------------------------------------
+        | Current Manila Date/Time
+        |--------------------------------------------------------------------------
+        */
         $now = Carbon::now('Asia/Manila');
         $today = $now->toDateString();
 
@@ -23,9 +27,14 @@ class UserController extends Controller
         |--------------------------------------------------------------------------
         | Get User Appointments
         |--------------------------------------------------------------------------
+        |
+        | IMPORTANT:
+        | We load the user relationship because the calendar uses:
+        | event.user
+        |
         */
-
         $appointments = UsersAppointments::with([
+            'user',
             'service',
             'therapist',
             'addOn',
@@ -35,38 +44,36 @@ class UserController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Prepare Appointment Date/Time
+        | Build Appointment Start / End DateTime
         |--------------------------------------------------------------------------
         */
-
         $appointments = $appointments->map(function ($appointment) {
 
-            $date = Carbon::parse($appointment->appointment_date)
-                ->format('Y-m-d');
+            $date = Carbon::parse(
+                $appointment->appointment_date
+            )->format('Y-m-d');
 
-            $time = Carbon::parse($appointment->appointment_time)
-                ->format('H:i:s');
+            $time = Carbon::parse(
+                $appointment->appointment_time
+            )->format('H:i:s');
 
             /*
             |--------------------------------------------------------------------------
             | Appointment Start
             |--------------------------------------------------------------------------
+            |
+            | Your business hours are:
+            |
+            | 1:00 PM - 1:00 AM
+            |
+            | Therefore, times before 1:00 PM belong to the next day.
+            |
             */
-
             $start = Carbon::createFromFormat(
                 'Y-m-d H:i:s',
                 "{$date} {$time}",
                 'Asia/Manila'
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Your business hours are 1 PM - 1 AM.
-            |
-            | Therefore:
-            | 12:00 AM - 12:59 AM belongs to the next day.
-            |--------------------------------------------------------------------------
-            */
 
             if ($start->hour < 13) {
                 $start->addDay();
@@ -74,13 +81,11 @@ class UserController extends Controller
 
             $appointment->start_datetime = $start;
 
-
             /*
             |--------------------------------------------------------------------------
             | Appointment End
             |--------------------------------------------------------------------------
             */
-
             if ($appointment->appointment_end_time) {
 
                 $endTime = Carbon::parse(
@@ -113,55 +118,71 @@ class UserController extends Controller
             return $appointment;
         });
 
-
         /*
         |--------------------------------------------------------------------------
-        | Appointment Statuses That Are Still Active
+        | ACTIVE APPOINTMENT STATUSES
         |--------------------------------------------------------------------------
+        |
+        | Both pending and confirmed are displayed.
+        |
         */
-
         $activeStatuses = [
             'pending',
-            'confirmed',
+            'confirm',
         ];
-
 
         /*
         |--------------------------------------------------------------------------
         | TODAY'S APPOINTMENTS
         |--------------------------------------------------------------------------
+        |
+        | Show BOTH:
+        | - pending
+        | - confirmed
+        |
+        | We intentionally DO NOT check:
+        |
+        | start_datetime >= $now
+        |
+        | because an appointment that happened earlier today should still
+        | remain visible under "Today's Appointments".
+        |
         */
-
         $todayAppointments = $appointments
             ->filter(function ($appointment) use (
                 $today,
-                $now,
                 $activeStatuses
             ) {
 
+                $status = strtolower(
+                    trim($appointment->status ?? '')
+                );
+
                 return in_array(
-                    strtolower($appointment->status ?? ''),
+                    $status,
                     $activeStatuses,
                     true
                 )
-                && $appointment->start_datetime->toDateString() === $today
-                && $appointment->start_datetime->greaterThanOrEqualTo($now);
+                && $appointment->start_datetime->toDateString() === $today;
             })
             ->sortBy(function ($appointment) {
                 return $appointment->start_datetime->timestamp;
             })
             ->values();
 
-
         /*
         |--------------------------------------------------------------------------
         | UPCOMING APPOINTMENTS
         |--------------------------------------------------------------------------
         |
-        | Future appointments excluding today's appointments.
-        |--------------------------------------------------------------------------
+        | Show pending + confirmed appointments that:
+        |
+        | 1. Are in the future
+        | 2. Are NOT today
+        |
+        | Limited to 5 appointments.
+        |
         */
-
         $upcomingAppointments = $appointments
             ->filter(function ($appointment) use (
                 $today,
@@ -169,8 +190,12 @@ class UserController extends Controller
                 $activeStatuses
             ) {
 
+                $status = strtolower(
+                    trim($appointment->status ?? '')
+                );
+
                 return in_array(
-                    strtolower($appointment->status ?? ''),
+                    $status,
                     $activeStatuses,
                     true
                 )
@@ -183,63 +208,84 @@ class UserController extends Controller
             ->take(5)
             ->values();
 
-
         /*
         |--------------------------------------------------------------------------
         | CALENDAR APPOINTMENTS
         |--------------------------------------------------------------------------
+        |
+        | Show ALL pending + confirmed appointments.
+        |
+        | We intentionally don't filter by $now here.
+        |
+        | This means:
+        | - Today's appointments show
+        | - Today's past appointments show
+        | - Future appointments show
+        |
         */
-
         $calendarAppointments = $appointments
             ->filter(function ($appointment) use (
-                $now,
                 $activeStatuses
             ) {
 
+                $status = strtolower(
+                    trim($appointment->status ?? '')
+                );
+
                 return in_array(
-                    strtolower($appointment->status ?? ''),
+                    $status,
                     $activeStatuses,
                     true
-                )
-                && $appointment->start_datetime->greaterThanOrEqualTo($now);
+                );
             })
             ->sortBy(function ($appointment) {
                 return $appointment->start_datetime->timestamp;
             })
             ->values();
 
-
         /*
         |--------------------------------------------------------------------------
-        | CALENDAR EVENTS
+        | Calendar Events
         |--------------------------------------------------------------------------
+        |
+        | Convert appointments into simple JavaScript-friendly objects.
+        |
         */
-
         $calendarEvents = $calendarAppointments
             ->map(function ($appointment) {
 
                 return [
-                    'date' => $appointment->start_datetime->format('Y-m-d'),
+                    'id' => $appointment->id,
+
+                    'date' => $appointment
+                        ->start_datetime
+                        ->format('Y-m-d'),
 
                     'title' => $appointment->service->name
                         ?? 'Appointment',
 
-                    'time' => $appointment->start_datetime->format('h:i A'),
+                    'time' => $appointment
+                        ->start_datetime
+                        ->format('h:i A'),
 
                     'status' => strtolower(
-                        $appointment->status ?? 'pending'
+                        trim($appointment->status ?? 'pending')
                     ),
+
+                    'user' => $appointment->user->name
+                        ?? 'User',
+
+                    'therapist' => $appointment->therapist->name
+                        ?? 'Not assigned',
                 ];
             })
             ->values();
 
-
         /*
         |--------------------------------------------------------------------------
-        | ANNOUNCEMENTS
+        | Published Posts / Announcements
         |--------------------------------------------------------------------------
         */
-
         $posts = Post::query()
             ->whereNotNull('published_at')
             ->where('published_at', '<=', $now)
@@ -247,25 +293,24 @@ class UserController extends Controller
             ->take(5)
             ->get();
 
-
         /*
         |--------------------------------------------------------------------------
-        | AVAILABLE THERAPISTS
+        | Available Therapists
         |--------------------------------------------------------------------------
         */
-
-        $therapists = Therapists::where('status', 'available')
+        $therapists = Therapists::where(
+            'status',
+            'available'
+        )
             ->orderBy('name')
             ->take(6)
             ->get();
 
-
         /*
         |--------------------------------------------------------------------------
-        | Dashboard
+        | Dashboard View
         |--------------------------------------------------------------------------
         */
-
         return view('user.dashboard', compact(
             'todayAppointments',
             'upcomingAppointments',

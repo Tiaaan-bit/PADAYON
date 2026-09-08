@@ -1,29 +1,12 @@
-<!DOCTYPE html>
+@extends('layouts.admin')
 
-<html lang="en">
+@section('title', 'Padayon Massage Center - Therapist')
 
-<head>
+@section('content')
 
-    <meta charset="UTF-8">
+    <div class=" min-h-screen flex flex-col ">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Therapists</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-
-</head>
-
-<body class="bg-gray-50 font-sans">
-
-    {{-- Sidebar --}}
-    @include('components.sidebar')
-
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- ========================================================= --}}
             {{-- SUCCESS MESSAGE --}}
@@ -1325,11 +1308,8 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
 
-</body>
-
-</html>
-
+@endsection

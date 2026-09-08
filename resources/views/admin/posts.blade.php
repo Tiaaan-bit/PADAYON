@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.admin')
 
-    <title>Admin Posts</title>
+@section('title', 'Padayon Massage Center - Announcement')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="min-h-screen bg-[#F4EDDB] p-6">
-
-    @include('components.sidebar')
+@section('content')
 
     <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
 
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             <div class="max-w-5xl mx-auto">
 
@@ -564,14 +555,13 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
 
 
-    {{-- ========================================= --}}
-    {{-- JAVASCRIPT --}}
-    {{-- ========================================= --}}
+@push('scripts')
+    
 
     <script>
 
@@ -634,5 +624,4 @@
 
     </script>
 
-</body>
-</html>
+@endpush

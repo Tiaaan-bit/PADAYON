@@ -88,9 +88,6 @@
 
         let loadingTimer = null;
 
-
-      
-
         document.addEventListener('livewire:navigate', () => {
 
             const loadingScreen =
@@ -100,11 +97,7 @@
                 return;
             }
 
-
             clearTimeout(loadingTimer);
-
-
-    
 
             loadingTimer = setTimeout(() => {
 

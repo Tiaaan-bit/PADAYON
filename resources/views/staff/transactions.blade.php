@@ -1,22 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.staff')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Padayon Massage Center - Transactions')
 
-    <title>Staff Transactions</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('content')
 
-<body class="bg-gray-50 font-sans">
+    <div class=" min-h-screen flex flex-col ">
 
-    @include('components.staffSidebar')
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- ====================================================== --}}
             {{-- PAGE HEADER --}}
@@ -820,7 +811,7 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
 
@@ -1394,10 +1385,12 @@
 
     </div>
 
+    @endsection
 
-    {{-- ================================================================ --}}
-    {{-- JAVASCRIPT --}}
-    {{-- ================================================================ --}}
+
+    
+    @push('scripts')
+        
 
     <script>
 
@@ -1615,6 +1608,4 @@
 
     </script>
 
-</body>
-
-</html>
+@endpush

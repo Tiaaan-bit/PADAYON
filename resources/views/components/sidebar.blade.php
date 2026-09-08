@@ -22,7 +22,7 @@
     {{-- Nav links --}}
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
 
-        <a href="{{ route('admin.dashboard') }}"
+        <a href="{{ route('admin.dashboard') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -36,7 +36,7 @@
 
 
 
-        <a href="{{ route('admin.posts') }}"
+        <a href="{{ route('admin.posts') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                     {{ request()->routeIs('admin.posts') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
             Announcements
         </a>
 
-        <a href="{{ route('admin.appointments') }}"
+        <a href="{{ route('admin.appointments') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.appointments*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@
             Appointments
         </a>
 
-        <a href="{{ route('admin.users') }}"
+        <a href="{{ route('admin.users') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.users*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
             Customers
         </a>
 
-        <a href="{{ route('admin.services') }}"
+        <a href="{{ route('admin.services') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.services*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@
             Services
         </a>
 
-        <a href="{{ route('admin.addons') }}"
+        <a href="{{ route('admin.addons') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
             {{ request()->routeIs('admin.addons*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
             Add-Ons
         </a>
 
-        <a href="{{ route('admin.therapists') }}"
+        <a href="{{ route('admin.therapists') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.therapist*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@
             Therapist
         </a>
 
-        <a href="{{ route('admin.transactions') }}"
+        <a href="{{ route('admin.transactions') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.transactions*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@
             Transactions
         </a>
 
-        <a href="{{ route('admin.reports') }}"
+        <a href="{{ route('admin.reports') }}"wire:navigate
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.reports*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10 hover:text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
     <div class="flex items-center justify-around px-1 py-2">
 
         {{-- Dashboard --}}
-        <a href="{{ route('admin.dashboard') }}"
+        <a href="{{ route('admin.dashboard') }}"wire:navigate
             class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
                 {{ request()->routeIs('admin.dashboard') ? 'text-white' : 'text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -171,7 +171,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
         </a>
 
         {{-- Appointments --}}
-        <a href="{{ route('admin.appointments') }}"
+        <a href="{{ route('admin.appointments') }}"wire:navigate
             class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
                 {{ request()->routeIs('admin.appointments*') ? 'text-white' : 'text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -186,7 +186,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
         </a>
 
         {{-- Customers --}}
-        <a href="{{ route('admin.users') }}"
+        <a href="{{ route('admin.users') }}"wire:navigate
             class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
                 {{ request()->routeIs('admin.users*') ? 'text-white' : 'text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -202,7 +202,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
         </a>
 
         {{-- Transactions --}}
-        <a href="{{ route('admin.transactions') }}"
+        <a href="{{ route('admin.transactions') }}"wire:navigate
             class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
                 {{ request()->routeIs('admin.transactions*') ? 'text-white' : 'text-white' }}">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -260,7 +260,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
 
         <div class="px-3 space-y-0.5">
 
-            <a href="{{ route('admin.services') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('admin.services') }}" onclick="toggleMoreDrawer()"wire:navigate
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
@@ -271,7 +271,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
                 Services
             </a>
 
-            <a href="{{ route('admin.addons') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('admin.addons') }}" onclick="toggleMoreDrawer()"wire:navigate
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
@@ -281,7 +281,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
                 Add-Ons
             </a>
 
-            <a href="{{ route('admin.therapists') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('admin.therapists') }}" onclick="toggleMoreDrawer()"wire:navigate
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
@@ -291,7 +291,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
                 Therapist
             </a>
 
-            <a href="{{ route('admin.reports') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('admin.reports') }}" onclick="toggleMoreDrawer()"wire:navigate
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ MOBILE BOTTOM NAV BAR  (visible on mobile, hidden lg+)
                 Reports
             </a>
 
-            <a href="{{ route('admin.posts') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('admin.posts') }}" onclick="toggleMoreDrawer()"wire:navigate
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">

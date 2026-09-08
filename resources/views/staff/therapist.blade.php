@@ -1,33 +1,20 @@
-<!DOCTYPE html>
+@extends('layouts.staff')
 
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Staff Therapists</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@section('title', 'Padayon Massage Center - Therapists')
 
 
-</head>
+@section('content')
 
-<body class="bg-gray-50 font-sans">
+    <div class=" min-h-screen flex flex-col ">
 
-    @include('components.staffSidebar')
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- Success --}}
             @if (session('success'))
                 <div
                     class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
 
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M5 13l4 4L19 7" />
                     </svg>
 
@@ -41,8 +28,7 @@
                 <div
                     class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
 
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M6 18L18 6M6 6l12 12" />
                     </svg>
 
@@ -243,8 +229,7 @@
                                     Available
                                 </option>
 
-                                <option value="unavailable"
-                                    {{ request('status') === 'unavailable' ? 'selected' : '' }}>
+                                <option value="unavailable" {{ request('status') === 'unavailable' ? 'selected' : '' }}>
                                     Unavailable
                                 </option>
 
@@ -337,8 +322,8 @@
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
 
-                                                <svg class="w-16 h-16 text-gray-300" fill="none"
-                                                    stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                                <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor"
+                                                    stroke-width="1.5" viewBox="0 0 24 24">
                                                     <path
                                                         d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
                                                 </svg>
@@ -641,11 +626,8 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
 
-
-</body>
-
-</html>
+@endsection

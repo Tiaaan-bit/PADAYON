@@ -637,7 +637,7 @@
                         </label>
 
                         <textarea x-model="body_problem" rows="4" maxlength="1000"
-                            placeholder="Tell us if you have any body pain or specific area you want the therapist to focus on. You may also enter N/A."
+                            placeholder="Tell us if you have any body pain or specific area you want the therapist to focus on. You may also enter none."
                             class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#8B5E3C] focus:border-[#8B5E3C] outline-none resize-none"></textarea>
 
                     </div>

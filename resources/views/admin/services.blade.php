@@ -1,30 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Padayon Massage Center - Services')
 
-    <title>Admin Services</title>
+@section('content')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
 
-<body class="bg-gray-50 font-sans">
+    <div class=" min-h-screen flex flex-col ">
 
-    @include('components.sidebar')
-
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
-
-        <main class="flex-1 p-4 sm:p-6">
+        <div class="flex-1 p-4 sm:p-6">
 
             {{-- Success --}}
             @if (session('success'))
-                <div class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="2" viewBox="0 0 24 24">
+                <div
+                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M5 13l4 4L19 7" />
                     </svg>
 
@@ -34,9 +24,9 @@
 
             {{-- Error --}}
             @if (session('error'))
-                <div class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="2" viewBox="0 0 24 24">
+                <div
+                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M6 18L18 6M6 6l12 12" />
                     </svg>
 
@@ -61,59 +51,57 @@
 
 
             {{-- Alpine --}}
-            <div
-                x-data="{
-
-                    showAddModal: false,
-                    showEditModal: false,
-
-                    serviceId: null,
-
-                    name: '',
-                    description: '',
-                    duration_minutes: '',
-                    price: '',
-                    status: 'active',
-
-                    openAddModal() {
-
-                        this.showAddModal = true;
-
-                        this.name = '';
-                        this.description = '';
-                        this.duration_minutes = '';
-                        this.price = '';
-                        this.status = 'active';
-
-                    },
-
-                    openEditModal(service) {
-
-                        this.showEditModal = true;
-
-                        this.serviceId = service.id;
-                        this.name = service.name ?? '';
-                        this.description = service.description ?? '';
-                        this.duration_minutes = service.duration_minutes ?? '';
-                        this.price = service.price ?? '';
-                        this.status = service.status ?? 'active';
-
-                    },
-
-                    closeAddModal() {
-
-                        this.showAddModal = false;
-
-                    },
-
-                    closeEditModal() {
-
-                        this.showEditModal = false;
-
-                    }
-
-                }"
-            >
+            <div x-data="{
+            
+                showAddModal: false,
+                showEditModal: false,
+            
+                serviceId: null,
+            
+                name: '',
+                description: '',
+                duration_minutes: '',
+                price: '',
+                status: 'active',
+            
+                openAddModal() {
+            
+                    this.showAddModal = true;
+            
+                    this.name = '';
+                    this.description = '';
+                    this.duration_minutes = '';
+                    this.price = '';
+                    this.status = 'active';
+            
+                },
+            
+                openEditModal(service) {
+            
+                    this.showEditModal = true;
+            
+                    this.serviceId = service.id;
+                    this.name = service.name ?? '';
+                    this.description = service.description ?? '';
+                    this.duration_minutes = service.duration_minutes ?? '';
+                    this.price = service.price ?? '';
+                    this.status = service.status ?? 'active';
+            
+                },
+            
+                closeAddModal() {
+            
+                    this.showAddModal = false;
+            
+                },
+            
+                closeEditModal() {
+            
+                    this.showEditModal = false;
+            
+                }
+            
+            }">
 
                 {{-- Page Header --}}
                 <div class="mb-6 flex items-center justify-between">
@@ -127,7 +115,7 @@
                             Add, update, and remove appointment services.
                         </p>
                     </div>
-                    
+
 
                 </div>
 
@@ -135,7 +123,8 @@
                 {{-- Summary Cards --}}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
 
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
+                    <div
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                         <div class="text-center">
 
@@ -152,14 +141,15 @@
                     </div>
 
 
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
+                    <div
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                         <div class="text-center">
 
                             <p class="text-xl sm:text-2xl font-bold text-gray-800">
                                 {{ $totalActiveServices }}
                             </p>
-                            
+
                             <p class="text-xs text-gray-400 font-medium mt-0.5">
                                 Active
                             </p>
@@ -169,14 +159,15 @@
                     </div>
 
 
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
+                    <div
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
 
                         <div class="text-center">
 
                             <p class="text-xl sm:text-2xl font-bold text-gray-800">
                                 {{ $totalInactiveServices }}
                             </p>
-                            
+
                             <p class="text-xs text-gray-400 font-medium mt-0.5">
                                 Inactive
                             </p>
@@ -192,25 +183,15 @@
                 {{-- ADD SERVICE MODAL --}}
                 {{-- ========================================================= --}}
 
-                <div
-                    x-show="showAddModal"
-                    x-transition
-                    style="display: none;"
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                >
+                <div x-show="showAddModal" x-transition style="display: none;"
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4">
 
                     {{-- Overlay --}}
-                    <div
-                        class="absolute inset-0 bg-black/50"
-                        @click="closeAddModal()"
-                    ></div>
+                    <div class="absolute inset-0 bg-black/50" @click="closeAddModal()"></div>
 
 
                     {{-- Modal --}}
-                    <div
-                        class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden"
-                        @click.stop
-                    >
+                    <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden" @click.stop>
 
                         {{-- Modal Header --}}
                         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -228,13 +209,10 @@
                             </div>
 
 
-                            <button
-                                type="button"
-                                @click="closeAddModal()"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                            >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
+                            <button type="button" @click="closeAddModal()"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
                                     <path d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -243,11 +221,7 @@
 
 
                         {{-- Add Form --}}
-                        <form
-                            method="POST"
-                            action="{{ route('admin.store') }}"
-                            class="p-6 space-y-5"
-                        >
+                        <form method="POST" action="{{ route('admin.store') }}" class="p-6 space-y-5">
 
                             @csrf
 
@@ -261,13 +235,8 @@
                                         Service Name
                                     </label>
 
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        x-model="name"
-                                        placeholder="e.g. Bed Massage"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <input type="text" name="name" x-model="name" placeholder="e.g. Bed Massage"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                     @error('name')
                                         <p class="mt-2 text-sm text-red-600">
@@ -284,13 +253,9 @@
                                         Duration Minutes
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        name="duration_minutes"
-                                        x-model="duration_minutes"
+                                    <input type="number" name="duration_minutes" x-model="duration_minutes"
                                         placeholder="Enter duration"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                     @error('duration_minutes')
                                         <p class="mt-2 text-sm text-red-600">
@@ -310,13 +275,8 @@
                                     Description
                                 </label>
 
-                                <textarea
-                                    name="description"
-                                    x-model="description"
-                                    rows="4"
-                                    placeholder="Short service description"
-                                    class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                ></textarea>
+                                <textarea name="description" x-model="description" rows="4" placeholder="Short service description"
+                                    class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"></textarea>
 
                                 @error('description')
                                     <p class="mt-2 text-sm text-red-600">
@@ -336,14 +296,9 @@
                                         Price
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        step="0.01"
-                                        x-model="price"
+                                    <input type="number" name="price" step="0.01" x-model="price"
                                         placeholder="Enter Price"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                     @error('price')
                                         <p class="mt-2 text-sm text-red-600">
@@ -360,11 +315,8 @@
                                         Status
                                     </label>
 
-                                    <select
-                                        name="status"
-                                        x-model="status"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <select name="status" x-model="status"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                         <option value="active">
                                             Active
@@ -384,19 +336,14 @@
                             {{-- Buttons --}}
                             <div class="flex justify-end gap-3 pt-2">
 
-                                <button
-                                    type="button"
-                                    @click="closeAddModal()"
-                                    class="rounded-xl bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 transition"
-                                >
+                                <button type="button" @click="closeAddModal()"
+                                    class="rounded-xl bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 transition">
                                     Cancel
                                 </button>
 
 
-                                <button
-                                    type="submit"
-                                    class="rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white hover:bg-[#6F4E37] transition"
-                                >
+                                <button type="submit"
+                                    class="rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white hover:bg-[#6F4E37] transition">
                                     Save Service
                                 </button>
 
@@ -415,11 +362,8 @@
 
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
 
-                    <form
-                        method="GET"
-                        action="{{ route('admin.services') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4"
-                    >
+                    <form method="GET" action="{{ route('admin.services') }}"
+                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
                         <div class="md:col-span-3">
 
@@ -427,31 +371,23 @@
                                 Search
                             </label>
 
-                            <input
-                                type="text"
-                                name="search"
-                                value="{{ request('search') }}"
+                            <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Search by service name, description, or duration"
-                                class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                            >
+                                class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
                         </div>
 
 
                         <div class="flex items-center gap-3">
 
-                            <button
-                                type="submit"
-                                class="rounded-lg bg-[#849753] px-5 py-2 text-white hover:bg-[#6F4E37] text-sm w-32"
-                            >
+                            <button type="submit"
+                                class="rounded-lg bg-[#849753] px-5 py-2 text-white hover:bg-[#6F4E37] text-sm w-32">
                                 Filter
                             </button>
 
 
-                            <a
-                                href="{{ route('admin.services') }}"
-                                class="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-50 w-32 text-center"
-                            >
+                            <a href="{{ route('admin.services') }}"
+                                class="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-50 w-32 text-center">
                                 Reset
                             </a>
 
@@ -474,13 +410,10 @@
                             All Services
                         </h3>
 
-                        <button
-                        type="button"
-                        @click="openAddModal()"
-                        class="text-xs font-semibold px-4 py-2.5 rounded-lg bg-[#849753] text-white hover:bg-[#6F4E37] transition"
-                    >
-                        Add New Service
-                    </button>
+                        <button type="button" @click="openAddModal()"
+                            class="text-xs font-semibold px-4 py-2.5 rounded-lg bg-[#849753] text-white hover:bg-[#6F4E37] transition">
+                            Add New Service
+                        </button>
 
                     </div>
 
@@ -489,13 +422,8 @@
 
                         <div class="py-16 text-center text-gray-400">
 
-                            <svg
-                                class="w-12 h-12 mx-auto mb-3 text-gray-300"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.5"
-                                viewBox="0 0 24 24"
-                            >
+                            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor"
+                                stroke-width="1.5" viewBox="0 0 24 24">
                                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
                             </svg>
 
@@ -504,9 +432,7 @@
                             </p>
 
                         </div>
-
                     @else
-
                         <div class="overflow-x-auto">
 
                             <table class="w-full text-sm">
@@ -515,31 +441,38 @@
 
                                     <tr class="bg-gray-50 text-left">
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             ID
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Service Name
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Description
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Duration
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Price
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Status
                                         </th>
 
-                                        <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        <th
+                                            class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                             Actions
                                         </th>
 
@@ -551,7 +484,6 @@
                                 <tbody class="divide-y divide-gray-100">
 
                                     @foreach ($services as $service)
-
                                         <tr class="hover:bg-gray-50 transition">
 
                                             <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
@@ -586,25 +518,23 @@
                                             <td class="px-5 py-4">
 
                                                 @if ($service->status === 'active')
-
-                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                    <span
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                         <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
 
                                                         Active
 
                                                     </span>
-
                                                 @else
-
-                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                    <span
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
 
                                                         <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
 
                                                         Inactive
 
                                                     </span>
-
                                                 @endif
 
                                             </td>
@@ -616,8 +546,7 @@
                                                 <div class="flex items-center gap-2">
 
                                                     {{-- MODIFY --}}
-                                                    <button
-                                                        type="button"
+                                                    <button type="button"
                                                         @click="openEditModal({{ \Illuminate\Support\Js::from([
                                                             'id' => $service->id,
                                                             'name' => $service->name,
@@ -626,27 +555,21 @@
                                                             'price' => $service->price,
                                                             'status' => $service->status,
                                                         ]) }})"
-                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition whitespace-nowrap"
-                                                    >
+                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition whitespace-nowrap">
                                                         Modify
                                                     </button>
 
 
                                                     {{-- DELETE --}}
-                                                    <form
-                                                        method="POST"
-                                                        action="{{ route('admin.destroy', $service) }}"
-                                                    >
+                                                    <form method="POST" action="{{ route('admin.destroy', $service) }}">
 
                                                         @csrf
 
                                                         @method('DELETE')
 
-                                                        <button
-                                                            type="submit"
+                                                        <button type="submit"
                                                             onclick="return confirm('Delete {{ addslashes($service->name) }}? This cannot be undone.')"
-                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition whitespace-nowrap"
-                                                        >
+                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
                                                             Delete
                                                         </button>
 
@@ -657,7 +580,6 @@
                                             </td>
 
                                         </tr>
-
                                     @endforeach
 
                                 </tbody>
@@ -668,13 +590,11 @@
 
 
                         @if ($services->hasPages())
-
                             <div class="px-5 py-4 border-t border-gray-100 flex justify-end">
 
                                 {{ $services->links() }}
 
                             </div>
-
                         @endif
 
                     @endif
@@ -686,25 +606,15 @@
                 {{-- MODIFY SERVICE MODAL --}}
                 {{-- ========================================================= --}}
 
-                <div
-                    x-show="showEditModal"
-                    x-transition
-                    style="display: none;"
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                >
+                <div x-show="showEditModal" x-transition style="display: none;"
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4">
 
                     {{-- Overlay --}}
-                    <div
-                        class="absolute inset-0 bg-black/50"
-                        @click="closeEditModal()"
-                    ></div>
+                    <div class="absolute inset-0 bg-black/50" @click="closeEditModal()"></div>
 
 
                     {{-- Modal --}}
-                    <div
-                        class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden"
-                        @click.stop
-                    >
+                    <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden" @click.stop>
 
                         {{-- Header --}}
                         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -722,19 +632,11 @@
                             </div>
 
 
-                            <button
-                                type="button"
-                                @click="closeEditModal()"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                            >
+                            <button type="button" @click="closeEditModal()"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600">
 
-                                <svg
-                                    class="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
                                     <path d="M6 18L18 6M6 6l12 12" />
                                 </svg>
 
@@ -744,11 +646,7 @@
 
 
                         {{-- Edit Form --}}
-                        <form
-                            :action="'{{ url('/admin/services') }}/' + serviceId"
-                            method="POST"
-                            class="p-6 space-y-5"
-                        >
+                        <form :action="'{{ url('/admin/services') }}/' + serviceId" method="POST" class="p-6 space-y-5">
 
                             @csrf
 
@@ -764,12 +662,8 @@
                                         Service Name
                                     </label>
 
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        x-model="name"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <input type="text" name="name" x-model="name"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                 </div>
 
@@ -780,12 +674,8 @@
                                         Duration Minutes
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        name="duration_minutes"
-                                        x-model="duration_minutes"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <input type="number" name="duration_minutes" x-model="duration_minutes"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                 </div>
 
@@ -799,12 +689,8 @@
                                     Description
                                 </label>
 
-                                <textarea
-                                    name="description"
-                                    x-model="description"
-                                    rows="4"
-                                    class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                ></textarea>
+                                <textarea name="description" x-model="description" rows="4"
+                                    class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"></textarea>
 
                             </div>
 
@@ -818,13 +704,8 @@
                                         Price
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        step="0.01"
-                                        x-model="price"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <input type="number" name="price" step="0.01" x-model="price"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                 </div>
 
@@ -835,11 +716,8 @@
                                         Status
                                     </label>
 
-                                    <select
-                                        name="status"
-                                        x-model="status"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20"
-                                    >
+                                    <select name="status" x-model="status"
+                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:border-[#849753] focus:ring-4 focus:ring-[#849753]/20">
 
                                         <option value="active">
                                             Active
@@ -859,19 +737,14 @@
                             {{-- Buttons --}}
                             <div class="flex justify-end gap-3 pt-2">
 
-                                <button
-                                    type="button"
-                                    @click="closeEditModal()"
-                                    class="rounded-xl bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 transition"
-                                >
+                                <button type="button" @click="closeEditModal()"
+                                    class="rounded-xl bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 transition">
                                     Cancel
                                 </button>
 
 
-                                <button
-                                    type="submit"
-                                    class="rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white hover:bg-[#6F4E37] transition"
-                                >
+                                <button type="submit"
+                                    class="rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white hover:bg-[#6F4E37] transition">
                                     Update Service
                                 </button>
 
@@ -885,10 +758,8 @@
 
             </div>
 
-        </main>
+        </div>
 
     </div>
 
-</body>
-
-</html>
+@endsection

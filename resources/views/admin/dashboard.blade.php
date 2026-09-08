@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', 'Padayon Massage Center -Dashboard')
 
-    <title>Padayon Massage Center - Dashboard</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+@push('styles')
     <style>
         .calendar-day {
             min-height: 60px;
@@ -32,10 +25,10 @@
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Calendar Hover Popup
-        |--------------------------------------------------------------------------
-        */
+                        |--------------------------------------------------------------------------
+                        | Calendar Hover Popup
+                        |--------------------------------------------------------------------------
+                        */
 
         .calendar-popup {
             visibility: hidden;
@@ -53,10 +46,10 @@
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Calendar Highlight
-        |--------------------------------------------------------------------------
-        */
+                        |--------------------------------------------------------------------------
+                        | Calendar Highlight
+                        |--------------------------------------------------------------------------
+                        */
 
         .calendar-highlight {
             opacity: 0;
@@ -68,11 +61,11 @@
             opacity: 1;
         }
     </style>
-</head>
-<body class="bg-[#D6BB9E] font-sans overflow-x-hidden">
+@endpush
 
-    @include('components.sidebar')
-    <main class="min-h-screen lg:pl-64 pb-20 lg:pb-6" x-data="dashboardCalendar(@js($calendarEvents))">
+
+@section('content')
+    <div x-data="dashboardCalendar(@js($calendarEvents))">
         <div class="px-4 sm:px-6 lg:px-8 py-5">
 
             {{-- =========================================================
@@ -164,8 +157,8 @@
                                                     class="w-full h-full flex
                                                     items-center justify-center">
 
-                                                    <svg class="w-8 h-8 text-gray-300" fill="none"
-                                                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor"
+                                                        stroke-width="1.5" viewBox="0 0 24 24">
                                                         <path
                                                             d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
                                                     </svg>
@@ -582,7 +575,7 @@
                                 Appointment Calendar
                             </h2>
 
-                           
+
 
 
                             {{-- Month Navigation --}}
@@ -810,14 +803,9 @@
 
 
                                                         {{-- Therapist --}}
-                                                        <p class="text-[9px]
-                                                            text-gray-400
-                                                            truncate"
-                                                            x-text="
-                                                                'Therapist: ' +
-                                                                event.therapist
-                                                            ">
-                                                        </p>
+                                                    
+                                                        <p class="text-[9px] text-gray-400 truncate"
+                                                            x-text="'Therapist: ' + (event.therapist || 'N/A')"></p>
 
                                                     </div>
 
@@ -963,7 +951,7 @@
                             <div class="mt-3 space-y-2">
 
                                 @forelse($upcomingAppointments->take(5)
-                                    as $appointment)
+                                            as $appointment)
                                     <div
                                         class="rounded-lg bg-gray-50
                                         border border-gray-100
@@ -1081,8 +1069,7 @@
                                         border border-gray-100
                                         px-3 py-3">
 
-                                        <p
-                                            class="text-[10px]
+                                        <p class="text-[10px]
                                             text-gray-500">
                                             No upcoming appointments.
                                         </p>
@@ -1102,13 +1089,11 @@
 
         </div>
 
-    </main>
+    </div>
 
+@endsection
 
-
-</body>
-</html>
-
+@push('scripts')
     <script>
         function dashboardCalendar(events) {
 
@@ -1340,3 +1325,4 @@
             }
         }
     </script>
+@endpush

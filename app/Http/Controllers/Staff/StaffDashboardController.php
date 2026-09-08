@@ -12,14 +12,7 @@ class StaffDashboardController extends Controller
 {
     public function dashboard()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | TODAY
-        |--------------------------------------------------------------------------
-        */
-
         $today = Carbon::today('Asia/Manila');
-
 
         /*
         |--------------------------------------------------------------------------
@@ -30,16 +23,10 @@ class StaffDashboardController extends Controller
         |
         */
 
-        $appointments = UsersAppointments::with([
-            'user',
-            'service',
-            'therapist',
-            'addOn'
-        ])
-        ->whereDate('appointment_date', $today)
-        ->orderBy('appointment_time')
-        ->get();
-
+        $appointments = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
+            ->whereDate('appointment_date', $today)
+            ->orderBy('appointment_time')
+            ->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -47,11 +34,7 @@ class StaffDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $todayAppointmentsCount = UsersAppointments::whereDate(
-            'appointment_date',
-            $today
-        )->count();
-
+        $todayAppointmentsCount = UsersAppointments::whereDate('appointment_date', $today)->count();
 
         /*
         |--------------------------------------------------------------------------
@@ -59,13 +42,7 @@ class StaffDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $confirmedAppointmentsCount = UsersAppointments::whereDate(
-            'appointment_date',
-            $today
-        )
-        ->where('status', 'confirm')
-        ->count();
-
+        $confirmedAppointmentsCount = UsersAppointments::whereDate('appointment_date', $today)->where('status', 'confirm')->count();
 
         /*
         |--------------------------------------------------------------------------
@@ -73,13 +50,7 @@ class StaffDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $pendingAppointmentsCount = UsersAppointments::whereDate(
-            'appointment_date',
-            $today
-        )
-        ->where('status', 'pending')
-        ->count();
-
+        $pendingAppointmentsCount = UsersAppointments::whereDate('appointment_date', $today)->where('status', 'pending')->count();
 
         /*
         |--------------------------------------------------------------------------
@@ -87,11 +58,7 @@ class StaffDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $therapists = Therapists::where(
-            'status',
-            'available'
-        )->get();
-
+        $therapists = Therapists::where('status', 'available')->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -103,21 +70,12 @@ class StaffDashboardController extends Controller
         |
         */
 
-        $upcomingAppointments = UsersAppointments::with([
-            'user',
-            'service',
-            'therapist',
-            'addOn'
-        ])
-        ->whereDate('appointment_date', '>=', $today)
-        ->whereIn('status', [
-            'pending',
-            'confirm'
-        ])
-        ->orderBy('appointment_date')
-        ->orderBy('appointment_time')
-        ->get();
-
+        $upcomingAppointments = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
+            ->whereDate('appointment_date', '>', $today)
+            ->whereIn('status', ['pending', 'confirm'])
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -125,10 +83,7 @@ class StaffDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $posts = Post::whereNotNull('published_at')
-            ->latest('published_at')
-            ->get();
-
+        $posts = Post::whereNotNull('published_at')->latest('published_at')->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -140,53 +95,36 @@ class StaffDashboardController extends Controller
         |
         */
 
-        $allAppointmentsForCalendar = UsersAppointments::with([
-            'user',
-            'service'
-        ])
-        ->orderBy('appointment_date')
-        ->orderBy('appointment_time')
-        ->get();
-
+        $allAppointmentsForCalendar = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
 
         $calendarEvents = $allAppointmentsForCalendar
             ->map(function ($appointment) {
-
                 return [
                     'id' => $appointment->id,
 
-                    'date' => Carbon::parse(
-                        $appointment->appointment_date
-                    )->format('Y-m-d'),
+                    'date' => Carbon::parse($appointment->appointment_date)->format('Y-m-d'),
 
-                    'time' => Carbon::parse(
-                        $appointment->appointment_time
-                    )->format('h:i A'),
+                    'time' => Carbon::parse($appointment->appointment_time)->format('h:i A'),
 
                     'title' => $appointment->service->name ?? 'Service',
 
                     'user' => $appointment->user->name ?? 'N/A',
-                ];
 
+                    'therapist' => $appointment->therapist->name ?? 'N/A',
+
+                    'status' => strtolower(trim($appointment->status ?? '')),
+                ];
             })
             ->values();
-
-
         /*
         |--------------------------------------------------------------------------
         | RETURN DASHBOARD VIEW
         |--------------------------------------------------------------------------
         */
 
-        return view('staff.dashboard', compact(
-            'appointments',
-            'therapists',
-            'upcomingAppointments',
-            'posts',
-            'calendarEvents',
-            'todayAppointmentsCount',
-            'confirmedAppointmentsCount',
-            'pendingAppointmentsCount'
-        ));
+        return view('staff.dashboard', compact('appointments', 'therapists', 'upcomingAppointments', 'posts', 'calendarEvents', 'todayAppointmentsCount', 'confirmedAppointmentsCount', 'pendingAppointmentsCount'));
     }
 }
