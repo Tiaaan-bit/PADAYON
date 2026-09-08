@@ -1,0 +1,947 @@
+@extends('layouts.user')
+
+@section('title', 'Padayon Massage Center - Appointments History')
+
+@section('content')
+
+<div class="p-4 sm:p-6">
+
+    {{-- SUCCESS MESSAGE --}}
+    @if (session('success'))
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- ERROR MESSAGE --}}
+    @if (session('error'))
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- PAGE HEADER --}}
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-800">
+            Appointment Overview
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-0.5">
+            View all your bookings, status, service details, and schedule.
+        </p>
+    </div>
+
+    {{-- STATISTICS --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
+            <div class="text-center min-w-0">
+                <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                    {{ $totalAppointments ?? 0 }}
+                </p>
+                <p class="text-xs text-gray-400 font-medium mt-0.5">
+                    Total Appointments
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
+            <div class="text-center min-w-0">
+                <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                    {{ $pendingAppointments ?? 0 }}
+                </p>
+                <p class="text-xs text-gray-400 font-medium mt-0.5">
+                    Pending
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
+            <div class="text-center min-w-0">
+                <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                    {{ $confirmedAppointments ?? 0 }}
+                </p>
+                <p class="text-xs text-gray-400 font-medium mt-0.5">
+                    Confirmed
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
+            <div class="text-center min-w-0">
+                <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                    {{ $rejectedAppointments ?? 0 }}
+                </p>
+                <p class="text-xs text-gray-400 font-medium mt-0.5">
+                    Rejected
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
+            <div class="text-center min-w-0">
+                <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                    {{ $cancelledAppointments ?? 0 }}
+                </p>
+                <p class="text-xs text-gray-400 font-medium mt-0.5">
+                    Cancelled
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+
+    {{-- FILTERS --}}
+    <form
+        method="GET"
+        action="{{ route('user.my-appointments') }}"
+        class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6"
+    >
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+            {{-- SEARCH --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Service, therapist, level, ID"
+                    class="w-full rounded-xl border-gray-300 focus:border-[#849753] focus:ring-[#849753]"
+                >
+            </div>
+
+
+            {{-- STATUS --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                </label>
+
+                <select
+                    name="status"
+                    class="w-full rounded-xl border-gray-300 focus:border-[#849753] focus:ring-[#849753]"
+                >
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="pending"
+                        {{ request('status') == 'pending' ? 'selected' : '' }}>
+                        Pending
+                    </option>
+
+                    <option value="confirm"
+                        {{ request('status') == 'confirm' ? 'selected' : '' }}>
+                        Confirm
+                    </option>
+
+                    <option value="rejected"
+                        {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                        Rejected
+                    </option>
+
+                    <option value="cancelled"
+                        {{ request('status') == 'cancelled' ? 'selected' : '' }}>
+                        Cancelled
+                    </option>
+                </select>
+            </div>
+
+
+            {{-- APPOINTMENT DATE --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Appointment Date
+                </label>
+
+                <input
+                    type="date"
+                    name="appointment_date"
+                    value="{{ request('appointment_date') }}"
+                    class="w-full rounded-xl border-gray-300 focus:border-[#849753] focus:ring-[#849753]"
+                >
+            </div>
+
+
+            {{-- BUTTONS --}}
+            <div class="flex items-center gap-3">
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-[#849753] px-6 py-2 text-white font-medium hover:bg-[#6F4E37] transition w-40"
+                >
+                    Filter
+                </button>
+
+                <a
+                    href="{{ route('user.my-appointments') }}"
+                    class="rounded-xl border border-gray-300 px-6 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 w-40 text-center"
+                >
+                    Reset
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    {{-- APPOINTMENT TABLE --}}
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+
+            <h3 class="font-semibold text-gray-800">
+                My Appointment List
+            </h3>
+
+            <span class="text-xs text-gray-400">
+                {{ $appointments->total() }} total
+            </span>
+
+        </div>
+
+
+        @if ($appointments->isEmpty())
+
+            <div class="py-16 text-center text-gray-400">
+
+                <svg
+                    class="w-12 h-12 mx-auto mb-3 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                >
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+
+                <p class="text-sm">
+                    You have no appointments yet.
+                </p>
+
+            </div>
+
+        @else
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-sm">
+
+                    <thead>
+                        <tr class="bg-gray-50 text-left">
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                #
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Date
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Time
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                End Time
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Service Details
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Add-on Details
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Therapist
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Status
+                            </th>
+
+                            <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Action
+                            </th>
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @foreach ($appointments as $appointment)
+
+                            <tr
+                                class="appointment-row hover:bg-gray-50 transition align-top cursor-pointer"
+
+                                onclick="openAppointmentModal(this)"
+
+                                data-id="{{ $appointment->id }}"
+
+                                data-date="{{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}"
+
+                                data-time="{{ $appointment->appointment_time
+                                    ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
+                                    : 'N/A' }}"
+
+                                data-end-time="{{ $appointment->appointment_end_time
+                                    ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
+                                    : 'N/A' }}"
+
+                                data-service-name="{{ $appointment->service->name ?? 'N/A' }}"
+
+                                data-service-description="{{ $appointment->service->description ?? 'N/A' }}"
+
+                                data-service-duration="{{ $appointment->service->duration_minutes ?? '0' }}"
+
+                                data-service-price="{{ number_format($appointment->service_price ?? 0, 2) }}"
+
+                                data-level="{{ $appointment->level ?? 'N/A' }}"
+
+                                data-addon-name="{{ $appointment->addOn->name ?? 'None' }}"
+
+                                data-addon-duration="{{ $appointment->addOn
+                                    ? $appointment->addOn->duration_minutes . ' mins'
+                                    : 'No add-on selected' }}"
+
+                                data-addon-price="{{ number_format($appointment->addons_price ?? 0, 2) }}"
+
+                                data-therapist="{{ $appointment->therapist->name ?? 'N/A' }}"
+
+                                data-status="{{ ucfirst($appointment->status ?? 'N/A') }}"
+
+                                data-previous-operations="{{ $appointment->has_previous_operations ?? 'N/A' }}"
+
+                                data-body-problem="{{ $appointment->body_problem ?? 'N/A' }}"
+                            >
+
+                                {{-- ID --}}
+                                <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    {{ $appointment->id }}
+                                </td>
+
+
+                                {{-- DATE --}}
+                                <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    {{ $appointment->appointment_date
+                                        ? $appointment->appointment_date->format('Y-m-d')
+                                        : 'N/A' }}
+                                </td>
+
+
+                                {{-- TIME --}}
+                                <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    {{ $appointment->appointment_time
+                                        ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
+                                        : 'N/A' }}
+                                </td>
+
+
+                                {{-- END TIME --}}
+                                <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    {{ $appointment->appointment_end_time
+                                        ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
+                                        : 'N/A' }}
+                                </td>
+
+
+                                {{-- SERVICE --}}
+                                <td class="px-5 py-4 text-gray-600">
+
+                                    <div class="space-y-1 min-w-0">
+
+                                        <p class="font-semibold text-gray-800 wrap-break-word">
+                                            {{ $appointment->service->name ?? 'N/A' }}
+                                        </p>
+
+                                        <p class="text-xs text-gray-500 wrap-break-word">
+                                            {{ $appointment->service->description ?? 'N/A' }}
+                                        </p>
+
+                                        <p class="text-xs text-gray-500">
+                                            Duration:
+                                            {{ $appointment->service->duration_minutes ?? '0' }}
+                                            mins
+                                        </p>
+
+                                        <p class="text-xs font-medium text-gray-500 capitalize">
+                                            Level:
+                                            {{ $appointment->level ?? 'N/A' }}
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+
+                                {{-- ADD-ON --}}
+                                <td class="px-5 py-4 text-gray-600">
+
+                                    <div class="space-y-1 min-w-0">
+
+                                        <p class="font-semibold text-gray-800 wrap-break-word">
+                                            {{ $appointment->addOn->name ?? 'None' }}
+                                        </p>
+
+                                        <p class="text-xs text-gray-500 wrap-break-word">
+                                            {{ $appointment->addOn
+                                                ? $appointment->addOn->duration_minutes . ' mins'
+                                                : 'No add-on selected' }}
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+
+                                {{-- THERAPIST --}}
+                                <td class="px-5 py-4">
+
+                                    <div class="flex items-center gap-3 min-w-0">
+
+                                        <div class="w-9 h-9 rounded-full bg-[#6F4E37] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                                            {{ strtoupper(substr($appointment->therapist->name ?? 'N', 0, 1)) }}
+                                        </div>
+
+                                        <div class="min-w-0">
+
+                                            <p class="font-semibold text-gray-800 wrap-break-word">
+                                                {{ $appointment->therapist->name ?? 'N/A' }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                {{-- STATUS --}}
+                                <td class="px-5 py-4">
+
+                                    @if ($appointment->status === 'confirm')
+
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            Confirm
+                                        </span>
+
+                                    @elseif ($appointment->status === 'pending')
+
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                                            Pending
+                                        </span>
+
+                                    @elseif ($appointment->status === 'rejected')
+
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                            Rejected
+                                        </span>
+
+                                    @elseif ($appointment->status === 'cancelled')
+
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                                            Cancelled
+                                        </span>
+
+                                    @else
+
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
+                                            {{ ucfirst($appointment->status ?? 'N/A') }}
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- ACTION --}}
+                                <td
+                                    class="px-5 py-4"
+                                    onclick="event.stopPropagation()"
+                                >
+
+                                    @if (in_array($appointment->status, ['pending', 'confirm']))
+
+                                        <form
+                                            action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
+                                            method="POST"
+                                        >
+                                            @csrf
+                                            @method('PUT')
+
+                                            <button
+                                                type="submit"
+                                                onclick="return confirm('Cancel this appointment?')"
+                                                class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm"
+                                            >
+                                                Cancel
+                                            </button>
+
+                                        </form>
+
+                                    @else
+
+                                        <span class="text-xs text-gray-400">
+                                            No action
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {{-- PAGINATION --}}
+            <div class="px-5 py-4 border-t border-gray-100">
+                {{ $appointments->links() }}
+            </div>
+
+        @endif
+
+    </div>
+
+</div>
+
+
+{{-- ================================================================ --}}
+{{-- APPOINTMENT DETAILS MODAL --}}
+{{-- ================================================================ --}}
+
+<div
+    id="appointmentModal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="appointmentModalTitle"
+>
+
+    {{-- DARK OVERLAY --}}
+    <div
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onclick="closeAppointmentModal()"
+    ></div>
+
+
+    {{-- MODAL POSITION --}}
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+
+        {{-- MODAL BOX --}}
+        <div
+            class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
+            onclick="event.stopPropagation()"
+        >
+
+            {{-- MODAL HEADER --}}
+            <div class="sticky top-0 bg-white z-10 px-6 py-5 border-b border-gray-100">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-xs font-semibold text-[#849753] uppercase tracking-wide">
+                            Appointment Details
+                        </p>
+
+                        <h2
+                            id="appointmentModalTitle"
+                            class="text-2xl font-bold text-gray-800 mt-1"
+                        >
+                            Appointment #--
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        onclick="closeAppointmentModal()"
+                        class="text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none ml-4"
+                        aria-label="Close"
+                    >
+                        &times;
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            {{-- MODAL CONTENT --}}
+            <div class="p-6 space-y-6">
+
+                {{-- APPOINTMENT INFORMATION --}}
+                <div>
+
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        Appointment Information
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Date
+                            </p>
+                            <p id="modalDate" class="mt-1 font-semibold text-gray-800">
+                                N/A
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Time
+                            </p>
+                            <p id="modalTime" class="mt-1 font-semibold text-gray-800">
+                                N/A
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Therapist
+                            </p>
+                            <p id="modalTherapist" class="mt-1 font-semibold text-gray-800">
+                                N/A
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Status
+                            </p>
+                            <p id="modalStatus" class="mt-1 font-semibold text-gray-800">
+                                N/A
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- SERVICE INFORMATION --}}
+                <div>
+
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        Service Information
+                    </h3>
+
+                    <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Service
+                            </p>
+
+                            <p id="modalServiceName" class="mt-1 font-semibold text-gray-800">
+                                N/A
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Description
+                            </p>
+
+                            <p id="modalServiceDescription" class="mt-1 text-sm text-gray-600">
+                                N/A
+                            </p>
+                        </div>
+
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Duration
+                                </p>
+
+                                <p id="modalServiceDuration" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Price
+                                </p>
+
+                                <p id="modalServicePrice" class="mt-1 font-semibold text-gray-800">
+                                    ₱0.00
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Level
+                                </p>
+
+                                <p id="modalLevel" class="mt-1 font-semibold text-gray-800 capitalize">
+                                    N/A
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- ADD-ON INFORMATION --}}
+                <div>
+
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        Add-on Information
+                    </h3>
+
+                    <div class="bg-gray-50 rounded-xl p-4">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Add-on
+                                </p>
+
+                                <p id="modalAddonName" class="mt-1 font-semibold text-gray-800">
+                                    None
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Duration
+                                </p>
+
+                                <p id="modalAddonDuration" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Price
+                                </p>
+
+                                <p id="modalAddonPrice" class="mt-1 font-semibold text-gray-800">
+                                    ₱0.00
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- CUSTOMER CONDITION --}}
+                <div>
+
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                        Customer Condition
+                    </h3>
+
+                    <div class="bg-gray-50 rounded-xl p-4 space-y-4">
+
+                        <div>
+
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Previous Operations
+                            </p>
+
+                            <p id="modalPreviousOperations" class="mt-1 text-gray-800 capitalize">
+                                N/A
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <p class="text-xs text-gray-400 uppercase font-semibold">
+                                Body Problem
+                            </p>
+
+                            <p id="modalBodyProblem" class="mt-1 text-gray-700 whitespace-pre-line">
+                                N/A
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {{-- MODAL FOOTER --}}
+            <div class="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex justify-end">
+
+                <button
+                    type="button"
+                    onclick="closeAppointmentModal()"
+                    class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                >
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@endsection
+
+
+@push('scripts')
+
+<script>
+
+    const appointmentModal = document.getElementById('appointmentModal');
+
+
+    function openAppointmentModal(row) {
+
+        const id = row.dataset.id;
+        const date = row.dataset.date;
+        const time = row.dataset.time;
+        const endTime = row.dataset.endTime;
+
+        const serviceName = row.dataset.serviceName;
+        const serviceDescription = row.dataset.serviceDescription;
+        const serviceDuration = row.dataset.serviceDuration;
+        const servicePrice = row.dataset.servicePrice;
+
+        const level = row.dataset.level;
+
+        const addonName = row.dataset.addonName;
+        const addonDuration = row.dataset.addonDuration;
+        const addonPrice = row.dataset.addonPrice;
+
+        const therapist = row.dataset.therapist;
+        const status = row.dataset.status;
+
+        const previousOperations = row.dataset.previousOperations;
+        const bodyProblem = row.dataset.bodyProblem;
+
+
+        // Appointment title
+        document.getElementById('appointmentModalTitle').textContent =
+            'Appointment #' + id;
+
+
+        // Appointment information
+        document.getElementById('modalDate').textContent =
+            date;
+
+        document.getElementById('modalTime').textContent =
+            time + ' - ' + endTime;
+
+        document.getElementById('modalTherapist').textContent =
+            therapist;
+
+        document.getElementById('modalStatus').textContent =
+            status;
+
+
+        // Service information
+        document.getElementById('modalServiceName').textContent =
+            serviceName;
+
+        document.getElementById('modalServiceDescription').textContent =
+            serviceDescription;
+
+        document.getElementById('modalServiceDuration').textContent =
+            serviceDuration + ' mins';
+
+        document.getElementById('modalServicePrice').textContent =
+            '₱' + servicePrice;
+
+        document.getElementById('modalLevel').textContent =
+            level;
+
+
+        // Add-on information
+        document.getElementById('modalAddonName').textContent =
+            addonName;
+
+        document.getElementById('modalAddonDuration').textContent =
+            addonDuration;
+
+        document.getElementById('modalAddonPrice').textContent =
+            '₱' + addonPrice;
+
+
+        // Customer condition
+        document.getElementById('modalPreviousOperations').textContent =
+            previousOperations;
+
+        document.getElementById('modalBodyProblem').textContent =
+            bodyProblem;
+
+
+        // Show modal
+        appointmentModal.classList.remove('hidden');
+
+        document.body.classList.add('overflow-hidden');
+    }
+
+
+    function closeAppointmentModal() {
+
+        appointmentModal.classList.add('hidden');
+
+        document.body.classList.remove('overflow-hidden');
+    }
+
+
+    // Escape key
+    document.addEventListener('keydown', function(event) {
+
+        if (event.key === 'Escape') {
+
+            closeAppointmentModal();
+
+        }
+
+    });
+
+</script>
+
+@endpush
+

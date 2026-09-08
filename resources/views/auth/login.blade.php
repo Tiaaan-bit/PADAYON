@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padayon Massage Center - Sign In</title>
+    @vite('resources/css/app.css')
+</head>
+
+
+<body class="min-h-screen bg-[#D6BB9E] flex items-center justify-center p-4">
+
+
+
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
+
+        <a href="{{ route('home.showHomePage') }}"
+            class="inline-flex items-center gap-2 text-sm font-medium text-[#849753] hover:underline mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+        </a>
+
+        {{-- Logo --}}
+        <div class="text-center mb-8">
+
+            <h1 class="text-2xl font-bold text-[#849753]">Padayon Massage Center</h1>
+            <h1 class="text-lg font-bold text-gray-800">Welcome back</h1>
+            <p class="text-sm text-gray-500 mt-1">Sign in to your account</p>
+        </div>
+
+        {{-- Flash Messages --}}
+        @if ($errors->has('email'))
+            <div
+                class="mb-5 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path
+                        d="M12 9v4m0 4h.01M10.29 3.86l-7.43 12.85A2 2 0 004.59 20h14.82a2 2 0 001.73-3.29L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+                {{ $errors->first('email') }}
+            </div>
+        @endif
+        @if (session('success'))
+            <div
+                class="mb-5 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M5 13l4 4L19 7" />
+                </svg>
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div
+                class="mb-5 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                {{ session('error') }}
+            </div>
+        @endif
+        @if (session('info'))
+            <div
+                class="mb-5 px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 text-sm rounded-lg flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4m0 4h.01" />
+                </svg>
+                {{ session('info') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}" class="space-y-5">
+            @csrf
+
+            {{-- Email --}}
+            <div>
+                <label for="email" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                    Email Address
+                </label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                    placeholder="you@example.com" autocomplete="email" required autofocus
+                    class="w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 outline-none transition
+                        focus:ring-2 focus:ring-[#849753] focus:border-[#849753] focus:bg-white
+                        @error('email') border-red-400 bg-red-50 @else @enderror">
+                
+            </div>
+
+            {{-- Password --}}
+            <div class="relative">
+                <label for="email" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                    Password
+                </label>
+                <input type="password" id="password" name="password"
+                    placeholder="••••••••"
+                    autocomplete="current-password" required
+                    class="w-full px-4 py-2.5 pr-12 rounded-lg border text-sm text-gray-800 outline-none transition
+                    focus:ring-2 focus:ring-[#849753] focus:border-[#849753] focus:bg-white">
+            
+                <!-- Hidden by default -->
+                <button type="button" id="togglePassword"
+                    class="hidden absolute inset-y-0 right-3 items-center text-gray-500 hover:text-gray-700">
+            
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6-1c-1.5-4-5-7-9-7s-7.5 3-9 7c1.5 4 5 7 9 7s7.5-3 9-7z" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Remember me & Forgot --}}
+            <div class="text-center mb-8">
+                
+                <a href="{{ route('password.request') }}" class="text-sm text-[#849753] font-medium hover:underline">
+                    Forgot password?
+                </a>
+            </div>
+
+            {{-- Submit --}}
+            <button type="submit"
+                class="w-full py-3 bg-[#849753] hover:bg-[#6F4E37] active:scale-[.99] text-white font-semibold rounded-lg text-sm transition-all">
+                Sign In
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            Don't have an account?
+            <a href="{{ route('register') }}" class="text-[#849753] font-semibold hover:underline">Create one</a>
+        </p>
+
+    </div>
+    @if (session('login_rate_limited'))
+    <div
+        id="rateLimitModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+    >
+        <div
+            class="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-7 text-center"
+        >
+
+            {{-- X Close Button --}}
+            <button
+                type="button"
+                id="rateLimitX"
+                class="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
+                aria-label="Close"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+
+            {{-- Warning Icon --}}
+            <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-8 w-8 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v4m0 4h.01M10.29 3.86l-7.43 12.85A2 2 0 004.59 20h14.82a1.99 1.99 0 001.73-2.99L13.71 3.86a2 2 0 00-3.42 0z"
+                    />
+                </svg>
+            </div>
+
+            <h2 class="text-xl font-bold text-gray-800">
+                Too Many Login Attempts
+            </h2>
+
+            <p class="text-sm text-gray-500 mt-2">
+                You have reached the maximum number of login attempts.
+                Please wait before trying again.
+            </p>
+
+            {{-- Timer --}}
+            <div class="mt-6">
+                <p class="text-xs uppercase tracking-wider font-semibold text-gray-400">
+                    Try again in
+                </p>
+
+                <div
+                    id="rateLimitTimer"
+                    class="mt-2 text-5xl font-bold text-[#849753] tabular-nums"
+                >
+                    03:00
+                </div>
+            </div>
+
+            {{-- Progress Bar --}}
+            <div class="mt-6 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                <div
+                    id="rateLimitProgress"
+                    class="h-full bg-[#849753] transition-all duration-1000"
+                    style="width: 100%"
+                ></div>
+            </div>
+
+            {{-- Try Again Button --}}
+            <button
+                type="button"
+                id="rateLimitClose"
+                disabled
+                class="mt-6 w-full rounded-lg bg-gray-300 py-3 text-sm font-semibold text-gray-500 cursor-not-allowed"
+            >
+                Please wait...
+            </button>
+
+        </div>
+    </div>
+@endif
+</body>
+
+</html>
+
+<script>
+    const password = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    // Show/Hide the eye icon while typing
+    password.addEventListener("input", () => {
+        if (password.value.length > 0) {
+            togglePassword.classList.remove("hidden");
+            togglePassword.classList.add("flex");
+        } else {
+            togglePassword.classList.add("hidden");
+            togglePassword.classList.remove("flex");
+
+            // Reset to hidden password when cleared
+            password.type = "password";
+
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6-1c-1.5-4-5-7-9-7s-7.5 3-9 7c1.5 4 5 7 9 7s7.5-3 9-7z" />
+            `;
+        }
+    });
+
+    // Toggle password visibility
+    togglePassword.addEventListener("click", () => {
+        if (password.type === "password") {
+            password.type = "text";
+
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4 0-7.5-3-9-7a13.16 13.16 0 013.1-4.36M9.88 9.88A3 3 0 0114.12 14.12M6.1 6.1L3 3m18 18L3 3" />
+            `;
+        } else {
+            password.type = "password";
+
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6-1c-1.5-4-5-7-9-7s-7.5 3-9 7c1.5 4 5 7 9 7s7.5-3 9-7z" />
+            `;
+        }
+    });
+</script>
+
+@if (session('login_rate_limited'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const modal = document.getElementById('rateLimitModal');
+        const timer = document.getElementById('rateLimitTimer');
+        const progress = document.getElementById('rateLimitProgress');
+        const closeButton = document.getElementById('rateLimitClose');
+        const xButton = document.getElementById('rateLimitX');
+
+        const retryAt = {{ session('retry_after') }};
+        const totalSeconds = 600;
+
+        // X button
+        xButton.addEventListener('click', function () {
+            modal.remove();
+        });
+
+        function updateTimer() {
+
+            const now = Math.floor(Date.now() / 1000);
+
+            let remaining = retryAt - now;
+
+            if (remaining <= 0) {
+
+                remaining = 0;
+
+                timer.textContent = '00:00';
+
+                progress.style.width = '0%';
+
+                closeButton.disabled = false;
+                closeButton.textContent = 'Try Again';
+
+                closeButton.classList.remove(
+                    'bg-gray-300',
+                    'text-gray-500',
+                    'cursor-not-allowed'
+                );
+
+                closeButton.classList.add(
+                    'bg-[#849753]',
+                    'text-white',
+                    'hover:bg-[#6F4E37]'
+                );
+
+                closeButton.addEventListener('click', function () {
+                    modal.remove();
+
+                    const loginButton = document.querySelector(
+                        'button[type="submit"]'
+                    );
+
+                    if (loginButton) {
+                        loginButton.disabled = false;
+
+                        loginButton.classList.remove(
+                            'opacity-50',
+                            'cursor-not-allowed'
+                        );
+                    }
+                });
+
+                clearInterval(countdown);
+
+                return;
+            }
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            timer.textContent =
+                String(minutes).padStart(2, '0') +
+                ':' +
+                String(seconds).padStart(2, '0');
+
+            const percentage =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        (remaining / totalSeconds) * 100
+                    )
+                );
+
+            progress.style.width = percentage + '%';
+        }
+
+        updateTimer();
+
+        const countdown = setInterval(updateTimer, 1000);
+
+        // Disable login button while rate limited
+        const loginButton = document.querySelector(
+            'button[type="submit"]'
+        );
+
+        if (loginButton) {
+            loginButton.disabled = true;
+
+            loginButton.classList.add(
+                'opacity-50',
+                'cursor-not-allowed'
+            );
+        }
+    });
+</script>
+@endif
