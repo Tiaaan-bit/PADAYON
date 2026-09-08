@@ -1,5 +1,5 @@
 {{-- Desktop sidebar --}}
-<aside class="hidden lg:flex fixed top-0 left-0 h-screen w-64 bg-[#849753] flex-col z-50">
+<aside class="hidden lg:flex fixed top-0 left-0 h-screen w-60 bg-[#849753] flex-col z-50">
     <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10 justify-center">
         <h1 class="text-white font-bold text-sm leading-tight">Padayon Massage Center</h1>
     </div>
