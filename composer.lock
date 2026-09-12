@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db11c2048068b4f8eb882ed65cb28bdf",
+    "content-hash": "78d62a17acc5735a5c3e362e58107083",
     "packages": [
         {
             "name": "brick/math",
@@ -6758,6 +6758,79 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2026-08-03T18:00:17+00:00"
+        },
+        {
+            "name": "meehh/laravel-goat",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CodeWithTeds/meehh.git",
+                "reference": "6a7403fc263825af9d9a7b8e1dd2f3d961348e3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CodeWithTeds/meehh/zipball/6a7403fc263825af9d9a7b8e1dd2f3d961348e3c",
+                "reference": "6a7403fc263825af9d9a7b8e1dd2f3d961348e3c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^11.0|^12.0|^13.0",
+                "illuminate/filesystem": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0",
+                "phpunit/phpunit": "^11.0|^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Goat\\GoatServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Goat\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Prof Alex Software Dev",
+                    "homepage": "https://github.com/CodeWithTeds/meehh",
+                    "role": "Owner / TE-AD"
+                },
+                {
+                    "name": "TE-AD",
+                    "homepage": "https://github.com/CodeWithTeds/meehh"
+                }
+            ],
+            "description": "Terminal-first Laravel feature generator — template & boilerplate for full feature slices (Model, Requests, Resources, Service, Repository, Policy, Tests) from a single migration or ERD. Not just CRUD.",
+            "homepage": "https://github.com/CodeWithTeds/meehh",
+            "keywords": [
+                "artisan",
+                "boilerplate",
+                "clean-architecture",
+                "feature-generator",
+                "generator",
+                "goat",
+                "laravel",
+                "scaffold",
+                "template"
+            ],
+            "support": {
+                "docs": "https://github.com/CodeWithTeds/meehh#readme",
+                "issues": "https://github.com/CodeWithTeds/meehh/issues",
+                "source": "https://github.com/CodeWithTeds/meehh"
+            },
+            "time": "2026-09-05T03:38:21+00:00"
         },
         {
             "name": "mockery/mockery",
