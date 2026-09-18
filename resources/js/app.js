@@ -7,9 +7,6 @@ import Chart from 'chart.js/auto';
 window.Chart = Chart;
 window.Alpine = Alpine;
 
-Alpine.data(
-    'appointmentWizard',
-    appointmentWizard
-);
+
 
 Alpine.start();

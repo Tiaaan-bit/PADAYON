@@ -2,23 +2,32 @@
 
 namespace App\Models;
 
+use App\Models\Post;
+use App\Notifications\CustomResetPassword;
+use App\Notifications\CustomVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Notifications\CustomVerifyEmail;
-use App\Notifications\CustomResetPassword;
-use App\Models\Post;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = ['name', 'email', 'phone', 'password', 'role', 'status', 'is_online', 'last_seen_at', 'email_verified_at', 'email_verification_code', 'email_verification_code_expires_at'];
 
+    /**
+     * The attributes that should be hidden.
+     */
     protected $hidden = ['password', 'remember_token'];
 
+    /**
+     * The attributes that should be cast.
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'last_seen_at' => 'datetime',
@@ -27,19 +36,32 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verification_code_expires_at' => 'datetime',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Role Helpers
+    |--------------------------------------------------------------------------
+    */
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
     }
 
     public function isUser(): bool
     {
         return $this->role === 'user';
     }
-    public function isStaff(): bool
-    {
-        return $this->role === 'staff';
-    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status Helpers
+    |--------------------------------------------------------------------------
+    */
 
     public function isPending(): bool
     {
@@ -50,6 +72,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->status === 'active';
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    */
 
     public function sendEmailVerificationNotification(): void
     {
@@ -63,20 +91,44 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new CustomVerifyEmail($code));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset
+    |--------------------------------------------------------------------------
+    */
+
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new CustomResetPassword($token));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Online Status
+    |--------------------------------------------------------------------------
+    */
+
     public function markOnline(): void
     {
-        $this->update(['is_online' => true, 'last_seen_at' => now()]);
+        $this->update([
+            'is_online' => true,
+            'last_seen_at' => now(),
+        ]);
     }
 
     public function markOffline(): void
     {
-        $this->update(['is_online' => false, 'last_seen_at' => now()]);
+        $this->update([
+            'is_online' => false,
+            'last_seen_at' => now(),
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function posts(): HasMany
     {
