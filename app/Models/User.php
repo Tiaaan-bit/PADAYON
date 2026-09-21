@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\Admin\User\UserRole;
+use App\Enums\Admin\User\UserStatus;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -34,6 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
         'is_online' => 'boolean',
         'email_verification_code_expires_at' => 'datetime',
+        'role' => UserRole::class,
+        'status' => UserStatus::class,
     ];
 
     /*
@@ -44,7 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === UserRole::ADMIN;
     }
 
     public function isStaff(): bool
@@ -54,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isUser(): bool
     {
-        return $this->role === 'user';
+        return $this->role === UserRole::USER;
     }
 
     /*

@@ -2,66 +2,41 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\User\DeleteUser;
+use App\Actions\Admin\User\ToggleUserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UserFilterRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Repositories\Admin\User\UserRepositoryInterface;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class AdminUsersController extends Controller
 {
-    public function users(Request $request)
+    public function __construct(protected UserRepositoryInterface $userRepository) {}
+
+    public function users(UserFilterRequest $request): View
     {
-        $query = User::where('role', 'user');
+        $data = $this->userRepository->getUsersPageData($request->validated());
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('joined_date')) {
-            $query->whereDate('created_at', $request->joined_date);
-        }
-
-        $users = $query->orderByDesc('is_online')->orderByDesc('last_seen_at')->paginate(5)->withQueryString();
-
-        $stats = [
-            'total' => User::where('role', 'user')->count(),
-            'active' => User::where('role', 'user')->where('status', 'active')->count(),
-            'pending' => User::where('role', 'user')->where('status', 'pending')->count(),
-            'online' => User::where('role', 'user')->where('is_online', true)->count(),
-        ];
-
-        return view('admin.users', compact('users', 'stats'));
+        return view('admin.users', $data);
     }
 
-    public function toggleStatus(User $user)
+    public function toggleStatus(User $user, ToggleUserStatus $toggleUserStatus): RedirectResponse
     {
-        if ($user->isAdmin()) {
-            return back()->with('error', 'Cannot modify admin accounts.');
-        }
+        Gate::authorize('toggleStatus', $user);
 
-        $user->update([
-            'status' => $user->status === 'active' ? 'pending' : 'active',
-        ]);
+        $toggleUserStatus->execute($user);
 
-        return back()->with('success', "User status updated to {$user->fresh()->status}.");
+        return back()->with('success', "User status updated to {$user->status->value}.");
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, DeleteUser $deleteUser): RedirectResponse
     {
-        if ($user->isAdmin()) {
-            return back()->with('error', 'Cannot delete admin accounts.');
-        }
+        Gate::authorize('delete', $user);
 
-        $user->delete();
+        $deleteUser->execute($user);
 
         return back()->with('success', 'User deleted successfully.');
     }

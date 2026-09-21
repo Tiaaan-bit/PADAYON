@@ -514,7 +514,7 @@
 
                                         {{-- Status --}}
 
-                                        @if (strtolower($appointment->status) === 'confirm')
+                                        @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                             <span
                                                 class="shrink-0 rounded-full
                                                    bg-green-100 px-2 py-1
@@ -522,7 +522,7 @@
                                                    text-green-700">
                                                 Confirmed
                                             </span>
-                                        @elseif (strtolower($appointment->status) === 'pending')
+                                        @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                             <span
                                                 class="shrink-0 rounded-full
                                                    bg-yellow-100 px-2 py-1
@@ -650,7 +650,7 @@
 
                                         {{-- Status --}}
 
-                                        @if (strtolower($appointment->status) === 'confirm')
+                                        @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                             <span
                                                 class="shrink-0 rounded-full
                                                    bg-green-100 px-2 py-1
@@ -658,7 +658,7 @@
                                                    text-green-700">
                                                 Confirmed
                                             </span>
-                                        @elseif (strtolower($appointment->status) === 'pending')
+                                        @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                             <span
                                                 class="shrink-0 rounded-full
                                                    bg-yellow-100 px-2 py-1
@@ -727,10 +727,10 @@
         }
 
         /*
-                |--------------------------------------------------------------------------
-                | Appointment Hover Popup
-                |--------------------------------------------------------------------------
-                */
+                    |--------------------------------------------------------------------------
+                    | Appointment Hover Popup
+                    |--------------------------------------------------------------------------
+                    */
 
         .calendar-popup {
             visibility: hidden;
@@ -748,10 +748,10 @@
         }
 
         /*
-                |--------------------------------------------------------------------------
-                | Hover Highlight
-                |--------------------------------------------------------------------------
-                */
+                    |--------------------------------------------------------------------------
+                    | Hover Highlight
+                    |--------------------------------------------------------------------------
+                    */
 
         .calendar-highlight {
             opacity: 0;

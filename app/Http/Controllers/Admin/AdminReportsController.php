@@ -3,107 +3,60 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Admin\ReportFilterRequest;
+use App\Repositories\Admin\Report\ReportRepositoryInterface;
+use App\Services\Admin\ReportPeriodService;
+use Illuminate\View\View;
 
 class AdminReportsController extends Controller
 {
-    public function reports(Request $request)
+    public function reports(ReportFilterRequest $request, ReportRepositoryInterface $reports, ReportPeriodService $periodService): View
     {
-        $periodOptions = [
-            'today' => 'Today',
-            'yesterday' => 'Yesterday',
-            'this_week' => 'This Week',
-            'this_month' => 'This Month',
-            'this_quarter' => 'This Quarter',
-            'this_year' => 'This Year',
+        $period = $request->period();
+
+        [$start, $end] = $periodService->getRange($period);
+
+        $totalRevenue = $reports->getTotalRevenue($start, $end);
+
+        $totalAppointments = $reports->getTotalAppointments($start, $end);
+
+        $peakHours = $reports->getPeakHours($start, $end);
+
+        $serviceDistribution = $reports->getServiceDistribution($start, $end);
+
+        $dailyRevenue = $reports->getDailyRevenue($start, $end);
+
+        $days = $periodService->getDays($period, $start, $end);
+
+        $revenueTrend = [
+            'labels' => [],
+            'values' => [],
         ];
-
-        $period = $request->input('period', 'today');
-        if (! is_string($period) || ! array_key_exists($period, $periodOptions)) {
-            $period = 'today';
-        }
-
-        $periodLabel = $periodOptions[$period];
-        [$start, $end] = $this->getPeriodRange($period);
-
-        $baseQuery = DB::table('appointments')
-            ->whereBetween('appointment_date', [$start->toDateString(), $end->toDateString()])
-            ->where('appointments.status', '!=', 'cancelled');
-
-        $totalRevenue = (clone $baseQuery)->sum(DB::raw('COALESCE(amount_paid, 0)'));
-        $totalAppointments = (clone $baseQuery)->count();
-
-        $peakHours = (clone $baseQuery)
-            ->selectRaw("DATE_FORMAT(appointment_time, '%H:00') as hour, COUNT(*) as total")
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->get();
-
-            $serviceDistribution = DB::table('appointments')
-            ->join('services', 'appointments.service_id', '=', 'services.id')
-            ->whereBetween('appointments.appointment_date', [$start->toDateString(), $end->toDateString()])
-            ->where('appointments.status', '!=', 'cancelled')
-            ->selectRaw('services.id, services.name as service_name, services.description, services.duration_minutes, COUNT(*) as total')
-            ->groupBy('services.id', 'services.name', 'services.description','services.duration_minutes')
-            ->orderByDesc('total')
-            ->get();
-
-        $revenueTrend = $this->buildRevenueTrend($period, $start, $end);
-
-        return view('admin.reports', compact(
-            'period',
-            'periodLabel',
-            'periodOptions',
-            'totalRevenue',
-            'totalAppointments',
-            'peakHours',
-            'serviceDistribution',
-            'revenueTrend'
-        ));
-    }
-
-    private function getPeriodRange(string $period): array
-    {
-        return match ($period) {
-            'yesterday' => [Carbon::yesterday()->startOfDay(), Carbon::yesterday()->endOfDay()],
-            'this_week' => [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()],
-            'this_month' => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()],
-            'this_quarter' => [Carbon::now()->startOfQuarter(), Carbon::now()->endOfQuarter()],
-            'this_year' => [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()],
-            default => [Carbon::today()->startOfDay(), Carbon::today()->endOfDay()],
-        };
-    }
-
-    private function buildRevenueTrend(string $period, Carbon $start, Carbon $end): array
-    {
-        $labels = [];
-        $values = [];
-
-        if ($period === 'today' || $period === 'yesterday') {
-            $days = collect([$start->copy()]);
-        } else {
-            $days = collect(CarbonPeriod::create($start->copy()->startOfDay(), $end->copy()->startOfDay()));
-        }
-
-        $dailyRevenue = DB::table('appointments')
-            ->whereBetween('appointment_date', [$start->toDateString(), $end->toDateString()])
-            ->where('appointments.status', '!=', 'cancelled')
-            ->selectRaw('appointment_date, SUM(COALESCE(amount_paid, 0)) as total')
-            ->groupBy('appointment_date')
-            ->pluck('total', 'appointment_date');
 
         foreach ($days as $day) {
             $date = $day->format('Y-m-d');
-            $labels[] = $day->format('M d');
-            $values[] = (float) ($dailyRevenue[$date] ?? 0);
+
+            $revenueTrend['labels'][] = $day->format('M d');
+
+            $revenueTrend['values'][] = (float) ($dailyRevenue[$date] ?? 0);
         }
 
-        return [
-            'labels' => $labels,
-            'values' => $values,
-        ];
+        return view('admin.reports', [
+            'period' => $period->value,
+            'periodLabel' => $period->label(),
+            'periodOptions' => collect(\App\Enums\Admin\Report\ReportPeriod::cases())
+                ->mapWithKeys(
+                    fn($period) => [
+                        $period->value => $period->label(),
+                    ],
+                )
+                ->all(),
+
+            'totalRevenue' => $totalRevenue,
+            'totalAppointments' => $totalAppointments,
+            'peakHours' => $peakHours,
+            'serviceDistribution' => $serviceDistribution,
+            'revenueTrend' => $revenueTrend,
+        ]);
     }
 }

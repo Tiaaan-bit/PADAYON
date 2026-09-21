@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Admin\Appointment\AppointmentStatus;
 
 class UsersAppointments extends Model
 {
@@ -34,6 +35,8 @@ class UsersAppointments extends Model
         'service_price' => 'decimal:2',
         'addons_price' => 'decimal:2',
         'amount_paid' => 'decimal:2',
+        'status' => AppointmentStatus::class,
+
     ];
 
     public function user()

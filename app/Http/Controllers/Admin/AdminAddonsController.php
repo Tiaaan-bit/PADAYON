@@ -2,68 +2,52 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\AddOn\CreateAddOn;
+use App\Actions\Admin\AddOn\DeleteAddOn;
+use App\Actions\Admin\AddOn\UpdateAddOn;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AddOnRequest;
 use App\Models\AddOns;
+use App\Repositories\Admin\AddOn\AddOnRepositoryInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class AdminAddonsController extends Controller
 {
-    public function addons(Request $request)
+    public function addons(Request $request, AddOnRepositoryInterface $addOns): View
     {
-        $query = AddOns::query();
+        $addOnList = $addOns->getAll($request->input('search'));
 
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-        $addOns = $query
-            ->latest()
-            ->paginate(5)
-            ->withQueryString();
-
-        return view('admin.addons', compact('addOns'));
+        return view('admin.addons', [
+            'addOns' => $addOnList,
+        ]);
     }
 
-
-
-    public function store(Request $request)
+    public function store(AddOnRequest $request, CreateAddOn $createAddOn): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'duration_minutes' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive',
-        ]);
+        Gate::authorize('create', AddOns::class);
 
-        AddOns::create($validated);
+        $createAddOn->execute($request->validated());
 
         return redirect()->route('admin.addons')->with('success', 'Add-on added successfully.');
     }
 
-
-
-    public function edit(AddOns $addOn)
+    public function update(AddOnRequest $request, AddOns $addOn, UpdateAddOn $updateAddOn): RedirectResponse
     {
-        return view('admin.addons', compact('addOn'));
-    }
+        Gate::authorize('update', $addOn);
 
-    public function update(Request $request, AddOns $addOn)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'duration_minutes' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        $addOn->update($validated);
+        $updateAddOn->execute($addOn, $request->validated());
 
         return redirect()->route('admin.addons')->with('success', 'Add-on updated successfully.');
     }
 
-    public function destroy(AddOns $addOn)
+    public function destroy(AddOns $addOn, DeleteAddOn $deleteAddOn): RedirectResponse
     {
-        $addOn->delete($addOn->id);
+        Gate::authorize('delete', $addOn);
+
+        $deleteAddOn->execute($addOn);
 
         return redirect()->route('admin.addons')->with('success', 'Add-on deleted successfully.');
     }

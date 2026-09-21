@@ -2,86 +2,73 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Service\CreateService;
+use App\Actions\Admin\Service\DeleteService;
+use App\Actions\Admin\Service\UpdateService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ServiceRequest;
 use App\Models\Services;
+use App\Repositories\Admin\Service\ServiceRepositoryInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class AdminServicesController extends Controller
 {
-    public function services(Request $request)
+    public function services(Request $request, ServiceRepositoryInterface $services): View
     {
-        $query = Services::query();
-    
-        if ($request->filled('search')) {
-            $search = $request->search;
-    
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('duration_minutes', 'like', "%{$search}%");
-            });
-        }
-    
-        // Total active services
-        $totalActiveServices = Services::where('status', 'active')->count();
-    
-        // Total inactive services
-        $totalInactiveServices = Services::where('status', 'inactive')->count();
-    
-        $services = $query
-            ->latest()
-            ->paginate(5)
-            ->withQueryString();
-    
-        return view('admin.services', compact(
-            'services',
-            'totalActiveServices',
-            'totalInactiveServices'
-        ));
+        $serviceList = $services->getAll($request->input('search'));
+
+        $totalActiveServices = $services->getActiveCount();
+
+        $totalInactiveServices = $services->getInactiveCount();
+
+        return view('admin.services', [
+            'services' => $serviceList,
+            'totalActiveServices' => $totalActiveServices,
+            'totalInactiveServices' => $totalInactiveServices,
+        ]);
     }
 
-    public function create() {}
-
-    public function store(Request $request)
+    public function create(): View
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'duration_minutes' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-            'status' => 'required|in:active,inactive',
-        ]);
+        return view('admin.services');
+    }
 
-        Services::create($validated);
+    public function store(ServiceRequest $request, CreateService $createService): RedirectResponse
+    {
+        Gate::authorize('create', Services::class);
+
+        $createService->execute($request->validated());
 
         return redirect()->route('admin.services')->with('success', 'Service added successfully.');
     }
 
-    public function edit(Services $service)
+    public function edit(Services $service, ServiceRepositoryInterface $services): View
     {
-        $services = Services::latest()->paginate(5)->withQueryString();
+        $serviceList = $services->getPaginated();
 
-        return view('admin.services', compact('services', 'service'));
+        return view('admin.services', [
+            'services' => $serviceList,
+            'service' => $service,
+        ]);
     }
 
-    public function update(Request $request, Services $service)
+    public function update(ServiceRequest $request, Services $service, UpdateService $updateService): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'duration_minutes' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-            'status' => 'required|in:active,inactive',
-        ]);
+        Gate::authorize('update', $service);
 
-        $service->update($validated);
+        $updateService->execute($service, $request->validated());
 
         return redirect()->route('admin.services')->with('success', 'Service updated successfully.');
     }
 
-    public function destroy(Services $service)
+    public function destroy(Services $service, DeleteService $deleteService): RedirectResponse
     {
-        $service->delete();
+        Gate::authorize('delete', $service);
+
+        $deleteService->execute($service);
 
         return redirect()->route('admin.services')->with('success', 'Service deleted successfully.');
     }

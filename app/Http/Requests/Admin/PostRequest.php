@@ -3,33 +3,22 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class PostRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isAdmin();
+        return true;
     }
 
     public function rules(): array
     {
         return [
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
+            'title' => ['required', 'string', 'max:255'],
 
-            'content' => [
-                'nullable',
-                'string',
-            ],
+            'content' => ['nullable', 'string'],
 
-            'published_at' => [
-                'required',
-                'date',
-            ],
+            'published_at' => ['required', 'date'],
         ];
     }
 }

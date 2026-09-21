@@ -2,92 +2,47 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Appointment\CancelAppointment;
+use App\Actions\Admin\Appointment\UpdateAppointmentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateAppointmentStatusRequest;
 use App\Models\UsersAppointments;
-use App\Notifications\AppointmentCancelledNotification;
-use App\Notifications\AppointmentConfirmedNotification;
-use App\Notifications\AppointmentNoShowNotification;
-use App\Notifications\AppointmentRejectedNotification;
-use Carbon\Carbon;
+use App\Repositories\Admin\Appointment\AppointmentRepositoryInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+use App\Enums\Admin\Appointment\AppointmentStatus;
 
 class AdminAppointmentsController extends Controller
 {
-    public function index(Request $request)
+    public function __construct(protected AppointmentRepositoryInterface $appointmentRepository) {}
+
+    public function index(Request $request): View
     {
-        $totalAppointments = UsersAppointments::count();
-        $totalConfirmed = UsersAppointments::where('status', 'confirm')->count();
-        $totalRejected = UsersAppointments::where('status', 'rejected')->count();
-        $totalPending = UsersAppointments::where('status', 'pending')->count();
-        $totalCancelled = UsersAppointments::where('status', 'cancelled')->count();
-        $totalNoShow = UsersAppointments::where('status', 'no show')->count();
+        $data = $this->appointmentRepository->getAppointmentPageData($request->all());
 
-
-        $query = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])->latest();
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('service')) {
-            $query->where('service_id', $request->service);
-        }
-
-        if ($request->filled('appointment_date')) {
-            $query->whereDate('appointment_date', $request->appointment_date);
-        }
-
-        $appointments = $query->paginate(5)->withQueryString();
-
-        $services = \App\Models\Services::orderBy('name')->get();
-
-        return view('admin.appointments', compact('totalAppointments', 'totalConfirmed', 'totalRejected', 'totalPending', 'totalCancelled', 'appointments', 'services','totalNoShow'));
+        return view('admin.appointments', $data);
     }
 
-    public function updateStatus(Request $request, UsersAppointments $appointment)
+    public function updateStatus(UpdateAppointmentStatusRequest $request, UsersAppointments $appointment, UpdateAppointmentStatus $updateAppointmentStatus): RedirectResponse
     {
-        $validated = $request->validate([
-            'status' => ['required', 'in:pending,confirm,rejected,cancelled,no show'],
-        ]);
+        Gate::authorize('updateStatus', $appointment);
 
-        $oldStatus = $appointment->status;
-
-        $appointment->update([
-            'status' => $validated['status'],
-        ]);
-
-        $user = $appointment->user;
-
-        if ($user && $validated['status'] !== $oldStatus) {
-            if ($validated['status'] === 'confirm') {
-                $user->notify(new AppointmentConfirmedNotification($appointment));
-            }
-
-            if ($validated['status'] === 'rejected') {
-                $user->notify(new AppointmentRejectedNotification($appointment));
-            }
-
-            if ($validated['status'] === 'cancelled') {
-                $user->notify(new AppointmentCancelledNotification($appointment));
-            }
-
-            if ($validated['status'] === 'no show') {
-                $user->notify(new AppointmentNoShowNotification($appointment));
-            }
-        }
-
+        $updateAppointmentStatus->execute($appointment, AppointmentStatus::from($request->validated('status')));
+        
         return back()->with('success', 'Appointment status updated successfully.');
     }
 
-    public function cancel(UsersAppointments $appointment)
+    public function cancel(UsersAppointments $appointment, CancelAppointment $cancelAppointment): RedirectResponse
     {
-        if ($appointment->status === 'cancelled') {
+        Gate::authorize('cancel', $appointment);
+
+        if ($appointment->status === AppointmentStatus::CANCELLED) {
             return back()->with('error', 'Appointment is already cancelled.');
         }
 
-        $appointment->update([
-            'status' => 'cancelled',
-        ]);
+        $cancelAppointment->execute($appointment);
 
         return back()->with('success', 'Appointment cancelled successfully.');
     }

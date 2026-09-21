@@ -3,45 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\UsersAppointments;
+use App\Repositories\Admin\Transaction\TransactionRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AdminTransactionsController extends Controller
 {
-    public function transactions(Request $request)
+    public function transactions(Request $request, TransactionRepositoryInterface $transactions): View
     {
-        $query = UsersAppointments::with(['user', 'service', 'therapist', 'addOn']);
+        $transactionList = $transactions->getAll($request->input('date'), $request->input('payment_method'), $request->input('amount'));
 
-        if ($request->filled('date')) {
-            $query->whereDate('appointment_date', $request->date);
-        }
+        $totalServicePrice = $transactions->getTotalServicePrice();
 
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
+        $totalAddOnPrice = $transactions->getTotalAddOnPrice();
 
-        if ($request->filled('amount')) {
-            $query->where('amount_paid', $request->amount);
-        }
+        $totalAmountPaid = $transactions->getTotalAmountPaid();
 
-        $transactions = $query->latest()->paginate(5)->withQueryString();
-
-        $allTransactions = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
-            ->latest()
-            ->get();
-
-        $totalServicePrice = $allTransactions->sum(function ($transaction) {
-            return $transaction->service->price ?? 0;
-        });
-
-        $totalAddOnPrice = $allTransactions->sum(function ($transaction) {
-            return $transaction->addons_price ?? 0;
-        });
-
-        $totalAmountPaid = $allTransactions->sum('amount_paid');
-
-        return view('admin.transactions', compact('transactions', 'totalServicePrice', 'totalAddOnPrice', 'totalAmountPaid'));
+        return view('admin.transactions', [
+            'transactions' => $transactionList,
+            'totalServicePrice' => $totalServicePrice,
+            'totalAddOnPrice' => $totalAddOnPrice,
+            'totalAmountPaid' => $totalAmountPaid,
+        ]);
     }
-
-    
 }

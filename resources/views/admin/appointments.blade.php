@@ -2,6 +2,11 @@
 
 @section('title', 'Padayon Massage Center - Appointments')
 
+@php
+    use App\Enums\Admin\Appointment\AppointmentStatus;
+    use App\Enums\Admin\Appointment\AppointmentLevel;
+@endphp
+
 @section('content')
 
     <div class="min-h-screen flex flex-col">
@@ -116,6 +121,7 @@
             <div class="flex flex-wrap items-center gap-4 mb-8">
 
                 {{-- Total Appointments --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -137,6 +143,7 @@
 
 
                 {{-- Confirmed --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -158,6 +165,7 @@
 
 
                 {{-- Rejected --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -179,6 +187,7 @@
 
 
                 {{-- Pending --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -200,6 +209,7 @@
 
 
                 {{-- Cancelled --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -221,6 +231,7 @@
 
 
                 {{-- No Show --}}
+
                 <div
                     class="bg-white rounded-xl border border-gray-200
                     shadow-sm p-4 sm:p-5 flex-1 min-w-35"
@@ -259,6 +270,7 @@
                 >
 
                     {{-- Appointment Date --}}
+
                     <div>
 
                         <label
@@ -280,6 +292,7 @@
 
 
                     {{-- Status --}}
+
                     <div>
 
                         <label
@@ -300,36 +313,36 @@
                             </option>
 
                             <option
-                                value="pending"
-                                {{ request('status') === 'pending' ? 'selected' : '' }}
+                                value="{{ AppointmentStatus::PENDING->value }}"
+                                {{ request('status') === AppointmentStatus::PENDING->value ? 'selected' : '' }}
                             >
                                 Pending
                             </option>
 
                             <option
-                                value="confirm"
-                                {{ request('status') === 'confirm' ? 'selected' : '' }}
+                                value="{{ AppointmentStatus::CONFIRMED->value }}"
+                                {{ request('status') === AppointmentStatus::CONFIRMED->value ? 'selected' : '' }}
                             >
-                                Confirm
+                                Confirmed
                             </option>
 
                             <option
-                                value="rejected"
-                                {{ request('status') === 'rejected' ? 'selected' : '' }}
+                                value="{{ AppointmentStatus::REJECTED->value }}"
+                                {{ request('status') === AppointmentStatus::REJECTED->value ? 'selected' : '' }}
                             >
                                 Rejected
                             </option>
 
                             <option
-                                value="cancelled"
-                                {{ request('status') === 'cancelled' ? 'selected' : '' }}
+                                value="{{ AppointmentStatus::CANCELLED->value }}"
+                                {{ request('status') === AppointmentStatus::CANCELLED->value ? 'selected' : '' }}
                             >
                                 Cancelled
                             </option>
 
                             <option
-                                value="no show"
-                                {{ request('status') === 'no show' ? 'selected' : '' }}
+                                value="{{ AppointmentStatus::NO_SHOW->value }}"
+                                {{ request('status') === AppointmentStatus::NO_SHOW->value ? 'selected' : '' }}
                             >
                                 No Show
                             </option>
@@ -340,6 +353,7 @@
 
 
                     {{-- Service --}}
+
                     <div>
 
                         <label
@@ -382,6 +396,7 @@
 
 
                     {{-- Filter Buttons --}}
+
                     <div class="flex items-center gap-3">
 
                         <button
@@ -392,7 +407,6 @@
                         >
                             Filter
                         </button>
-
 
                         <a
                             href="{{ route('admin.appointments') }}"
@@ -420,6 +434,7 @@
             >
 
                 {{-- Table Header --}}
+
                 <div
                     class="px-5 py-4 border-b border-gray-100
                     flex items-center justify-between"
@@ -437,8 +452,6 @@
 
 
                 @if ($appointments->isEmpty())
-
-                    {{-- No appointments --}}
 
                     <div class="py-16 text-center text-gray-400">
 
@@ -472,75 +485,39 @@
 
                                 <tr class="bg-gray-50 text-left">
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         #
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         User
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Service Details
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Add-on Details
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Condition
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Therapist
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Appointment Time
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Status
                                     </th>
 
-                                    <th
-                                        class="px-5 py-3 text-xs font-semibold
-                                        text-gray-400 uppercase tracking-wide
-                                        whitespace-nowrap"
-                                    >
+                                    <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                         Action
                                     </th>
 
@@ -577,11 +554,13 @@
 
                                         data-service-price="{{ number_format($appointment->service->price ?? 0, 2) }}"
 
-                                        data-level="{{ $appointment->level ?? 'N/A' }}"
+                                        data-level="{{ $appointment->level?->value ?? 'N/A' }}"
 
                                         data-addon-name="{{ $appointment->addOn->name ?? 'None' }}"
 
-                                        data-addon-duration="{{ $appointment->addOn ? $appointment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}"
+                                        data-addon-duration="{{ $appointment->addOn
+                                            ? $appointment->addOn->duration_minutes . ' mins'
+                                            : 'No add-on selected' }}"
 
                                         data-addon-price="{{ number_format($appointment->addons_price ?? 0, 2) }}"
 
@@ -591,23 +570,28 @@
 
                                         data-therapist="{{ $appointment->therapist->name ?? 'N/A' }}"
 
-                                        data-date="{{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}"
+                                        data-date="{{ $appointment->appointment_date
+                                            ? $appointment->appointment_date->format('Y-m-d')
+                                            : 'N/A' }}"
 
-                                        data-time-start="{{ $appointment->appointment_time ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') : 'N/A' }}"
+                                        data-time-start="{{ $appointment->appointment_time
+                                            ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
+                                            : 'N/A' }}"
 
-                                        data-time-end="{{ $appointment->appointment_end_time ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A') : 'N/A' }}"
+                                        data-time-end="{{ $appointment->appointment_end_time
+                                            ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
+                                            : 'N/A' }}"
 
-                                        data-status="{{ ucfirst($appointment->status ?? 'N/A') }}"
+                                        data-status="{{ $appointment->status?->value ?? 'N/A' }}"
                                     >
 
 
                                         {{-- ID --}}
 
-                                        <td
-                                            class="px-5 py-4 text-gray-600
-                                            whitespace-nowrap"
-                                        >
+                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+
                                             {{ $appointment->id }}
+
                                         </td>
 
 
@@ -628,18 +612,21 @@
 
                                                 </div>
 
-
                                                 <div>
 
                                                     <p
                                                         class="font-semibold
                                                         text-gray-800 whitespace-nowrap"
                                                     >
+
                                                         {{ $appointment->user->name ?? 'N/A' }}
+
                                                     </p>
 
                                                     <p class="text-xs text-gray-400">
+
                                                         {{ $appointment->user->email ?? '' }}
+
                                                     </p>
 
                                                 </div>
@@ -656,11 +643,15 @@
                                             <div class="space-y-1">
 
                                                 <p class="font-semibold text-gray-800">
+
                                                     {{ $appointment->service->name ?? 'N/A' }}
+
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
+
                                                     {{ $appointment->service->description ?? 'N/A' }}
+
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
@@ -688,7 +679,7 @@
 
                                                     Level:
 
-                                                    {{ $appointment->level ?? 'N/A' }}
+                                                    {{ $appointment->level?->value ?? 'N/A' }}
 
                                                 </p>
 
@@ -704,7 +695,9 @@
                                             <div class="space-y-1">
 
                                                 <p class="font-semibold text-gray-800">
+
                                                     {{ $appointment->addOn->name ?? 'None' }}
+
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
@@ -776,7 +769,9 @@
                                             class="px-5 py-4 text-gray-600
                                             whitespace-nowrap"
                                         >
+
                                             {{ $appointment->therapist->name ?? 'N/A' }}
+
                                         </td>
 
 
@@ -816,11 +811,13 @@
                                         </td>
 
 
+                                        {{-- ================================================= --}}
                                         {{-- STATUS --}}
+                                        {{-- ================================================= --}}
 
                                         <td class="px-5 py-4">
 
-                                            @if ($appointment->status === 'confirm')
+                                            @if ($appointment->status === AppointmentStatus::CONFIRMED)
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -836,11 +833,11 @@
                                                         bg-green-500"
                                                     ></span>
 
-                                                    Confirm
+                                                    Confirmed
 
                                                 </span>
 
-                                            @elseif($appointment->status === 'rejected')
+                                            @elseif ($appointment->status === AppointmentStatus::REJECTED)
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -860,7 +857,7 @@
 
                                                 </span>
 
-                                            @elseif($appointment->status === 'pending')
+                                            @elseif ($appointment->status === AppointmentStatus::PENDING)
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -880,7 +877,7 @@
 
                                                 </span>
 
-                                            @elseif($appointment->status === 'cancelled')
+                                            @elseif ($appointment->status === AppointmentStatus::CANCELLED)
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -900,7 +897,7 @@
 
                                                 </span>
 
-                                            @elseif($appointment->status === 'no show')
+                                            @elseif ($appointment->status === AppointmentStatus::NO_SHOW)
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -931,7 +928,7 @@
                                                     whitespace-nowrap"
                                                 >
 
-                                                    {{ ucfirst($appointment->status ?? 'N/A') }}
+                                                    {{ $appointment->status?->value ?? 'N/A' }}
 
                                                 </span>
 
@@ -940,7 +937,9 @@
                                         </td>
 
 
+                                        {{-- ================================================= --}}
                                         {{-- ACTION --}}
+                                        {{-- ================================================= --}}
 
                                         <td
                                             class="px-5 py-4"
@@ -966,42 +965,43 @@
                                                     class="rounded-lg border-gray-300
                                                     text-sm focus:border-[#6F4E37]
                                                     focus:ring-[#6F4E37] w-full"
-                                                    @if ($appointment->status === 'cancelled')
+
+                                                    @if ($appointment->status === AppointmentStatus::CANCELLED)
                                                         disabled
                                                     @endif
                                                 >
 
                                                     <option
-                                                        value="pending"
-                                                        {{ $appointment->status === 'pending' ? 'selected' : '' }}
+                                                        value="{{ AppointmentStatus::PENDING->value }}"
+                                                        {{ $appointment->status === AppointmentStatus::PENDING ? 'selected' : '' }}
                                                     >
                                                         Pending
                                                     </option>
 
                                                     <option
-                                                        value="confirm"
-                                                        {{ $appointment->status === 'confirm' ? 'selected' : '' }}
+                                                        value="{{ AppointmentStatus::CONFIRMED->value }}"
+                                                        {{ $appointment->status === AppointmentStatus::CONFIRMED ? 'selected' : '' }}
                                                     >
                                                         Confirm
                                                     </option>
 
                                                     <option
-                                                        value="rejected"
-                                                        {{ $appointment->status === 'rejected' ? 'selected' : '' }}
+                                                        value="{{ AppointmentStatus::REJECTED->value }}"
+                                                        {{ $appointment->status === AppointmentStatus::REJECTED ? 'selected' : '' }}
                                                     >
                                                         Rejected
                                                     </option>
 
                                                     <option
-                                                        value="cancelled"
-                                                        {{ $appointment->status === 'cancelled' ? 'selected' : '' }}
+                                                        value="{{ AppointmentStatus::CANCELLED->value }}"
+                                                        {{ $appointment->status === AppointmentStatus::CANCELLED ? 'selected' : '' }}
                                                     >
                                                         Cancelled
                                                     </option>
 
                                                     <option
-                                                        value="no show"
-                                                        {{ $appointment->status === 'no show' ? 'selected' : '' }}
+                                                        value="{{ AppointmentStatus::NO_SHOW->value }}"
+                                                        {{ $appointment->status === AppointmentStatus::NO_SHOW ? 'selected' : '' }}
                                                     >
                                                         No Show
                                                     </option>
@@ -1016,11 +1016,14 @@
                                                     hover:bg-[#6F4E37]
                                                     text-sm disabled:opacity-50
                                                     w-full"
-                                                    @if ($appointment->status === 'cancelled')
+
+                                                    @if ($appointment->status === AppointmentStatus::CANCELLED)
                                                         disabled
                                                     @endif
                                                 >
+
                                                     Update
+
                                                 </button>
 
                                             </form>
@@ -1038,7 +1041,9 @@
                                             class="px-5 py-10 text-center
                                             text-gray-400"
                                         >
+
                                             No appointments found.
+
                                         </td>
 
                                     </tr>
@@ -1075,7 +1080,6 @@
     </div>
 
 
-
     {{-- ================================================================ --}}
     {{-- APPOINTMENT DETAILS MODAL --}}
     {{-- ================================================================ --}}
@@ -1088,9 +1092,7 @@
         aria-labelledby="appointmentModalTitle"
     >
 
-        {{-- ============================================================ --}}
-        {{-- DARK OVERLAY --}}
-        {{-- ============================================================ --}}
+        {{-- Dark Overlay --}}
 
         <div
             class="fixed inset-0 bg-black/50 backdrop-blur-sm"
@@ -1098,15 +1100,11 @@
         ></div>
 
 
-        {{-- ============================================================ --}}
-        {{-- MODAL POSITION --}}
-        {{-- ============================================================ --}}
+        {{-- Modal Position --}}
 
         <div class="relative min-h-screen flex items-center justify-center p-4">
 
-            {{-- ======================================================== --}}
-            {{-- MODAL BOX --}}
-            {{-- ======================================================== --}}
+            {{-- Modal Box --}}
 
             <div
                 class="relative w-full max-w-3xl bg-white rounded-2xl
@@ -1114,9 +1112,7 @@
                 onclick="event.stopPropagation()"
             >
 
-                {{-- ==================================================== --}}
-                {{-- MODAL HEADER --}}
-                {{-- ==================================================== --}}
+                {{-- Modal Header --}}
 
                 <div
                     class="sticky top-0 bg-white z-10 px-6 py-5
@@ -1144,8 +1140,6 @@
                         </div>
 
 
-                        {{-- Close button --}}
-
                         <button
                             type="button"
                             onclick="closeAppointmentModal()"
@@ -1153,7 +1147,9 @@
                             text-3xl font-bold leading-none ml-4"
                             aria-label="Close"
                         >
+
                             &times;
+
                         </button>
 
                     </div>
@@ -1161,16 +1157,12 @@
                 </div>
 
 
-                {{-- ==================================================== --}}
-                {{-- MODAL CONTENT --}}
-                {{-- ==================================================== --}}
+                {{-- Modal Content --}}
 
                 <div class="p-6 space-y-6">
 
 
-                    {{-- ================================================= --}}
                     {{-- CUSTOMER INFORMATION --}}
-                    {{-- ================================================= --}}
 
                     <div>
 
@@ -1220,9 +1212,7 @@
                     </div>
 
 
-                    {{-- ================================================= --}}
                     {{-- APPOINTMENT INFORMATION --}}
-                    {{-- ================================================= --}}
 
                     <div>
 
@@ -1324,9 +1314,7 @@
                     </div>
 
 
-                    {{-- ================================================= --}}
                     {{-- SERVICE INFORMATION --}}
-                    {{-- ================================================= --}}
 
                     <div>
 
@@ -1443,9 +1431,7 @@
                     </div>
 
 
-                    {{-- ================================================= --}}
                     {{-- ADD-ON INFORMATION --}}
-                    {{-- ================================================= --}}
 
                     <div>
 
@@ -1459,7 +1445,6 @@
                         <div class="bg-gray-50 rounded-xl p-4">
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
 
                                 <div>
 
@@ -1524,9 +1509,7 @@
                     </div>
 
 
-                    {{-- ================================================= --}}
                     {{-- CONDITION INFORMATION --}}
-                    {{-- ================================================= --}}
 
                     <div>
 
@@ -1586,9 +1569,7 @@
                 </div>
 
 
-                {{-- ==================================================== --}}
                 {{-- MODAL FOOTER --}}
-                {{-- ==================================================== --}}
 
                 <div
                     class="sticky bottom-0 bg-white border-t
@@ -1634,7 +1615,9 @@
 
     function openAppointmentModal(row) {
 
-        // Get appointment data from the clicked row
+        // --------------------------------------------------------
+        // Get appointment data from data-* attributes
+        // --------------------------------------------------------
 
         const id =
             row.dataset.id;
@@ -1691,8 +1674,42 @@
             row.dataset.status;
 
 
+        // --------------------------------------------------------
+        // Format status for display
+        // --------------------------------------------------------
+
+        let formattedStatus = status;
+
+        switch (status) {
+
+            case 'confirm':
+                formattedStatus = 'Confirmed';
+                break;
+
+            case 'pending':
+                formattedStatus = 'Pending';
+                break;
+
+            case 'rejected':
+                formattedStatus = 'Rejected';
+                break;
+
+            case 'cancelled':
+                formattedStatus = 'Cancelled';
+                break;
+
+            case 'no show':
+                formattedStatus = 'No Show';
+                break;
+
+            default:
+                formattedStatus = status || 'N/A';
+                break;
+        }
+
+
         // ========================================================
-        // PUT DATA INTO MODAL
+        // MODAL TITLE
         // ========================================================
 
         document.getElementById(
@@ -1701,7 +1718,9 @@
             'Appointment #' + id;
 
 
-        // User
+        // ========================================================
+        // CUSTOMER
+        // ========================================================
 
         document.getElementById(
             'modalUserName'
@@ -1728,7 +1747,9 @@
             initial;
 
 
-        // Appointment
+        // ========================================================
+        // APPOINTMENT
+        // ========================================================
 
         document.getElementById(
             'modalDate'
@@ -1748,10 +1769,12 @@
         document.getElementById(
             'modalStatus'
         ).textContent =
-            status;
+            formattedStatus;
 
 
-        // Service
+        // ========================================================
+        // SERVICE
+        // ========================================================
 
         document.getElementById(
             'modalServiceName'
@@ -1779,7 +1802,9 @@
             level;
 
 
-        // Add-on
+        // ========================================================
+        // ADD-ON
+        // ========================================================
 
         document.getElementById(
             'modalAddonName'
@@ -1797,7 +1822,9 @@
             '₱' + addonPrice;
 
 
-        // Condition
+        // ========================================================
+        // CONDITION
+        // ========================================================
 
         document.getElementById(
             'modalPreviousOperations'

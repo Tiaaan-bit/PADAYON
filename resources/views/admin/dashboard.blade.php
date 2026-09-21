@@ -533,8 +533,7 @@
                                                             text-gray-500
                                                             text-[10px] font-semibold
                                                             rounded-full whitespace-nowrap">
-                                                            {{ ucfirst($appointment->status ?? 'N/A') }}
-                                                        </span>
+                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                        </span>
                                                     @endif
 
                                                 </td>
@@ -1038,8 +1037,7 @@
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-gray-500">
-                                                    {{ ucfirst($appointment->status ?? 'N/A') }}
-                                                </span>
+                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                </span>
                                             @endif
 
                                         </div>
