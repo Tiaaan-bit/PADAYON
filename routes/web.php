@@ -140,6 +140,7 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/therapists', [AdminTherapistController::class, 'store'])->name('therapist.store');
         Route::put('/therapists/{therapist}', [AdminTherapistController::class, 'update'])->name('therapist.update');
         Route::delete('/therapists/{therapist}', [AdminTherapistController::class, 'destroy'])->name('therapist.destroy');
+        Route::get( '/therapists/{therapist}/feedback',[AdminTherapistController::class, 'feedback'])->name('therapist.feedback');
 
         //---Admin Appointment Controller---//
         Route::get('/appointments', [AdminAppointmentsController::class, 'index'])->name('appointments');

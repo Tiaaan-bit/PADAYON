@@ -1,4 +1,3 @@
-
 @extends('layouts.home')
 
 @section('title', 'Padayon Massage Center - Services')
@@ -9,10 +8,7 @@
 
         {{-- Background Decoration --}}
         <div class="absolute top-0 right-0 opacity-10">
-            <img
-                src="{{ asset('images/bamboo.png') }}"
-                class="w-72"
-                alt="">
+            <img src="{{ asset('images/bamboo.png') }}" class="w-72" alt="">
         </div>
 
         <div class="max-w-6xl mx-auto relative z-10">
@@ -20,8 +16,7 @@
             {{-- Hero Title --}}
             <div class="text-center mb-16">
 
-                <h1
-                    class="text-5xl md:text-6xl font-extrabold bg-[#849753] bg-clip-text text-transparent uppercase">
+                <h1 class="text-5xl md:text-6xl font-extrabold bg-[#849753] bg-clip-text text-transparent uppercase">
 
                     Our Services
 
@@ -37,372 +32,98 @@
 
 
             {{-- Services Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
+            <div class="overflow-x-auto rounded-3xl shadow-2xl">
 
-                {{-- ================================================= --}}
-                {{-- BED MASSAGE --}}
-                {{-- ================================================= --}}
+                <table class="w-full bg-white border-collapse">
 
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    {{-- Table Header --}}
+                    <thead>
+                        <tr class="bg-[#849753] text-white">
 
-                    <div class="bg-[#849753] py-5">
+                            <th class="px-8 py-6 text-left text-lg md:text-xl font-bold uppercase">
+                                Service
+                            </th>
 
-                        <h2
-                            class="text-3xl font-bold text-center text-white uppercase">
+                            <th class="px-8 py-6 text-left text-lg md:text-xl font-bold uppercase">
+                                Description
+                            </th>
 
-                            Bed Massage
+                            <th class="px-8 py-6 text-center text-lg md:text-xl font-bold uppercase">
+                                Price
+                            </th>
 
-                        </h2>
+                            <th class="px-8 py-6 text-center text-lg md:text-xl font-bold uppercase">
+                                Duration
+                            </th>
 
-                    </div>
+                        </tr>
+                    </thead>
 
+                    {{-- Table Body --}}
+                    <tbody>
 
-                    <div class="p-8 space-y-5">
+                        @forelse ($services as $serviceName => $serviceItems)
 
-                        {{-- 30 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
+                            @foreach ($serviceItems as $service)
+                                <tr class="border-b border-gray-200 last:border-b-0">
 
-                            <div>
+                                    {{-- Service Category --}}
+                                    <td class="px-8 py-6 align-middle">
 
-                                <h3 class="text-xl font-semibold">
-                                    Half Body
-                                </h3>
+                                        @if ($loop->first)
+                                            <h2 class="text-lg md:text-xl font-bold text-[#6F4E37] uppercase">
+                                                {{ $serviceName }}
+                                            </h2>
+                                        @endif
 
-                                <p class="text-gray-500 text-sm">
-                                    30 Minutes
-                                </p>
+                                    </td>
 
-                            </div>
+                                    {{-- Description --}}
+                                    <td class="px-8 py-6">
 
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
+                                        <h3 class="text-lg md:text-xl font-semibold text-black">
+                                            {{ $service->description }}
+                                        </h3>
 
-                                ₱300
+                                    </td>
 
-                            </span>
+                                    {{-- Price --}}
+                                    <td class="px-8 py-6 text-center">
 
-                        </div>
+                                        <span class="text-xl md:text-2xl font-bold text-[#6F4E37] whitespace-nowrap">
+                                            ₱{{ number_format((float) $service->price, 0) }}
+                                        </span>
 
+                                    </td>
 
-                        {{-- 60 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
+                                    {{-- Duration --}}
+                                    <td class="px-8 py-6 text-center">
 
-                            <div>
+                                        <span class="text-gray-500 text-base md:text-lg whitespace-nowrap">
+                                            {{ $service->duration_minutes }} Minutes
+                                        </span>
 
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
+                                    </td>
 
-                                <p class="text-gray-500 text-sm">
-                                    60 Minutes
-                                </p>
+                                </tr>
+                            @endforeach
 
-                            </div>
+                        @empty
 
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
+                            <tr>
+                                <td colspan="4" class="px-8 py-16 text-center">
+                                    <p class="text-gray-500 text-lg">
+                                        No services are currently available.
+                                    </p>
+                                </td>
+                            </tr>
 
-                                ₱400
+                        @endforelse
 
-                            </span>
+                    </tbody>
 
-                        </div>
-
-
-                        {{-- 90 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    90 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱550
-
-                            </span>
-
-                        </div>
-
-
-                        {{-- 120 Minutes --}}
-                        <div
-                            class="flex justify-between items-center">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    120 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱750
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                {{-- ================================================= --}}
-                {{-- SITTING MASSAGE --}}
-                {{-- ================================================= --}}
-
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-
-                    <div class="bg-[#849753] py-5">
-
-                        <h2
-                            class="text-3xl font-bold text-center text-white uppercase">
-
-                            Sitting Massage
-
-                        </h2>
-
-                    </div>
-
-
-                    <div class="p-8 space-y-5">
-
-                        {{-- 30 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Half Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    30 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱250
-
-                            </span>
-
-                        </div>
-
-
-                        {{-- 60 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    60 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱350
-
-                            </span>
-
-                        </div>
-
-
-                        {{-- 90 Minutes --}}
-                        <div
-                            class="flex justify-between items-center border-b pb-3">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    90 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱500
-
-                            </span>
-
-                        </div>
-
-
-                        {{-- 120 Minutes --}}
-                        <div
-                            class="flex justify-between items-center">
-
-                            <div>
-
-                                <h3 class="text-xl font-semibold">
-                                    Whole Body
-                                </h3>
-
-                                <p class="text-gray-500 text-sm">
-                                    120 Minutes
-                                </p>
-
-                            </div>
-
-                            <span
-                                class="text-[#6F4E37] font-bold text-2xl">
-
-                                ₱700
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            {{-- ================================================= --}}
-            {{-- REFLEXOLOGY --}}
-            {{-- ================================================= --}}
-
-            <div
-                class="mt-12 bg-white rounded-3xl shadow-2xl overflow-hidden">
-
-                <div class="bg-[#849753] py-5">
-
-                    <h2
-                        class="text-3xl font-bold text-center text-white uppercase">
-
-                        Reflexology & Massage Rates
-
-                    </h2>
-
-                </div>
-
-
-                <div class="p-8 space-y-5">
-
-                    {{-- 30 Minutes Reflexology --}}
-                    <div
-                        class="flex justify-between border-b pb-3">
-
-                        <span class="font-semibold text-lg">
-
-                            30 Minutes Reflexology
-
-                        </span>
-
-                        <span
-                            class="text-[#6F4E37] font-bold text-xl">
-
-                            ₱500
-
-                        </span>
-
-                    </div>
-
-
-                    {{-- 60 Minutes Reflexology --}}
-                    <div
-                        class="flex justify-between border-b pb-3">
-
-                        <span class="font-semibold text-lg">
-
-                            60 Minutes Reflexology
-
-                        </span>
-
-                        <span
-                            class="text-[#6F4E37] font-bold text-xl">
-
-                            ₱950
-
-                        </span>
-
-                    </div>
-
-
-                    {{-- Massage Combination --}}
-                    <div
-                        class="flex justify-between border-b pb-3">
-
-                        <span class="font-semibold text-lg">
-
-                            60 Minutes Normal Massage
-                            + 30 Minutes Normal Massage
-
-                        </span>
-
-                        <span
-                            class="text-[#6F4E37] font-bold text-xl">
-
-                            ₱1,250
-
-                        </span>
-
-                    </div>
-
-
-                    {{-- Massage + Reflexology --}}
-                    <div
-                        class="flex justify-between">
-
-                        <span class="font-semibold text-lg">
-
-                            60 Minutes Normal Massage
-                            + 60 Minutes Reflexology
-
-                        </span>
-
-                        <span
-                            class="text-[#6F4E37] font-bold text-xl">
-
-                            ₱1,450
-
-                        </span>
-
-                    </div>
-
-                </div>
+                </table>
 
             </div>
 
@@ -412,39 +133,87 @@
             {{-- ADD ONS --}}
             {{-- ================================================= --}}
 
-            <div
-                class="mt-12 bg-[#849753] rounded-3xl shadow-2xl p-10 text-center">
+            {{-- ADD-ONS --}}
+            <div class="mt-12 overflow-x-auto rounded-3xl shadow-2xl">
 
-                <h2
-                    class="text-4xl font-extrabold text-white uppercase">
+                <table class="w-full bg-white border-collapse">
 
-                    Add Ons
-
-                </h2>
-
-
-                <p
-                    class="text-white text-2xl mt-4 font-semibold">
-
-                    Hotstone Massage
-
-                </p>
+                    {{-- Add-ons Header --}}
+                    <thead>
+                        <tr class="bg-[#6F4E37] text-white">
 
 
-                <p
-                    class="text-white text-2xl mt-4 font-semibold">
 
-                    30 Minutes
+                        </tr>
 
-                </p>
+                        <tr class="bg-[#849753] text-white">
 
+                            <th class="px-8 py-5 text-left text-lg font-bold uppercase">
+                                Add-On
+                            </th>
 
-                <p
-                    class="text-5xl font-extrabold text-[#6F4E37] mt-5">
+                            <th class="px-8 py-5 text-center text-lg font-bold uppercase">
+                                Price
+                            </th>
 
-                    ₱350
+                            <th class="px-8 py-5 text-center text-lg font-bold uppercase">
+                                Duration
+                            </th>
 
-                </p>
+                        </tr>
+                    </thead>
+
+                    {{-- Add-ons Body --}}
+                    <tbody>
+
+                        @forelse ($addOns as $addOn)
+                            <tr class="border-b border-gray-200 last:border-b-0">
+
+                                {{-- Add-On Name --}}
+                                <td class="px-8 py-6">
+
+                                    <h3 class="text-lg md:text-xl font-semibold text-black">
+                                        {{ $addOn->name }}
+                                    </h3>
+
+                                </td>
+
+                                {{-- Price --}}
+                                <td class="px-8 py-6 text-center">
+
+                                    <span class="text-xl md:text-2xl font-bold text-[#6F4E37] whitespace-nowrap">
+                                        ₱{{ number_format((float) $addOn->price, 0) }}
+                                    </span>
+
+                                </td>
+
+                                {{-- Duration --}}
+                                <td class="px-8 py-6 text-center">
+
+                                    <span class="text-gray-500 text-base md:text-lg whitespace-nowrap">
+                                        {{ $addOn->duration_minutes }} Minutes
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+                                <td colspan="3" class="px-8 py-10 text-center">
+
+                                    <p class="text-gray-500">
+                                        No add-ons are currently available.
+                                    </p>
+
+                                </td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 

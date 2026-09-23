@@ -14,7 +14,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-[#F4EDDB]">
+<body class="bg-[#F4EDDB] font-sans">
 
     {{-- Header --}}
     <x-header />

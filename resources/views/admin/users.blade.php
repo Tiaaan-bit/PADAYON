@@ -43,10 +43,6 @@
                 <h2 class="text-xl font-bold text-gray-800">
                     Manage Customers
                 </h2>
-
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Manage all registered users and monitor activity.
-                </p>
             </div>
 
             {{-- Statistics --}}

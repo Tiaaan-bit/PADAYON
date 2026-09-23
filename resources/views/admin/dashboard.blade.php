@@ -25,10 +25,10 @@
         }
 
         /*
-                        |--------------------------------------------------------------------------
-                        | Calendar Hover Popup
-                        |--------------------------------------------------------------------------
-                        */
+                            |--------------------------------------------------------------------------
+                            | Calendar Hover Popup
+                            |--------------------------------------------------------------------------
+                            */
 
         .calendar-popup {
             visibility: hidden;
@@ -46,10 +46,10 @@
         }
 
         /*
-                        |--------------------------------------------------------------------------
-                        | Calendar Highlight
-                        |--------------------------------------------------------------------------
-                        */
+                            |--------------------------------------------------------------------------
+                            | Calendar Highlight
+                            |--------------------------------------------------------------------------
+                            */
 
         .calendar-highlight {
             opacity: 0;
@@ -67,24 +67,6 @@
 @section('content')
     <div x-data="dashboardCalendar(@js($calendarEvents))">
         <div class="px-4 sm:px-6 lg:px-8 py-5">
-
-            {{-- =========================================================
-                HEADER
-            ========================================================== --}}
-            <div class="flex items-center justify-between mb-5">
-
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
-                        Welcome back, {{ auth()->user()->name }}.
-                    </h1>
-
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                        Here's what's happening at Padayon Massage Center.
-                    </p>
-                </div>
-
-            </div>
-
 
             {{-- =========================================================
                 MAIN DASHBOARD
@@ -107,7 +89,7 @@
                         h-55 sm:h-75 md:h-100 lg:min-h-125 xl:min-h-125">
 
                         <img src="{{ asset('build/assets/images/Welcome.webp') }}" alt="Welcome"
-                            class="absolute inset-0 w-full h-full object-cover object-center">
+                            class="absolute inset-0 w-full h-full object-fill object-center">
 
                     </div>
 
@@ -459,7 +441,7 @@
                                                 {{-- STATUS --}}
                                                 <td class="px-5 py-4">
 
-                                                    @if ($appointment->status === 'confirm')
+                                                    @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                                         <span
                                                             class="inline-flex items-center
                                                             gap-1.5 px-2.5 py-1
@@ -477,7 +459,7 @@
                                                             Confirmed
 
                                                         </span>
-                                                    @elseif ($appointment->status === 'pending')
+                                                    @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                                         <span
                                                             class="inline-flex items-center
                                                             gap-1.5 px-2.5 py-1
@@ -533,7 +515,7 @@
                                                             text-gray-500
                                                             text-[10px] font-semibold
                                                             rounded-full whitespace-nowrap">
-                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                        </span>
+                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }} </span>
                                                     @endif
 
                                                 </td>
@@ -802,7 +784,7 @@
 
 
                                                         {{-- Therapist --}}
-                                                    
+
                                                         <p class="text-[9px] text-gray-400 truncate"
                                                             x-text="'Therapist: ' + (event.therapist || 'N/A')"></p>
 
@@ -950,7 +932,7 @@
                             <div class="mt-3 space-y-2">
 
                                 @forelse($upcomingAppointments->take(5)
-                                            as $appointment)
+                                                as $appointment)
                                     <div
                                         class="rounded-lg bg-gray-50
                                         border border-gray-100
@@ -1004,28 +986,28 @@
 
 
                                             {{-- Status --}}
-                                            @if ($appointment->status === 'confirm')
+                                            @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-green-700">
                                                     Confirmed
                                                 </span>
-                                            @elseif ($appointment->status === 'pending')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-yellow-700">
                                                     Pending
                                                 </span>
-                                            @elseif ($appointment->status === 'rejected')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::REJECTED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-red-700">
                                                     Rejected
                                                 </span>
-                                            @elseif ($appointment->status === 'cancelled')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CANCELLED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
@@ -1037,7 +1019,7 @@
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-gray-500">
-                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                </span>
+                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }} </span>
                                             @endif
 
                                         </div>

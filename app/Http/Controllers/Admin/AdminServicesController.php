@@ -47,7 +47,7 @@ class AdminServicesController extends Controller
 
     public function edit(Services $service, ServiceRepositoryInterface $services): View
     {
-        $serviceList = $services->getPaginated();
+        $serviceList = $services->getAll();
 
         return view('admin.services', [
             'services' => $serviceList,

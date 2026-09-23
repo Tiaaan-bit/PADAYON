@@ -21,11 +21,6 @@
                 <h2 class="text-xl font-bold text-gray-800">
                     Transaction History
                 </h2>
-
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Review all transaction records and payment information.
-                </p>
-
             </div>
 
 

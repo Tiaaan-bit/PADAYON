@@ -29,7 +29,7 @@
 
 
                 <p
-                    class="max-w-xl mx-auto lg:mx-0 mt-5 text-lg lg:text-xl text-black/70 leading-relaxed px-4 lg:px-0">
+                    class="font-bold max-w-xl mx-auto lg:mx-0 mt-5 text-lg lg:text-xl text-black/70 leading-relaxed px-4 lg:px-0">
 
                     Dito sa Padayon Massage Center, bawat haplos ay
                     may malasakit, bawat therapy ay may puso.
@@ -158,7 +158,7 @@
 
 
                 <p
-                    class="max-w-md text-xl text-center text-black lg:text-left">
+                    class="font-bold max-w-md text-xl text-center text-black lg:text-left">
 
                     Ang pahinga mo, ang aming misyon.
                     Serbisyong may puso, dignidad, at malasakit

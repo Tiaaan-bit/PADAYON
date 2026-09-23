@@ -110,10 +110,6 @@
                         <h2 class="text-xl font-bold text-gray-800">
                             Manage Services
                         </h2>
-
-                        <p class="text-sm text-gray-500 mt-0.5">
-                            Add, update, and remove appointment services.
-                        </p>
                     </div>
 
 

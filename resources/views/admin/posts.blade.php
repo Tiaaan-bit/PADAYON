@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="lg:ml-64 min-h-screen flex flex-col pb-20 lg:pb-0">
+    <div class="min-h-screen flex flex-col">
 
         <div class="flex-1 p-4 sm:p-6">
 
@@ -17,13 +17,8 @@
                 <div class="mb-8">
 
                     <h1 class="text-3xl font-bold text-gray-800">
-                        Service Promotions
+                        Announcements
                     </h1>
-
-                    <p class="text-gray-500 mt-1">
-                        Create, edit, and manage service promotions and announcements.
-                    </p>
-
                 </div>
 
 
@@ -558,6 +553,7 @@
         </div>
 
     </div>
+    @endsection
 
 
 @push('scripts')

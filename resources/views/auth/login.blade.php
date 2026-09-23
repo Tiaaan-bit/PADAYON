@@ -27,9 +27,18 @@
         {{-- Logo --}}
         <div class="text-center mb-8">
 
-            <h1 class="text-2xl font-bold text-[#849753]">Padayon Massage Center</h1>
-            <h1 class="text-lg font-bold text-gray-800">Welcome back</h1>
-            <p class="text-sm text-gray-500 mt-1">Sign in to your account</p>
+            <img src="{{ asset('build/assets/images/logo.png') }}"
+                alt="Padayon Massage Center - Blind Massage Specialists"
+                class="h-40 w-auto mx-auto object-contain mb-4">
+
+            <h1 class="text-lg font-bold text-gray-800">
+                Welcome back
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Sign in to your account
+            </p>
+
         </div>
 
         {{-- Flash Messages --}}

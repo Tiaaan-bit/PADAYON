@@ -4,7 +4,6 @@
 
 @php
     use App\Enums\Admin\Appointment\AppointmentStatus;
-    use App\Enums\Admin\Appointment\AppointmentLevel;
 @endphp
 
 @section('content')
@@ -20,13 +19,8 @@
             <div class="mb-6">
 
                 <h2 class="text-xl font-bold text-gray-800">
-                    Appointments Dashboard
+                    Manage Appointments
                 </h2>
-
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Manage appointment statuses and review all bookings.
-                </p>
-
             </div>
 
 
@@ -969,11 +963,25 @@
                                                     @if ($appointment->status === AppointmentStatus::CANCELLED)
                                                         disabled
                                                     @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::CONFIRMED)
+                                                        disabled
+                                                    @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::NO_SHOW)
+                                                        disabled
+                                                    @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::REJECTED)
+                                                    disabled
+                                                @endif
+
                                                 >
 
                                                     <option
                                                         value="{{ AppointmentStatus::PENDING->value }}"
                                                         {{ $appointment->status === AppointmentStatus::PENDING ? 'selected' : '' }}
+                                                        
                                                     >
                                                         Pending
                                                     </option>
@@ -981,6 +989,7 @@
                                                     <option
                                                         value="{{ AppointmentStatus::CONFIRMED->value }}"
                                                         {{ $appointment->status === AppointmentStatus::CONFIRMED ? 'selected' : '' }}
+                                                        
                                                     >
                                                         Confirm
                                                     </option>
@@ -1018,6 +1027,18 @@
                                                     w-full"
 
                                                     @if ($appointment->status === AppointmentStatus::CANCELLED)
+                                                        disabled
+                                                    @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::CONFIRMED)
+                                                        disabled
+                                                    @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::NO_SHOW)
+                                                        disabled
+                                                    @endif
+
+                                                    @if ($appointment->status === AppointmentStatus::REJECTED)
                                                         disabled
                                                     @endif
                                                 >

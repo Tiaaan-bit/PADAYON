@@ -2,13 +2,18 @@
 
 namespace App\Repositories\Admin\Therapist;
 
+use App\Models\TherapistFeedback;
 use App\Models\Therapists;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class TherapistRepository implements TherapistRepositoryInterface
 {
-    public function getAll(?string $search = null, ?string $status = null, ?string $specialty = null): LengthAwarePaginator
-    {
+    public function getAll(
+        ?string $search = null,
+        ?string $status = null,
+        ?string $specialty = null
+    ): LengthAwarePaginator {
         $query = Therapists::query();
 
         if ($search) {
@@ -23,7 +28,10 @@ class TherapistRepository implements TherapistRepositoryInterface
             $query->where('specialty', 'like', "%{$specialty}%");
         }
 
-        return $query->latest()->paginate(6)->withQueryString();
+        return $query
+            ->latest()
+            ->paginate(6)
+            ->withQueryString();
     }
 
     public function create(array $data): Therapists
@@ -41,5 +49,14 @@ class TherapistRepository implements TherapistRepositoryInterface
     public function delete(Therapists $therapist): bool
     {
         return $therapist->delete();
+    }
+
+    public function getFeedback(Therapists $therapist): Collection
+    {
+        return TherapistFeedback::query()
+            ->with('user:id,name')
+            ->where('therapist_id', $therapist->id)
+            ->latest()
+            ->get();
     }
 }

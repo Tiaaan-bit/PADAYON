@@ -120,10 +120,6 @@
                         Manage Add Ons
                     </h2>
 
-                    <p class="text-sm text-gray-500 mt-0.5">
-                        Add, update, and remove appointment add-ons.
-                    </p>
-
                 </div>
 
 

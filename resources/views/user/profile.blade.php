@@ -13,10 +13,6 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
             Profile Settings
         </h1>
-
-        <p class="text-sm text-gray-500 mt-1">
-            Update your profile, security, and account information.
-        </p>
     </div>
 
 

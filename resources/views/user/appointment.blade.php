@@ -23,6 +23,7 @@
                 return [
                     'id' => $therapist->id,
                     'name' => $therapist->name,
+                    'image'=> $therapist->image,
                 ];
             })
             ->values();
@@ -81,10 +82,6 @@
                         <h1 class="text-2xl font-bold text-gray-800">
                             Book an Appointment
                         </h1>
-
-                        <p class="text-sm text-gray-500 mt-1">
-                            Choose your service, therapist, schedule and payment.
-                        </p>
 
                     </div>
 
@@ -562,47 +559,92 @@
                             </div>
 
 
-                            <div
-                                class="grid grid-cols-1 sm:grid-cols-2
-                                   lg:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
 
                                 <template x-for="therapist in therapists" :key="therapist.id">
-
+                            
                                     <label class="cursor-pointer">
-
-                                        <input type="radio" name="therapist_id" :value="therapist.id"
-                                            x-model="therapist_id" class="peer sr-only">
-
+                            
+                                        <input
+                                            type="radio"
+                                            name="therapist_id"
+                                            :value="therapist.id"
+                                            x-model="therapist_id"
+                                            class="peer sr-only"
+                                        >
+                            
                                         <div
                                             class="border-2 border-gray-200
-                                               rounded-2xl p-5 text-center
-                                               peer-checked:border-[#849753]
-                                               peer-checked:bg-[#849753]/5
-                                               transition">
-
-                                            <div
-                                                class="w-16 h-16 mx-auto rounded-full
-                                                   bg-[#849753]/10
-                                                   flex items-center
-                                                   justify-center mb-3">
-
-                                                <span class="text-xl font-bold text-[#849753]"
-                                                    x-text="therapist.name.charAt(0)"></span>
-
+                                                   rounded-2xl overflow-hidden
+                                                   bg-white
+                                                   peer-checked:border-[#849753]
+                                                   peer-checked:bg-[#849753]/5
+                                                   transition
+                                                   hover:border-[#849753]/50
+                                                   hover:shadow-md"
+                                        >
+                            
+                                            {{-- Therapist Image --}}
+                                            <div class="relative h-60 bg-gray-100">
+                            
+                                                <template x-if="therapist.image">
+                            
+                                                    <img
+                                                        :src="'/storage/' + therapist.image"
+                                                        :alt="therapist.name"
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        class="w-full h-full object-fill"
+                                                    >
+                            
+                                                </template>
+                            
+                                                {{-- Fallback when no image --}}
+                                                <template x-if="!therapist.image">
+                            
+                                                    <div
+                                                        class="w-full h-full flex items-center justify-center"
+                                                    >
+                            
+                                                        <div
+                                                            class="w-20 h-20 rounded-full
+                                                                   bg-[#849753]/10
+                                                                   flex items-center justify-center"
+                                                        >
+                            
+                                                            <span
+                                                                class="text-2xl font-bold text-[#849753]"
+                                                                x-text="therapist.name.charAt(0)"
+                                                            ></span>
+                            
+                                                        </div>
+                            
+                                                    </div>
+                            
+                                                </template>
+                            
                                             </div>
-
-                                            <h3 class="font-semibold text-gray-800" x-text="therapist.name"></h3>
-
-                                            <p class="text-xs text-green-600 mt-1">
-                                                Available
-                                            </p>
-
+                            
+                                            {{-- Therapist Information --}}
+                                            <div class="p-4 text-center">
+                            
+                                                <h3
+                                                    class="font-semibold text-gray-800"
+                                                    x-text="therapist.name"
+                                                ></h3>
+                            
+                                                <p class="text-xs text-green-600 mt-1">
+                                                    Available
+                                                </p>
+                            
+                                            </div>
+                            
                                         </div>
-
+                            
                                     </label>
-
+                            
                                 </template>
-
+                            
                             </div>
 
                         </div>

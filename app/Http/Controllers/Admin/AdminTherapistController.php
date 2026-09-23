@@ -26,6 +26,31 @@ class AdminTherapistController extends Controller
         ]);
     }
 
+    public function feedback(Therapists $therapist, TherapistRepositoryInterface $therapists): \Illuminate\Http\JsonResponse
+    {
+        Gate::authorize('view', $therapist);
+
+        $feedback = $therapists->getFeedback($therapist);
+
+        return response()->json([
+            'therapist' => [
+                'id' => $therapist->id,
+                'name' => $therapist->name,
+            ],
+            'feedback' => $feedback
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'user_name' => $item->user?->name ?? 'Anonymous',
+                        'rating' => (int) $item->rating,
+                        'comment' => $item->comment,
+                        'created_at' => $item->created_at?->format('M d, Y'),
+                    ];
+                })
+                ->values(),
+        ]);
+    }
+
     public function store(TherapistStoreRequest $request, CreateTherapist $createTherapist): RedirectResponse
     {
         Gate::authorize('create', Therapists::class);

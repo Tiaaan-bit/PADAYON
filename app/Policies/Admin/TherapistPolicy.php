@@ -21,4 +21,8 @@ class TherapistPolicy
     {
         return $user->isAdmin();
     }
+    public function view(User $user, Therapists $therapist): bool
+    {
+        return $user->isAdmin();
+    }
 }

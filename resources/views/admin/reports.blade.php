@@ -18,10 +18,6 @@
                     <h1 class="text-3xl font-bold text-gray-800">
                         Reports
                     </h1>
-
-                    <p class="text-gray-600 mt-1">
-                        Revenue, peak hours, and service analytics
-                    </p>
                 </div>
 
 

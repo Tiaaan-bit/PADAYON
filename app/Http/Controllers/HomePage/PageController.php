@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\HomePage;
 
 use App\Http\Controllers\Controller;
+use App\Models\AddOns;
+use App\Models\Services;
 
 class PageController extends Controller
 {
@@ -23,6 +25,10 @@ class PageController extends Controller
 
     public function showServicesPage()
     {
-        return view('home.services');
+        $services = Services::query()->where('status', 'active')->orderBy('name')->orderBy('duration_minutes')->get()->groupBy('name');
+
+        $addOns = AddOns::query()->where('status', 'active')->orderBy('name')->get();
+
+        return view('home.services', compact('services', 'addOns'));
     }
 }

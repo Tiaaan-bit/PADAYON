@@ -2,17 +2,20 @@
 
 namespace App\Repositories\Admin\Report;
 
+use App\Repositories\Admin\Report\ReportRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
+
 
 class ReportRepository implements ReportRepositoryInterface
 {
-    private function baseQuery(Carbon $start, Carbon $end)
+    private function baseQuery(Carbon $start, Carbon $end): Builder
     {
         return DB::table('appointments')
             ->whereBetween('appointment_date', [$start->toDateString(), $end->toDateString()])
-            ->where('appointments.status', '!=', 'cancelled');
+            ->where('appointments.status', 'confirm');
     }
 
     public function getTotalRevenue(Carbon $start, Carbon $end): float
@@ -44,7 +47,7 @@ class ReportRepository implements ReportRepositoryInterface
         return DB::table('appointments')
             ->join('services', 'appointments.service_id', '=', 'services.id')
             ->whereBetween('appointments.appointment_date', [$start->toDateString(), $end->toDateString()])
-            ->where('appointments.status', '!=', 'cancelled')
+            ->where('appointments.status', 'confirm')
             ->selectRaw(
                 "
                 services.id,
