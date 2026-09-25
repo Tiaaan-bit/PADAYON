@@ -80,16 +80,16 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('login', function (Request $request) {
             return Limit::perMinutes(10, 5)
-                ->by(strtolower($request->input('email')) . '|' . $request->ip())
+                ->by(strtolower($request->input('email', '')) . '|' . $request->ip())
                 ->response(function (Request $request, array $headers) {
-                    $retryAfter = $headers['Retry-After'] ?? 600;
+                    $retryAfter = (int) ($headers['Retry-After'] ?? 600);
 
                     return back()
                         ->withErrors([
-                            'email' => 'Too many login attempts, Try again later.',
+                            'email' => 'Too many login attempts. Please try again later.',
                         ])
                         ->with('login_rate_limited', true)
-                        ->with('retry_after', now()->addSeconds((int) $retryAfter)->timestamp)
+                        ->with('retry_after', now()->addSeconds($retryAfter)->timestamp)
                         ->withInput();
                 });
         });

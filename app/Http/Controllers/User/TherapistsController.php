@@ -15,27 +15,26 @@ class TherapistsController extends Controller
     public function index()
     {
         $userId = Auth::id();
-
-        // 4 therapists per page
         $therapists = Therapists::query()
-            ->where('status', 'available')
+            ->with([
+                'feedbacks' => function ($query) {
+                    $query->with('user')->latest();
+                },
+            ])
             ->withCount('feedbacks')
             ->withAvg('feedbacks', 'rating')
+            ->orderByRaw("CASE WHEN status = 'available' THEN 0 ELSE 1 END")
             ->orderByDesc('feedbacks_count')
             ->orderBy('name')
             ->paginate(4, ['*'], 'therapists_page');
 
+
         $userFeedbacks = TherapistFeedback::query()->where('user_id', $userId)->whereIn('therapist_id', $therapists->pluck('id'))->get()->keyBy('therapist_id');
+
 
         $confirmedTherapistIds = UsersAppointments::query()->where('user_id', $userId)->where('status', AppointmentStatus::CONFIRMED)->whereIn('therapist_id', $therapists->pluck('id'))->pluck('therapist_id')->unique();
 
-        // 5 reviews per page
-        $allFeedbacks = TherapistFeedback::query()
-            ->with(['user', 'therapist'])
-            ->latest()
-            ->paginate(5, ['*'], 'reviews_page');
-
-        return view('user.therapist', compact('therapists', 'userFeedbacks', 'confirmedTherapistIds', 'allFeedbacks'));
+        return view('user.therapist', compact('therapists', 'userFeedbacks', 'confirmedTherapistIds'));
     }
 
     public function storeFeedback(Request $request, Therapists $therapist)
@@ -45,7 +44,11 @@ class TherapistsController extends Controller
             'comment' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Check if user already reviewed this therapist
+        /*
+        |--------------------------------------------------------------------------
+        | Check if user already reviewed this therapist
+        |--------------------------------------------------------------------------
+        */
         $existingFeedback = TherapistFeedback::query()->where('user_id', Auth::id())->where('therapist_id', $therapist->id)->exists();
 
         if ($existingFeedback) {
@@ -54,7 +57,11 @@ class TherapistsController extends Controller
             ]);
         }
 
-        // Check if user has a confirmed appointment
+        /*
+        |--------------------------------------------------------------------------
+        | Check if user has a confirmed appointment
+        |--------------------------------------------------------------------------
+        */
         $hasAppointment = UsersAppointments::query()->where('user_id', Auth::id())->where('therapist_id', $therapist->id)->where('status', AppointmentStatus::CONFIRMED)->exists();
 
         if (!$hasAppointment) {
@@ -63,7 +70,11 @@ class TherapistsController extends Controller
             ]);
         }
 
-        // Create feedback
+        /*
+        |--------------------------------------------------------------------------
+        | Create Feedback
+        |--------------------------------------------------------------------------
+        */
         TherapistFeedback::create([
             'user_id' => Auth::id(),
             'therapist_id' => $therapist->id,
