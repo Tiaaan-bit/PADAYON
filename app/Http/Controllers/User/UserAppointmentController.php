@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\Admin\Appointment\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AddOns;
 use App\Models\Services;
 use App\Models\Therapists;
 use App\Models\UsersAppointments;
+use App\Services\PayMongoService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class UserAppointmentController extends Controller
 {
@@ -19,6 +23,8 @@ class UserAppointmentController extends Controller
     private int $openingHour = 13; // 1:00 PM
     private int $closingHour = 1; // 1:00 AM next day
     private int $slotInterval = 30;
+
+    public function __construct(private PayMongoService $payMongo) {}
 
     public function index()
     {
@@ -92,7 +98,7 @@ class UserAppointmentController extends Controller
     | Get existing appointments for therapist
     |--------------------------------------------------------------------------
     |
-    | Cancelled and rejected appointments do not block the therapist.
+    | Cancelled, failed and rejected appointments do not block the therapist.
     |
     */
 
@@ -100,7 +106,7 @@ class UserAppointmentController extends Controller
     {
         return UsersAppointments::where('therapist_id', $therapistId)
             ->where('appointment_date', $date)
-            ->whereNotIn('status', ['cancelled', 'rejected'])
+            ->whereNotIn('status', ['cancelled', 'rejected', 'failed'])
             ->orderBy('appointment_time')
             ->get();
     }
@@ -691,22 +697,21 @@ class UserAppointmentController extends Controller
         if ($validated['payment_method'] === 'branch') {
             $paymentType = null;
 
-            $amountPaid = 0;
+            $paymentAmount = 0;
         } elseif ($paymentType === 'downpayment') {
-            $amountPaid = round($totalAmount * 0.5, 2);
+            $paymentAmount = round($totalAmount * 0.5, 2);
         } else {
             // GCash full payment
-            $amountPaid = $totalAmount;
+            $paymentAmount = $totalAmount;
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Appointment status
+        | Payment has not been confirmed yet.
         |--------------------------------------------------------------------------
-        |
-        | Every newly submitted appointment starts as pending.
-        |
         */
+
+        $amountPaid = 0;
 
         $status = 'pending';
 
@@ -751,6 +756,10 @@ class UserAppointmentController extends Controller
 
             'amount_paid' => $amountPaid,
 
+            'payment_amount' => $paymentAmount,
+
+            'payment_status' => 'pending',
+
             'status' => $status,
         ]);
 
@@ -764,19 +773,22 @@ class UserAppointmentController extends Controller
         */
 
         if ($validated['payment_method'] === 'gcash') {
-            /*
-            |--------------------------------------------------------------------------
-            | TODO:
-            |
-            | 1. Create PayMongo checkout session
-            | 2. Save PayMongo checkout/payment reference
-            | 3. Redirect user to PayMongo
-            |--------------------------------------------------------------------------
-            */
+            $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
 
-            return redirect()
-                ->route('user.appointment')
-                ->with('success', 'Appointment created successfully. ' . 'Please complete your GCash payment.');
+            $checkout = $this->payMongo->createCheckoutSession(referenceNumber: $referenceNumber, description: 'Padayon Massage Center Appointment ' . $referenceNumber, amount: (int) round($paymentAmount * 100), successUrl: route('user.appointments.payment.success', $appointment), cancelUrl: route('user.appointments.payment.cancel', $appointment), customerName: Auth::user()->name, customerEmail: Auth::user()->email);
+
+            $checkoutSession = $checkout['data'];
+
+            $appointment->update([
+                'paymongo_checkout_session_id' => $checkoutSession['id'],
+                'paymongo_reference_number' => $referenceNumber,
+                'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(),
+
+            ]);
+
+            $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
+
+            return redirect()->away($checkoutUrl);
         }
 
         /*
@@ -786,7 +798,115 @@ class UserAppointmentController extends Controller
         */
 
         return redirect()
-            ->route('user.appointment')
+            ->route('user.my-appointments')
             ->with('success', 'Appointment submitted successfully. ' . 'Please wait for confirmation.');
+    }
+
+    public function paymentSuccess(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        return redirect()->route('user.my-appointments')->with('success', 'Payment submitted successfully. Your payment is being verified.');
+    }
+
+    public function paymentCancel(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        Log::info('PayMongo cancel URL reached.', [
+            'appointment_id' => $appointment->id,
+            'payment_status' => $appointment->payment_status,
+            'paymongo_checkout_session_id' => $appointment->paymongo_checkout_session_id,
+        ]);
+
+        return redirect()->route('user.my-appointments')->with('error', 'Payment was cancelled. No payment was completed.');
+    }
+
+    public function payAgain(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Only GCash appointments can be paid again
+    |--------------------------------------------------------------------------
+    */
+
+        if ($appointment->payment_method !== 'gcash') {
+            return back()->with('error', 'This appointment does not use GCash payment.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Only failed payments can be retried
+    |--------------------------------------------------------------------------
+    */
+
+        if ($appointment->payment_status !== 'failed') {
+            return back()->with('error', 'This payment cannot be retried.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Appointment must still be usable
+    |--------------------------------------------------------------------------
+    */
+
+        if ($appointment->status !== AppointmentStatus::FAILED) {
+            return back()->with('error', 'This appointment is not available for payment retry.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Create NEW PayMongo Checkout Session
+    |--------------------------------------------------------------------------
+    */
+
+        $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
+
+        $checkout = $this->payMongo->createCheckoutSession(
+            referenceNumber: $referenceNumber,
+
+            description: 'Padayon Massage Center Appointment ' . $referenceNumber,
+
+            amount: (int) round($appointment->payment_amount * 100),
+
+            successUrl: route('user.appointments.payment.success', $appointment),
+
+            cancelUrl: route('user.appointments.payment.cancel', $appointment),
+
+            customerName: Auth::user()->name,
+
+            customerEmail: Auth::user()->email,
+        );
+
+        $checkoutSession = $checkout['data'];
+
+        /*
+    |--------------------------------------------------------------------------
+    | Reset payment attempt
+    |--------------------------------------------------------------------------
+    */
+
+        $appointment->update([
+            'paymongo_checkout_session_id' => $checkoutSession['id'],
+            'paymongo_reference_number' => $referenceNumber,
+            'paymongo_payment_id' => null,
+            'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(),
+            'payment_status' => 'pending',
+            'amount_paid' => 0,
+            'paid_at' => null,
+            'status' => AppointmentStatus::PENDING,
+        ]);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Redirect to NEW Checkout Session
+    |--------------------------------------------------------------------------
+    */
+
+        $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
+
+        return redirect()->away($checkoutUrl);
     }
 }

@@ -11,7 +11,7 @@
         @yield('title', 'Padayon Massage Center - Dashboard')
     </title>
 
-    <link rel="icon" type="image/png" href="{{ asset('build/assets/images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.webp') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

@@ -14,7 +14,6 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Dessa\AssistantController;
 use App\Http\Controllers\HomePage\PageController;
 use App\Http\Controllers\Staff\StaffAppointmentsController;
 use App\Http\Controllers\Staff\StaffDashboardController;
@@ -29,6 +28,11 @@ use App\Http\Controllers\User\TherapistsController;
 use App\Http\Controllers\User\UserAppointmentController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schedule;
+use App\Http\Controllers\Payment\PayMongoWebhookController;
+
+Schedule::command('appointments:expire-pending-payments')->everyMinute();
+
 
 // ── Redirect root ─────────────────────────────────────────────────────────────
 Route::get('/', [PageController::class, 'showHomePage'])->name('home.showHomePage');
@@ -69,6 +73,9 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::get('/appointments/create', [UserAppointmentController::class, 'create'])->name('appointments.create');
         Route::post('/appointments/store', [UserAppointmentController::class, 'store'])->name('appointments.store');
         Route::get('/appointments/available-slots', [UserAppointmentController::class, 'availableSlots'])->name('appointments.availableSlots');
+        Route::get('/appointments/{appointment}/payment/success', [UserAppointmentController::class,'paymentSuccess',])->name('appointments.payment.success');
+        Route::get('/appointments/{appointment}/payment/cancel', [UserAppointmentController::class,'paymentCancel',])->name('appointments.payment.cancel');
+        Route::post('/appointments/{appointment}/pay-again',[UserAppointmentController::class, 'payAgain'])->name('appointments.payment.retry');
 
         //---User MyAppointment---//
         Route::get('/my-appointments', [MyAppointmentController::class, 'index'])->name('my-appointments');
@@ -93,17 +100,10 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 
-Route::middleware('auth.user')->group(function () {
-    Route::post('/dessa/message', [AssistantController::class, 'message']);
-    Route::post('/dessa/book', [AssistantController::class, 'book']);
-    Route::get('/dessa/upcoming', [AssistantController::class, 'upcoming']);
-    Route::post('/dessa/cancel', [AssistantController::class, 'cancel']);
-    Route::post('/dessa/reschedule', [AssistantController::class, 'reschedule']);
-    Route::get('/dessa/history', [AssistantController::class, 'history']);
-    Route::get('/dessa/payments', [AssistantController::class, 'payments']);
-    Route::post('/dessa/update-profile', [AssistantController::class, 'updateProfile']);
-    Route::get('/dessa/slots', [AssistantController::class, 'slots']);
-});
+
+    Route::post('/webhooks/paymongo', [PayMongoWebhookController::class,'handle',])->name('webhooks.paymongo');
+
+
 
 // ── Admin routes (auth.admin middleware = admins only) ────────────────────────
 Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function () {
@@ -186,3 +186,6 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
 // ── Logout ────────────────────────────────────────────────────────────────────
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
+

@@ -12,6 +12,8 @@
     <title>Padayon Massage Center - Sign In</title>
 
     @vite('resources/css/app.css')
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.webp') }}">
+
 
 </head>
 
@@ -35,7 +37,7 @@
 
         <div class="text-center mb-8">
 
-            <img src="{{ asset('build/assets/images/logo.png') }}"
+            <img src="{{ asset('images/logo.webp') }}"
                 alt="Padayon Massage Center - Blind Massage Specialists"
                 class="h-40 w-auto mx-auto object-contain mb-4">
 

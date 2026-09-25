@@ -59,6 +59,7 @@ class AdminDashboardService
                         AppointmentStatus::REJECTED => 'Rejected',
                         AppointmentStatus::CANCELLED => 'Cancelled',
                         AppointmentStatus::NO_SHOW => 'No Show',
+                        AppointmentStatus::FAILED => 'Failed',
                     },
                 ];
             })

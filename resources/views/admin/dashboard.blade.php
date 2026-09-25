@@ -88,7 +88,7 @@
                         border border-gray-200 shadow-sm
                         h-55 sm:h-75 md:h-100 lg:min-h-125 xl:min-h-125">
 
-                        <img src="{{ asset('build/assets/images/Welcome.webp') }}" alt="Welcome"
+                        <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome"
                             class="absolute inset-0 w-full h-full object-fill object-center">
 
                     </div>

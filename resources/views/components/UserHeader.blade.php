@@ -14,7 +14,7 @@
         <a href="{{ route('user.dashboard') }}" wire:navigate class="flex items-center gap-3 min-w-0">
 
             {{-- Logo --}}
-            <img src="{{ asset('build/assets/images/logo.png') }}" alt="Padayon Massage Center Logo"
+            <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
                 class="h-12 w-12 object-contain shrink-0">
 
 

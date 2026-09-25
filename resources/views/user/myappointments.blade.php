@@ -156,6 +156,9 @@
                         <option value="{{ AppointmentStatus::NO_SHOW->value }}" @selected(request('status') === AppointmentStatus::NO_SHOW->value)>
                             {{ AppointmentStatus::NO_SHOW->label() }}
                         </option>
+                        <option value="{{ AppointmentStatus::FAILED->value }}" @selected(request('status') === AppointmentStatus::FAILED->value)>
+                            {{ AppointmentStatus::FAILED->label() }}
+                        </option>
                     </select>
                 </div>
 
@@ -446,7 +449,17 @@
                                                     class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm">
                                                     Cancel
                                                 </button>
+                                            </form>
+                                        @elseif ($appointment->payment_method === 'gcash' && $appointment->payment_status === 'failed')
+                                            <form
+                                                action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
+                                                method="POST">
+                                                @csrf
 
+                                                <button type="submit"
+                                                    class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
+                                                    Pay Again
+                                                </button>
                                             </form>
                                         @else
                                             <span class="text-xs text-gray-400">

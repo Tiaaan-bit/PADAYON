@@ -49,6 +49,7 @@ use App\Repositories\Admin\Transaction\TransactionRepositoryInterface;
 use App\Repositories\Admin\Report\ReportRepository;
 use App\Repositories\Admin\Report\ReportRepositoryInterface;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -105,5 +106,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AddOns::class, AddOnPolicy::class);
 
         Gate::policy(Therapists::class, TherapistPolicy::class);
+
     }
 }

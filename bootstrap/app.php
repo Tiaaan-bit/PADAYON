@@ -13,6 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+    $middleware->validateCsrfTokens(except: [
+        'webhooks/paymongo',
+    ]);
+
+
+    
+    $middleware->append(\App\Http\Middleware\NgrokUrl::class);
+    
+
+
+
+        
+
         // Track online status on every authenticated request
         $middleware->append(\App\Http\Middleware\TrackOnlineStatus::class);
 

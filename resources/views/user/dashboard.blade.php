@@ -29,7 +29,7 @@
                     h-55 sm:h-75 md:h-100 lg:min-h-125
                     xl:min-h-[calc(100vh-150px)]">
 
-                    <img src="{{ asset('build/assets/images/Welcome.webp') }}" alt="Welcome" loading="eager"
+                    <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome" loading="eager"
                         class="absolute inset-0 w-full h-full object-cover object-center">
 
                 </div>

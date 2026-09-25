@@ -76,7 +76,7 @@
         >
 
             <img
-                src="{{ asset('build/assets/images/logo.png') }}"
+                src="{{ asset('images/logo.webp') }}"
                 alt="Padayon Massage Center Logo"
                 class="h-10 w-10
                        object-contain

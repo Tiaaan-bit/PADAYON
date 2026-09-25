@@ -27,6 +27,15 @@ class UsersAppointments extends Model
         'payment_method',
         'payment_type',
         'amount_paid',
+
+        'paymongo_checkout_session_id',
+        'paymongo_payment_id',
+        'payment_amount',
+        'payment_status',
+        'paid_at',
+        'paymongo_reference_number',
+        'paymongo_checkout_expires_at',
+
         'status',
     ];
 
@@ -35,6 +44,9 @@ class UsersAppointments extends Model
         'service_price' => 'decimal:2',
         'addons_price' => 'decimal:2',
         'amount_paid' => 'decimal:2',
+        'payment_amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+        'paymongo_checkout_expires_at' => 'datetime',
         'status' => AppointmentStatus::class,
 
     ];

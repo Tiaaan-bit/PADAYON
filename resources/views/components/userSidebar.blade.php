@@ -59,7 +59,7 @@
                    gap-2
                    min-w-0">
 
-            <img src="{{ asset('build/assets/images/logo.png') }}" alt="Padayon Massage Center Logo"
+            <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
                 class="h-10 w-10
                        object-contain
                        shrink-0">

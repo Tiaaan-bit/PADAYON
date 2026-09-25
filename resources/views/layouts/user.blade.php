@@ -13,7 +13,7 @@
         @yield('title', 'Padayon Massage Center')
     </title>
 
-    <link rel="icon" type="image/png" href="{{ asset('build/assets/images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.webp') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -31,12 +31,9 @@
 
 
     @include('components.PageLoading')
-
     @include('components.userSidebar')
     @include('components.toast-notification')
-    @include('components.dessa-widget')
 
-    
 
 
     <div class="min-h-screen transition-all duration-300" :class="sidebarOpen ? 'lg:ml-60' : 'lg:ml-20'">
