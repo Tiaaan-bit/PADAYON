@@ -31,13 +31,6 @@
         @endif
     </div>
 
-    {{-- Success Message --}}
-    @if (session('success'))
-        <div class="mb-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
-
 
     {{-- ========================= --}}
     {{-- SERVICE PROMOTIONS --}}
@@ -48,12 +41,8 @@
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div>
                 <h2 class="font-semibold text-gray-800">
-                    Service Promotions
+                    Announcements
                 </h2>
-
-                <p class="text-sm text-gray-500 mt-1">
-                    Latest announcements from the administrator.
-                </p>
             </div>
 
             <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-[#849753]/10 text-[#849753]">

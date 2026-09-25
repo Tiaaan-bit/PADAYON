@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Padayon Massage Center - Create Account</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('build/assets/images/logo.png') }}">
     @vite('resources/css/app.css')
 </head>
 

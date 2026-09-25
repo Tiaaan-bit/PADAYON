@@ -446,7 +446,7 @@
                                         data-date="{{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}"
                                         data-time-start="{{ $appointment->appointment_time ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') : 'N/A' }}"
                                         data-time-end="{{ $appointment->appointment_end_time ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A') : 'N/A' }}"
-                                        data-status="{{ ucfirst($appointment->status ?? 'N/A') }}">
+                                        data-status="{{ ucfirst($appointment->status->value ?? 'N/A') }}">
 
                                         {{-- ID --}}
 
@@ -695,7 +695,7 @@
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
 
-                                                    {{ ucfirst($appointment->status ?? 'N/A') }}
+                                                    {{ ucfirst($appointment->status->value ?? 'N/A') }}
 
                                                 </span>
                                             @endif

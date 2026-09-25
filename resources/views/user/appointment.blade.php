@@ -23,7 +23,7 @@
                 return [
                     'id' => $therapist->id,
                     'name' => $therapist->name,
-                    'image'=> $therapist->image,
+                    'image' => $therapist->image,
                 ];
             })
             ->values();
@@ -86,131 +86,87 @@
                     </div>
 
 
-                    {{-- =================================================
-                    STEP INDICATOR
-                ================================================== --}}
+                    {{-- STEP INDICATOR --}}
 
                     <div class="px-6 py-5 border-b border-gray-100">
 
-                        <div class="flex items-center justify-between">
+                        {{-- STEP NUMBERS --}}
+                        <div class="grid grid-cols-4 items-center">
 
-                            <template x-for="number in [1,2,3,4]" :key="number">
+                            {{-- STEP 1 --}}
+                            <div class="flex justify-center">
+                                <button type="button" @click="goToStep(1)"
+                                    class="flex items-center justify-center
+                       w-9 h-9 rounded-full
+                       text-sm font-semibold
+                       transition"
+                                    :class="step === 1 ?
+                                        'bg-[#849753] text-white' :
+                                        step > 1 ?
+                                        'bg-[#849753]/20 text-[#849753]' :
+                                        'bg-gray-100 text-gray-400'">
+                                    1
+                                </button>
+                            </div>
 
-                                <div class="flex items-center flex-1">
+                            {{-- STEP 2 --}}
+                            <div class="flex justify-center">
+                                <button type="button" @click="goToStep(2)"
+                                    class="flex items-center justify-center
+                       w-9 h-9 rounded-full
+                       text-sm font-semibold
+                       transition"
+                                    :class="step === 2 ?
+                                        'bg-[#849753] text-white' :
+                                        step > 2 ?
+                                        'bg-[#849753]/20 text-[#849753]' :
+                                        'bg-gray-100 text-gray-400'">
+                                    2
+                                </button>
+                            </div>
 
-                                    <button type="button" @click="goToStep(number)"
-                                        class="flex items-center justify-center
-                                           w-9 h-9 rounded-full text-sm
-                                           font-semibold transition"
-                                        :class="step === number ?
-                                            'bg-[#849753] text-white' :
-                                            step > number ?
-                                            'bg-[#849753]/20 text-[#849753]' :
-                                            'bg-gray-100 text-gray-400'">
-                                        <span x-text="number"></span>
-                                    </button>
+                            {{-- STEP 3 --}}
+                            <div class="flex justify-center">
+                                <button type="button" @click="goToStep(3)"
+                                    class="flex items-center justify-center
+                       w-9 h-9 rounded-full
+                       text-sm font-semibold
+                       transition"
+                                    :class="step === 3 ?
+                                        'bg-[#849753] text-white' :
+                                        step > 3 ?
+                                        'bg-[#849753]/20 text-[#849753]' :
+                                        'bg-gray-100 text-gray-400'">
+                                    3
+                                </button>
+                            </div>
 
-                                    <div x-show="number < 4" class="h-1 flex-1 mx-2 rounded"
-                                        :class="step > number ?
-                                            'bg-[#849753]' :
-                                            'bg-gray-100'">
-                                    </div>
-
-                                </div>
-
-                            </template>
+                            {{-- STEP 4 --}}
+                            <div class="flex justify-center">
+                                <button type="button" @click="goToStep(4)"
+                                    class="flex items-center justify-center
+                       w-9 h-9 rounded-full
+                       text-sm font-semibold
+                       transition"
+                                    :class="step === 4 ?
+                                        'bg-[#849753] text-white' :
+                                        'bg-gray-100 text-gray-400'">
+                                    4
+                                </button>
+                            </div>
 
                         </div>
 
-
-                        <div class="grid grid-cols-4 mt-2 text-xs text-gray-500">
-
-                            <span>Service</span>
-
-                            <span class="text-center">
-                                Therapist
-                            </span>
-
-                            <span class="text-center">
-                                Schedule
-                            </span>
-
-                            <span class="text-right">
-                                Payment
-                            </span>
-
+                        {{-- STEP LABELS --}}
+                        <div class="grid grid-cols-4 mt-3 text-xs text-gray-500">
+                            <span class="text-center">Service</span>
+                            <span class="text-center">Therapist</span>
+                            <span class="text-center">Schedule</span>
+                            <span class="text-center">Payment</span>
                         </div>
 
                     </div>
 
-                    {{-- Success Modal --}}
-                    @if (session('success'))
-                        <div x-data="{
-                            show: true
-                        }" x-init="setTimeout(() => {
-                            show = false;
-                        }, 5000);" x-show="show"
-                            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-                            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-                            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                            class="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 px-4"
-                            style="display: none;">
-
-                            {{-- Modal --}}
-                            <div x-show="show" x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-200"
-                                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90"
-                                @click.outside="show = false"
-                                class="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl">
-
-                                {{-- Success Icon --}}
-                                <div
-                                    class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-                                    <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-
-                                {{-- Title --}}
-                                <h2 class="text-2xl font-bold text-gray-800">
-                                    Booking Successful!
-                                </h2>
-
-                                {{-- Message --}}
-                                <p class="mt-3 text-gray-600">
-                                    {{ session('success') }}
-                                </p>
-
-                                {{-- Close Button --}}
-                                <button type="button" @click="show = false"
-                                    class="mt-6 w-full rounded-xl bg-[#849753] px-5 py-3 font-semibold text-white transition hover:bg-[#6f8245]">
-                                    Okay
-                                </button>
-
-                                {{-- Progress bar --}}
-                                <div class="mt-4 h-1 w-full overflow-hidden rounded-full bg-gray-200">
-                                    <div class="h-full rounded-full bg-[#849753]"
-                                        style="animation: successProgress 5s linear forwards;"></div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <style>
-                            @keyframes successProgress {
-                                from {
-                                    width: 100%;
-                                }
-
-                                to {
-                                    width: 0%;
-                                }
-                            }
-                        </style>
-                    @endif
                     {{-- =================================================
                     FORM
                 ================================================== --}}
@@ -562,17 +518,12 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
 
                                 <template x-for="therapist in therapists" :key="therapist.id">
-                            
+
                                     <label class="cursor-pointer">
-                            
-                                        <input
-                                            type="radio"
-                                            name="therapist_id"
-                                            :value="therapist.id"
-                                            x-model="therapist_id"
-                                            class="peer sr-only"
-                                        >
-                            
+
+                                        <input type="radio" name="therapist_id" :value="therapist.id"
+                                            x-model="therapist_id" class="peer sr-only">
+
                                         <div
                                             class="border-2 border-gray-200
                                                    rounded-2xl overflow-hidden
@@ -581,70 +532,57 @@
                                                    peer-checked:bg-[#849753]/5
                                                    transition
                                                    hover:border-[#849753]/50
-                                                   hover:shadow-md"
-                                        >
-                            
+                                                   hover:shadow-md">
+
                                             {{-- Therapist Image --}}
                                             <div class="relative h-60 bg-gray-100">
-                            
+
                                                 <template x-if="therapist.image">
-                            
-                                                    <img
-                                                        :src="'/storage/' + therapist.image"
-                                                        :alt="therapist.name"
-                                                        loading="lazy"
-                                                        decoding="async"
-                                                        class="w-full h-full object-fill"
-                                                    >
-                            
+
+                                                    <img :src="'/storage/' + therapist.image" :alt="therapist.name"
+                                                        loading="lazy" decoding="async"
+                                                        class="w-full h-full object-fill">
+
                                                 </template>
-                            
+
                                                 {{-- Fallback when no image --}}
                                                 <template x-if="!therapist.image">
-                            
-                                                    <div
-                                                        class="w-full h-full flex items-center justify-center"
-                                                    >
-                            
+
+                                                    <div class="w-full h-full flex items-center justify-center">
+
                                                         <div
                                                             class="w-20 h-20 rounded-full
                                                                    bg-[#849753]/10
-                                                                   flex items-center justify-center"
-                                                        >
-                            
-                                                            <span
-                                                                class="text-2xl font-bold text-[#849753]"
-                                                                x-text="therapist.name.charAt(0)"
-                                                            ></span>
-                            
+                                                                   flex items-center justify-center">
+
+                                                            <span class="text-2xl font-bold text-[#849753]"
+                                                                x-text="therapist.name.charAt(0)"></span>
+
                                                         </div>
-                            
+
                                                     </div>
-                            
+
                                                 </template>
-                            
+
                                             </div>
-                            
+
                                             {{-- Therapist Information --}}
                                             <div class="p-4 text-center">
-                            
-                                                <h3
-                                                    class="font-semibold text-gray-800"
-                                                    x-text="therapist.name"
-                                                ></h3>
-                            
+
+                                                <h3 class="font-semibold text-gray-800" x-text="therapist.name"></h3>
+
                                                 <p class="text-xs text-green-600 mt-1">
                                                     Available
                                                 </p>
-                            
+
                                             </div>
-                            
+
                                         </div>
-                            
+
                                     </label>
-                            
+
                                 </template>
-                            
+
                             </div>
 
                         </div>
@@ -1852,14 +1790,9 @@
 
                 step: 1,
 
-                serviceFilter: 'Bed Massage',
+                serviceFilter: @js($services->first()?->name),
 
-                serviceFilters: [
-                    'Bed Massage',
-                    'Sitting Massage',
-                    'Reflexology',
-                    'Normal Massage'
-                ],
+                serviceFilters: @js($services->pluck('name')->values()->toArray()),
 
 
                 /* ============================================================

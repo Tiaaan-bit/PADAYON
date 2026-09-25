@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\Admin\Appointment\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\TherapistFeedback;
 use App\Models\Therapists;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TherapistsController extends Controller
 {
-
     public function index()
     {
         $userId = Auth::id();
@@ -27,7 +27,7 @@ class TherapistsController extends Controller
 
         $userFeedbacks = TherapistFeedback::query()->where('user_id', $userId)->whereIn('therapist_id', $therapists->pluck('id'))->get()->keyBy('therapist_id');
 
-        $confirmedTherapistIds = UsersAppointments::query()->where('user_id', $userId)->where('status', 'confirm')->whereIn('therapist_id', $therapists->pluck('id'))->pluck('therapist_id')->unique();
+        $confirmedTherapistIds = UsersAppointments::query()->where('user_id', $userId)->where('status', AppointmentStatus::CONFIRMED)->whereIn('therapist_id', $therapists->pluck('id'))->pluck('therapist_id')->unique();
 
         // 5 reviews per page
         $allFeedbacks = TherapistFeedback::query()
@@ -42,10 +42,10 @@ class TherapistsController extends Controller
     {
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
-
             'comment' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        // Check if user already reviewed this therapist
         $existingFeedback = TherapistFeedback::query()->where('user_id', Auth::id())->where('therapist_id', $therapist->id)->exists();
 
         if ($existingFeedback) {
@@ -54,7 +54,8 @@ class TherapistsController extends Controller
             ]);
         }
 
-        $hasAppointment = UsersAppointments::query()->where('user_id', Auth::id())->where('therapist_id', $therapist->id)->where('status', 'confirm')->exists();
+        // Check if user has a confirmed appointment
+        $hasAppointment = UsersAppointments::query()->where('user_id', Auth::id())->where('therapist_id', $therapist->id)->where('status', AppointmentStatus::CONFIRMED)->exists();
 
         if (!$hasAppointment) {
             return back()->withErrors([
@@ -62,6 +63,7 @@ class TherapistsController extends Controller
             ]);
         }
 
+        // Create feedback
         TherapistFeedback::create([
             'user_id' => Auth::id(),
             'therapist_id' => $therapist->id,

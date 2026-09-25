@@ -31,99 +31,136 @@
             </div>
 
 
-            {{-- Services Grid --}}
+            {{-- ================================================= --}}
+            {{-- SERVICES --}}
+            {{-- ================================================= --}}
 
-            <div class="overflow-x-auto rounded-3xl shadow-2xl">
+            <div x-data="{
+                selectedCategory: null
+            }" class="space-y-4">
 
-                <table class="w-full bg-white border-collapse">
+                @forelse ($services as $serviceName => $serviceItems)
 
-                    {{-- Table Header --}}
-                    <thead>
-                        <tr class="bg-[#849753] text-white">
+                    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-                            <th class="px-8 py-6 text-left text-lg md:text-xl font-bold uppercase">
-                                Service
-                            </th>
+                        {{-- SERVICE CATEGORY --}}
+                        <button type="button"
+                            @click="
+                selectedCategory =
+                    selectedCategory === @js($serviceName)
+                        ? null
+                        : @js($serviceName)
+            "
+                            class="w-full px-8 py-6
+                   flex items-center justify-between
+                   bg-[#849753] text-white
+                   hover:bg-[#6F4E37]
+                   transition duration-300">
 
-                            <th class="px-8 py-6 text-left text-lg md:text-xl font-bold uppercase">
-                                Description
-                            </th>
+                            <h2 class="text-xl md:text-2xl font-bold uppercase">
+                                {{ $serviceName }}
+                            </h2>
 
-                            <th class="px-8 py-6 text-center text-lg md:text-xl font-bold uppercase">
-                                Price
-                            </th>
+                            <svg class="w-6 h-6 transition-transform duration-300"
+                                :class="selectedCategory === @js($serviceName) ?
+                                    'rotate-180' :
+                                    ''"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
 
-                            <th class="px-8 py-6 text-center text-lg md:text-xl font-bold uppercase">
-                                Duration
-                            </th>
+                        </button>
 
-                        </tr>
-                    </thead>
 
-                    {{-- Table Body --}}
-                    <tbody>
+                        {{-- SERVICE ITEMS --}}
+                        <div x-show="selectedCategory === @js($serviceName)" x-transition x-cloak>
 
-                        @forelse ($services as $serviceName => $serviceItems)
+                            <div class="overflow-x-auto">
 
-                            @foreach ($serviceItems as $service)
-                                <tr class="border-b border-gray-200 last:border-b-0">
+                                <table class="w-full">
 
-                                    {{-- Service Category --}}
-                                    <td class="px-8 py-6 align-middle">
+                                    {{-- TABLE HEADER --}}
+                                    <thead>
+                                        <tr class="bg-gray-50 border-b border-gray-200">
 
-                                        @if ($loop->first)
-                                            <h2 class="text-lg md:text-xl font-bold text-[#6F4E37] uppercase">
-                                                {{ $serviceName }}
-                                            </h2>
-                                        @endif
 
-                                    </td>
+                                            <th class="px-8 py-4 text-left text-sm font-bold uppercase text-gray-600">
+                                                Description
+                                            </th>
 
-                                    {{-- Description --}}
-                                    <td class="px-8 py-6">
+                                            <th class="px-8 py-4 text-center text-sm font-bold uppercase text-gray-600">
+                                                Price
+                                            </th>
 
-                                        <h3 class="text-lg md:text-xl font-semibold text-black">
-                                            {{ $service->description }}
-                                        </h3>
+                                            <th class="px-8 py-4 text-center text-sm font-bold uppercase text-gray-600">
+                                                Duration
+                                            </th>
 
-                                    </td>
+                                        </tr>
+                                    </thead>
 
-                                    {{-- Price --}}
-                                    <td class="px-8 py-6 text-center">
 
-                                        <span class="text-xl md:text-2xl font-bold text-[#6F4E37] whitespace-nowrap">
-                                            ₱{{ number_format((float) $service->price, 0) }}
-                                        </span>
+                                    {{-- TABLE BODY --}}
+                                    <tbody>
 
-                                    </td>
+                                        @foreach ($serviceItems as $service)
+                                            <tr class="border-b border-gray-200 last:border-b-0">
+  
 
-                                    {{-- Duration --}}
-                                    <td class="px-8 py-6 text-center">
 
-                                        <span class="text-gray-500 text-base md:text-lg whitespace-nowrap">
-                                            {{ $service->duration_minutes }} Minutes
-                                        </span>
+                                                {{-- DESCRIPTION --}}
+                                                <td class="px-8 py-6">
 
-                                    </td>
+                                                    <p class="text-gray-700">
+                                                        {{ $service->description }}
+                                                    </p>
 
-                                </tr>
-                            @endforeach
+                                                </td>
 
-                        @empty
 
-                            <tr>
-                                <td colspan="4" class="px-8 py-16 text-center">
-                                    <p class="text-gray-500 text-lg">
-                                        No services are currently available.
-                                    </p>
-                                </td>
-                            </tr>
+                                                {{-- PRICE --}}
+                                                <td class="px-8 py-6 text-center">
 
-                        @endforelse
+                                                    <span class="text-xl font-bold text-[#6F4E37] whitespace-nowrap">
+                                                        ₱{{ number_format((float) $service->price, 0) }}
+                                                    </span>
 
-                    </tbody>
+                                                </td>
 
-                </table>
+
+                                                {{-- DURATION --}}
+                                                <td class="px-8 py-6 text-center">
+
+                                                    <span class="text-gray-500 whitespace-nowrap">
+                                                        {{ $service->duration_minutes }} Minutes
+                                                    </span>
+
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @empty
+
+                    <div class="bg-white rounded-3xl shadow-2xl px-8 py-16 text-center">
+
+                        <p class="text-gray-500 text-lg">
+                            No services are currently available.
+                        </p>
+
+                    </div>
+
+                @endforelse
 
             </div>
 
@@ -133,87 +170,119 @@
             {{-- ADD ONS --}}
             {{-- ================================================= --}}
 
-            {{-- ADD-ONS --}}
-            <div class="mt-12 overflow-x-auto rounded-3xl shadow-2xl">
 
-                <table class="w-full bg-white border-collapse">
+            <div x-data="{
+                showAddOns: false
+            }" class="mt-12 bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-                    {{-- Add-ons Header --}}
-                    <thead>
-                        <tr class="bg-[#6F4E37] text-white">
+                {{-- ADD-ONS HEADER / BUTTON --}}
+                <button type="button" @click="showAddOns = !showAddOns"
+                    class="w-full px-8 py-6
+           flex items-center justify-between
+           bg-[#849753] text-white
+           hover:bg-[#6F4E37]
+           transition duration-300">
+
+                    <h2 class="text-xl md:text-2xl font-bold uppercase">
+                        Add-Ons
+                    </h2>
+
+                    <svg class="w-6 h-6 transition-transform duration-300" :class="showAddOns ? 'rotate-180' : ''"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+
+                </button>
 
 
+                {{-- ADD-ONS TABLE --}}
+                <div x-show="showAddOns" x-transition x-cloak>
 
-                        </tr>
+                    <div class="overflow-x-auto">
 
-                        <tr class="bg-[#849753] text-white">
+                        <table class="w-full">
 
-                            <th class="px-8 py-5 text-left text-lg font-bold uppercase">
-                                Add-On
-                            </th>
+                            {{-- HEADER --}}
+                            <thead>
 
-                            <th class="px-8 py-5 text-center text-lg font-bold uppercase">
-                                Price
-                            </th>
+                                <tr class="bg-gray-50 border-b border-gray-200">
 
-                            <th class="px-8 py-5 text-center text-lg font-bold uppercase">
-                                Duration
-                            </th>
+                                    <th class="px-8 py-5 text-left text-sm font-bold uppercase text-gray-600">
+                                        Add-On
+                                    </th>
 
-                        </tr>
-                    </thead>
+                                    <th class="px-8 py-5 text-center text-sm font-bold uppercase text-gray-600">
+                                        Price
+                                    </th>
 
-                    {{-- Add-ons Body --}}
-                    <tbody>
+                                    <th class="px-8 py-5 text-center text-sm font-bold uppercase text-gray-600">
+                                        Duration
+                                    </th>
 
-                        @forelse ($addOns as $addOn)
-                            <tr class="border-b border-gray-200 last:border-b-0">
+                                </tr>
 
-                                {{-- Add-On Name --}}
-                                <td class="px-8 py-6">
+                            </thead>
 
-                                    <h3 class="text-lg md:text-xl font-semibold text-black">
-                                        {{ $addOn->name }}
-                                    </h3>
 
-                                </td>
+                            {{-- BODY --}}
+                            <tbody>
 
-                                {{-- Price --}}
-                                <td class="px-8 py-6 text-center">
+                                @forelse ($addOns as $addOn)
+                                    <tr class="border-b border-gray-200 last:border-b-0">
 
-                                    <span class="text-xl md:text-2xl font-bold text-[#6F4E37] whitespace-nowrap">
-                                        ₱{{ number_format((float) $addOn->price, 0) }}
-                                    </span>
+                                        {{-- ADD-ON NAME --}}
+                                        <td class="px-8 py-6">
 
-                                </td>
+                                            <h3 class="text-lg md:text-xl font-semibold text-black">
+                                                {{ $addOn->name }}
+                                            </h3>
 
-                                {{-- Duration --}}
-                                <td class="px-8 py-6 text-center">
+                                        </td>
 
-                                    <span class="text-gray-500 text-base md:text-lg whitespace-nowrap">
-                                        {{ $addOn->duration_minutes }} Minutes
-                                    </span>
 
-                                </td>
+                                        {{-- PRICE --}}
+                                        <td class="px-8 py-6 text-center">
 
-                            </tr>
+                                            <span class="text-xl md:text-2xl font-bold text-[#6F4E37] whitespace-nowrap">
+                                                ₱{{ number_format((float) $addOn->price, 0) }}
+                                            </span>
 
-                        @empty
+                                        </td>
 
-                            <tr>
-                                <td colspan="3" class="px-8 py-10 text-center">
 
-                                    <p class="text-gray-500">
-                                        No add-ons are currently available.
-                                    </p>
+                                        {{-- DURATION --}}
+                                        <td class="px-8 py-6 text-center">
 
-                                </td>
-                            </tr>
-                        @endforelse
+                                            <span class="text-gray-500 text-base md:text-lg whitespace-nowrap">
+                                                {{ $addOn->duration_minutes }} Minutes
+                                            </span>
 
-                    </tbody>
+                                        </td>
 
-                </table>
+                                    </tr>
+
+                                @empty
+
+                                    <tr>
+
+                                        <td colspan="3" class="px-8 py-10 text-center">
+
+                                            <p class="text-gray-500">
+                                                No add-ons are currently available.
+                                            </p>
+
+                                        </td>
+
+                                    </tr>
+                                @endforelse
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
 
             </div>
 

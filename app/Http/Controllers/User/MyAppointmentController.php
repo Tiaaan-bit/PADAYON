@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\Admin\Appointment\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UsersAppointments;
 use App\Notifications\AppointmentCancelledNotification;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MyAppointmentController extends Controller
 {
@@ -15,8 +16,9 @@ class MyAppointmentController extends Controller
     {
         $user = Auth::user();
 
-        $appointmentsQuery = UsersAppointments::with(['service', 'therapist', 'addOn'])->where('user_id', $user->id)->orderByDesc('created_at');
-        
+        $appointmentsQuery = UsersAppointments::with(['service', 'therapist', 'addOn'])
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at');
 
         if ($request->filled('status')) {
             $appointmentsQuery->where('status', $request->status);
@@ -66,16 +68,16 @@ class MyAppointmentController extends Controller
             abort(403);
         }
 
-        if ($appointment->status === 'cancelled') {
+        if ($appointment->status === AppointmentStatus::CANCELLED) {
             return back()->with('error', 'This appointment is already cancelled.');
         }
 
-        if (!in_array($appointment->status, ['pending', 'confirm'])) {
+        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
             return back()->with('error', 'This appointment cannot be cancelled.');
         }
 
         $appointment->update([
-            'status' => 'cancelled',
+            'status' => AppointmentStatus::CANCELLED,
         ]);
 
         $user->notify(new AppointmentCancelledNotification($appointment));

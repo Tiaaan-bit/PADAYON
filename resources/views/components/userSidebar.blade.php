@@ -375,11 +375,9 @@
                 'justify-center px-2 py-3'">
 
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-
-                <circle cx="12" cy="8" r="3" />
-
-                <path d="M5 21a7 7 0 0114 0" />
-
+                <circle cx="12" cy="12" r="3" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
             </svg>
 
 
@@ -467,10 +465,13 @@
                         {{ request()->routeIs('user.dashboard') ? 'text-white' : 'text-white' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                    <rect x="14" y="14" width="7" height="7" rx="1" />
+
+                    <path d="M3 10.5L12 3l9 7.5" />
+
+                    <path d="M5 9.5V21h14V9.5" />
+
+                    <path d="M9 21v-6h6v6" />
+
                 </svg>
                 <span class="text-[10px] font-medium leading-tight">Home</span>
                 @if (request()->routeIs('user.dashboard'))
@@ -484,9 +485,11 @@
                         {{ request()->routeIs('user.my-appointments*') ? 'text-white' : 'text-white' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-                    <rect x="9" y="3" width="6" height="4" rx="1" />
-                    <path d="M9 12h6M9 16h4" />
+
+                    <path d="M4 5h16v15H4z" />
+
+                    <path d="M8 9h8M8 13h8M8 17h5" />
+
                 </svg>
                 <span class="text-[10px] font-medium leading-tight">Appts</span>
                 @if (request()->routeIs('user.my-appointments*'))
@@ -500,9 +503,13 @@
                         {{ request()->routeIs('user.appointment*') ? 'text-white' : 'text-white' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-                    <rect x="9" y="3" width="6" height="4" rx="1" />
-                    <path d="M9 12h6M9 16h4" />
+
+                    <rect x="3" y="4" width="18" height="17" rx="2" />
+
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+
+                    <path d="M12 13v4M10 15h4" />
+
                 </svg>
                 <span class="text-[10px] font-medium leading-tight">Book</span>
                 @if (request()->routeIs('user.appointment*'))
@@ -516,7 +523,13 @@
                         {{ request()->routeIs('user.payment-history*') ? 'text-white' : 'text-white' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" />
+
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+
+                    <path d="M3 10h18" />
+
+                    <path d="M7 15h4" />
+
                 </svg>
                 <span class="text-[10px] font-medium leading-tight">Pay</span>
                 @if (request()->routeIs('user.payment-history*'))
@@ -568,15 +581,20 @@
             </div>
 
 
-            <a href="{{ route('user.notifications') }}" onclick="toggleMoreDrawer()"
+            <a href="{{ route('user.therapists.index') }}" onclick="toggleMoreDrawer()"
                 class="inline-flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all w-full">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2z" />
-                    <path d="M18 16H6l1.2-1.2A2 2 0 008 13.4V10a4 4 0 118 0v3.4a2 2 0 00.8 1.4L18 16z" />
+
+                    <circle cx="12" cy="8" r="3" />
+
+                    <path d="M5 21a7 7 0 0114 0" />
+
                 </svg>
-                Notifications
+                Therapists
             </a>
+
+
 
             <a href="{{ route('user.profile') }}" onclick="toggleMoreDrawer()"
                 class="inline-flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white transition-all w-full">
@@ -632,4 +650,3 @@
         }
     }
 </script>
-

@@ -9,6 +9,8 @@
         @yield('title', 'Padayon Massage Center')
     </title>
 
+    <link rel="icon" type="image/png" href="{{ asset('build/assets/images/logo.png') }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')

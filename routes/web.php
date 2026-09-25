@@ -61,32 +61,33 @@ Route::middleware('auth')->group(function () {
 // ── User routes (auth.user middleware = verified users only) ──────────────────
 Route::middleware('auth.user')->prefix('user')->name('user.')->group(function () {
 
-        //---User Dashboard Controller---//
+        //---User Dashboard---//
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
-        //---User Appointment Controller---//
+        //---User Appointment---//
         Route::get('/appointment', [UserAppointmentController::class, 'index'])->name('appointment');
         Route::get('/appointments/create', [UserAppointmentController::class, 'create'])->name('appointments.create');
         Route::post('/appointments/store', [UserAppointmentController::class, 'store'])->name('appointments.store');
         Route::get('/appointments/available-slots', [UserAppointmentController::class, 'availableSlots'])->name('appointments.availableSlots');
 
-        //---User MyAppointment Controller---//
+        //---User MyAppointment---//
         Route::get('/my-appointments', [MyAppointmentController::class, 'index'])->name('my-appointments');
         Route::put('/my-appointments/{appointment}/cancel', [MyAppointmentController::class, 'cancel'])->name('my-appointments.cancel');
 
-        //---User Payment History Controller---//
+        //---User Payment History---//
         Route::get('/payment-history', [PaymentHistoryController::class, 'index'])->name('payment-history');
 
-        //---User Notifications Controller---//
+        //---User Notifications---//
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
         Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
+         //---User Therapist---//
         Route::get('/therapists', [TherapistsController::class, 'index'])->name('therapists.index');
         Route::post('/therapists/{therapist}/feedback', [TherapistsController::class, 'storeFeedback'])->name('therapists.feedback');
 
-        //---User Profile Controller---//
+        //---User Profile---//
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

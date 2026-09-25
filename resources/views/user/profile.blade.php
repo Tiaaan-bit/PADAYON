@@ -16,36 +16,6 @@
     </div>
 
 
-    {{-- Success Message --}}
-    @if (session('success'))
-        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            {{ session('success') }}
-        </div>
-    @endif
-
-
-    {{-- Error Message --}}
-    @if (session('error'))
-        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            {{ session('error') }}
-        </div>
-    @endif
-
-
-    {{-- Validation Errors --}}
-    @if ($errors->any())
-        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            <p class="font-medium mb-1">Please check the following:</p>
-
-            <ul class="list-disc list-inside text-sm">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- LEFT SIDE --}}

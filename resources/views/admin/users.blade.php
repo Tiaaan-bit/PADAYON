@@ -12,32 +12,6 @@
 
         <div class="flex-1 p-4 sm:p-6">
 
-            {{-- Success Message --}}
-            @if (session('success'))
-                <div
-                    class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
-
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M5 13l4 4L19 7" />
-                    </svg>
-
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            {{-- Error Message --}}
-            @if (session('error'))
-                <div
-                    class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
-
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-
-                    {{ session('error') }}
-                </div>
-            @endif
-
             {{-- Page Header --}}
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-gray-800">

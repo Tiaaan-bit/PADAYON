@@ -70,23 +70,6 @@
 
         <div class="px-4 sm:px-6 lg:px-8 py-5">
 
-            {{-- =========================================================
-                HEADER
-            ========================================================== --}}
-            <div class="flex items-center justify-between mb-5">
-
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
-                        Welcome back, {{ auth()->user()->name }}.
-                    </h1>
-
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                        Here's what's happening at Padayon Massage Center.
-                    </p>
-                </div>
-
-            </div>
-
 
             {{-- =========================================================
                 MAIN DASHBOARD
@@ -100,16 +83,14 @@
                 <section class="min-w-0">
 
 
-                    {{-- =================================================
-                        WELCOME IMAGE
-                    ================================================== --}}
+                    {{-- WELCOME IMAGE --}}
                     <div
                         class="relative w-full overflow-hidden rounded-2xl bg-white
                         border border-gray-200 shadow-sm
                         h-55 sm:h-75 md:h-100 lg:min-h-125 xl:min-h-125">
 
                         <img src="{{ asset('build/assets/images/Welcome.webp') }}" alt="Welcome"
-                            class="absolute inset-0 w-full h-full object-cover object-center">
+                            class="absolute inset-0 w-full h-full object-fill object-center">
 
                     </div>
 
@@ -535,8 +516,7 @@
                                                             text-gray-500
                                                             text-[10px] font-semibold
                                                             rounded-full whitespace-nowrap">
-                                                            {{ ucfirst($appointment->status ?? 'N/A') }}
-                                                        </span>
+                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                        </span>
                                                     @endif
 
                                                 </td>
@@ -1042,8 +1022,7 @@
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-gray-500">
-                                                    {{ ucfirst($appointment->status ?? 'N/A') }}
-                                                </span>
+                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                </span>
                                             @endif
 
                                         </div>

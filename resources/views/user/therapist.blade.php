@@ -39,28 +39,6 @@
 
 
             {{-- ========================================================= --}}
-            {{-- SUCCESS MESSAGE --}}
-            {{-- ========================================================= --}}
-
-            @if (session('success'))
-                <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-
-            {{-- ========================================================= --}}
-            {{-- ERROR MESSAGE --}}
-            {{-- ========================================================= --}}
-
-            @if ($errors->has('error'))
-                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-                    {{ $errors->first('error') }}
-                </div>
-            @endif
-
-
-            {{-- ========================================================= --}}
             {{-- THERAPIST GRID --}}
             {{-- ========================================================= --}}
 
@@ -429,14 +407,11 @@
                     <form method="POST"
                         :action="selectedTherapist
                             ?
-                            '{{ url('/therapists') }}/' +
-                            selectedTherapist.id +
-                            '/feedback' :
+                            '{{ route('user.therapists.feedback', ['therapist' => '__THERAPIST__']) }}'
+                            .replace('__THERAPIST__', selectedTherapist.id) :
                             '#'"
                         class="p-6" x-data="{ rating: 0 }">
-
                         @csrf
-
 
                         {{-- ============================================= --}}
                         {{-- RATING --}}

@@ -456,7 +456,7 @@
 
                                         data-amount-paid="{{ number_format($transaction->amount_paid ?? 0, 2) }}"
 
-                                        data-status="{{ ucfirst($transaction->status ?? 'N/A') }}"
+                                        data-status="{{ ucfirst($transaction->status->value ?? 'N/A') }}"
                                     >
 
 
@@ -759,7 +759,7 @@
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap"
                                                 >
 
-                                                    {{ ucfirst($transaction->status ?? 'N/A') }}
+                                                    {{ ucfirst($transaction->status->value ?? 'N/A') }}
 
                                                 </span>
 

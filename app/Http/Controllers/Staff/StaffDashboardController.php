@@ -115,7 +115,7 @@ class StaffDashboardController extends Controller
 
                     'therapist' => $appointment->therapist->name ?? 'N/A',
 
-                    'status' => strtolower(trim($appointment->status ?? '')),
+                    'status' => $appointment->status?->value ?? '',
                 ];
             })
             ->values();
