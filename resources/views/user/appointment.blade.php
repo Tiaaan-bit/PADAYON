@@ -175,7 +175,16 @@
 
                         @csrf
 
+                        <input type="hidden" name="service_id" x-model="service_id">
+                        <input type="hidden" name="therapist_id" x-model="therapist_id">
+                        <input type="hidden" name="level" x-model="level">
+                        <input type="hidden" name="add_on_id" x-model="add_on_id">
+                        <input type="hidden" name="has_previous_operations" x-model="has_previous_operations">
+                        <input type="hidden" name="body_problem" x-model="body_problem">
+                        <input type="hidden" name="appointment_date" x-model="appointment_date">
                         <input type="hidden" name="appointment_time" x-model="appointment_time">
+                        <input type="hidden" name="payment_method" x-model="payment_method">
+                        <input type="hidden" name="payment_type" x-model="payment_type">
 
 
                         @if ($errors->any())
@@ -251,7 +260,7 @@
 
                                     <label class="relative cursor-pointer">
 
-                                        <input type="radio" name="service_id" :value="service.id" x-model="service_id"
+                                        <input type="radio" :value="service.id" x-model="service_id"
                                             class="peer sr-only">
 
                                         <div
@@ -320,7 +329,7 @@
 
                                         <label class="cursor-pointer">
 
-                                            <input type="radio" name="level" :value="item.value" x-model="level"
+                                            <input type="radio" :value="item.value" x-model="level"
                                                 class="peer sr-only">
 
                                             <div
@@ -357,8 +366,7 @@
 
                                     <label class="cursor-pointer block">
 
-                                        <input type="radio" name="add_on_id" value="" x-model="add_on_id"
-                                            class="peer sr-only">
+                                        <input type="radio" value="" x-model="add_on_id" class="peer sr-only">
 
                                         <div
                                             class="border-2 border-gray-200
@@ -389,8 +397,8 @@
 
                                         <label class="cursor-pointer block">
 
-                                            <input type="radio" name="add_on_id" :value="addOn.id"
-                                                x-model="add_on_id" class="peer sr-only">
+                                            <input type="radio" :value="addOn.id" x-model="add_on_id"
+                                                class="peer sr-only">
 
                                             <div
                                                 class="border-2 border-gray-200
@@ -520,9 +528,8 @@
                                 <template x-for="therapist in therapists" :key="therapist.id">
 
                                     <label class="cursor-pointer">
-
-                                        <input type="radio" name="therapist_id" :value="therapist.id"
-                                            x-model="therapist_id" class="peer sr-only">
+                                        <input type="radio" :value="therapist.id" x-model="therapist_id"
+                                            class="peer sr-only">
 
                                         <div
                                             class="border-2 border-gray-200

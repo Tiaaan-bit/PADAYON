@@ -4,7 +4,7 @@
     {{-- LOGO + BRAND --}}
     <a href="{{ route('home.showHomePage') }}" class="flex items-center gap-3">
 
-        <img src="{{ asset('images/logo.png') }}" alt="Padayon Massage Center Logo"
+        <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
             class="h-16 w-16 object-contain">
 
         <div class="leading-tight">

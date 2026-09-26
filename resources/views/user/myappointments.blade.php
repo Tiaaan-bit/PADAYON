@@ -438,7 +438,20 @@
                                     {{-- ACTION --}}
                                     <td class="px-5 py-4" @click.stop>
 
-                                        @if ($status === AppointmentStatus::PENDING)
+                                        @if ($appointment->payment_method === 'gcash' && in_array($appointment->payment_status, ['failed', 'pending']))
+                                            {{-- PAY AGAIN --}}
+                                            <form
+                                                action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
+                                                method="POST">
+                                                @csrf
+
+                                                <button type="submit"
+                                                    class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
+                                                    Pay Again
+                                                </button>
+                                            </form>
+                                        @elseif ($status === AppointmentStatus::PENDING)
+                                            {{-- CANCEL --}}
                                             <form action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
                                                 method="POST">
                                                 @csrf
@@ -448,17 +461,6 @@
                                                     onclick="return confirm('Cancel this appointment?')"
                                                     class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm">
                                                     Cancel
-                                                </button>
-                                            </form>
-                                        @elseif ($appointment->payment_method === 'gcash' && $appointment->payment_status === 'failed')
-                                            <form
-                                                action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
-                                                method="POST">
-                                                @csrf
-
-                                                <button type="submit"
-                                                    class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
-                                                    Pay Again
                                                 </button>
                                             </form>
                                         @else

@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class UserAppointmentController extends Controller
 {
     private string $timezone = 'Asia/Manila';
-
     private int $openingHour = 13; // 1:00 PM
     private int $closingHour = 1; // 1:00 AM next day
     private int $slotInterval = 30;
@@ -106,7 +106,7 @@ class UserAppointmentController extends Controller
     {
         return UsersAppointments::where('therapist_id', $therapistId)
             ->where('appointment_date', $date)
-            ->whereNotIn('status', ['cancelled', 'rejected', 'failed'])
+            ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
             ->orderBy('appointment_time')
             ->get();
     }
@@ -186,6 +186,14 @@ class UserAppointmentController extends Controller
 
         $addOnPrice = $selectedAddOn ? (float) $selectedAddOn->price : 0;
 
+        // Get the service currently selected by the user.
+        $currentService = Services::where('status', 'active')->find($currentServiceId);
+
+        if (!$currentService) {
+            return [];
+        }
+
+        // Available time for the massage itself.
         $availableServiceMinutes = $availableMinutes - $addOnDuration;
 
         if ($availableServiceMinutes <= 0) {
@@ -193,15 +201,16 @@ class UserAppointmentController extends Controller
         }
 
         return Services::where('status', 'active')
-            ->where('id', '!=', $currentServiceId)
+            ->where('name', $currentService->name)
+            ->where('duration_minutes', '<', $currentService->duration_minutes)
             ->where('duration_minutes', '<=', $availableServiceMinutes)
-            ->orderBy('duration_minutes')
-            ->orderBy('price')
+            ->orderByDesc('duration_minutes')
             ->get()
             ->map(function ($service) use ($addOnDuration, $addOnPrice) {
                 return [
                     'id' => $service->id,
                     'name' => $service->name,
+                    'description' => $service->description,
                     'price' => (float) $service->price,
                     'duration_minutes' => (int) $service->duration_minutes,
                     'total_duration' => (int) $service->duration_minutes + $addOnDuration,
@@ -487,23 +496,14 @@ class UserAppointmentController extends Controller
 
         $validated = $request->validate([
             'service_id' => ['required', 'integer', 'exists:services,id'],
-
             'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
-
             'level' => ['required', 'in:gentle,mild,hard'],
-
             'add_on_id' => ['nullable', 'integer', 'exists:add_ons,id'],
-
             'has_previous_operations' => ['required', 'in:yes,no'],
-
             'body_problem' => ['nullable', 'string', 'max:2000'],
-
             'appointment_date' => ['required', 'date_format:Y-m-d'],
-
             'appointment_time' => ['required', 'date_format:H:i'],
-
             'payment_method' => ['required', 'in:branch,gcash'],
-
             'payment_type' => ['nullable', 'required_if:payment_method,gcash', 'in:full,downpayment'],
         ]);
 
@@ -637,33 +637,10 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | FINAL SERVER-SIDE CONFLICT CHECK
-        |--------------------------------------------------------------------------
-        |
-        | Never rely only on the frontend availability check.
-        |
-        */
-
-        $existingAppointments = $this->getTherapistAppointments((int) $therapist->id, $validated['appointment_date']);
-
-        foreach ($existingAppointments as $existingAppointment) {
-            $range = $this->getAppointmentRange($existingAppointment);
-
-            if ($this->appointmentOverlaps($start, $end, $range['start'], $range['end'])) {
-                throw ValidationException::withMessages([
-                    'appointment_time' => 'The selected time is no longer available. ' . 'Please choose another schedule.',
-                ]);
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
         | Prices
         |--------------------------------------------------------------------------
         |
-        | IMPORTANT:
-        | Prices are taken from the database.
-        | We do NOT trust prices sent from the browser.
+        | Prices always come from the database.
         |
         */
 
@@ -677,26 +654,12 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         | Payment amount
         |--------------------------------------------------------------------------
-        |
-        | Branch:
-        |   payment_type = null
-        |   amount_paid = 0
-        |
-        | GCash Full:
-        |   payment_type = full
-        |   amount_paid = 100%
-        |
-        | GCash Downpayment:
-        |   payment_type = downpayment
-        |   amount_paid = 50%
-        |
         */
 
         $paymentType = $validated['payment_type'] ?? null;
 
         if ($validated['payment_method'] === 'branch') {
             $paymentType = null;
-
             $paymentAmount = 0;
         } elseif ($paymentType === 'downpayment') {
             $paymentAmount = round($totalAmount * 0.5, 2);
@@ -707,84 +670,170 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Payment has not been confirmed yet.
+        | Initial payment state
         |--------------------------------------------------------------------------
         */
 
         $amountPaid = 0;
 
-        $status = 'pending';
-
         /*
         |--------------------------------------------------------------------------
-        | Create appointment
+        | IMPORTANT:
+        |
+        | Start database transaction.
+        |
+        | We lock the therapist row so that two users cannot
+        | simultaneously book the same therapist/time.
         |--------------------------------------------------------------------------
         */
 
-        $appointment = UsersAppointments::create([
-            'user_id' => Auth::id(),
+        $appointment = DB::transaction(function () use ($validated, $service, $therapist, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $paymentType, $paymentAmount, $amountPaid, $start, $end) {
+            /*
+            |--------------------------------------------------------------------------
+            | LOCK THERAPIST
+            |--------------------------------------------------------------------------
+            |
+            | This is the important concurrency protection.
+            |
+            | If another request is currently booking this therapist,
+            | that request must finish before this one can continue.
+            |
+            */
 
-            'service_id' => $service->id,
+            $lockedTherapist = Therapists::where('id', $therapist->id)->where('status', 'available')->lockForUpdate()->first();
 
-            'therapist_id' => $therapist->id,
+            if (!$lockedTherapist) {
+                throw ValidationException::withMessages([
+                    'therapist_id' => 'Selected therapist is no longer available.',
+                ]);
+            }
 
-            'service_price' => $servicePrice,
+            /*
+            |--------------------------------------------------------------------------
+            | FINAL SERVER-SIDE CONFLICT CHECK
+            |--------------------------------------------------------------------------
+            |
+            | IMPORTANT:
+            | This check happens AFTER locking the therapist.
+            |
+            | This prevents two simultaneous requests from both
+            | passing the availability check.
+            |
+            */
 
-            'service_duration_minutes' => $serviceDuration,
+            $existingAppointments = $this->getTherapistAppointments((int) $lockedTherapist->id, $validated['appointment_date']);
 
-            'level' => $validated['level'],
+            foreach ($existingAppointments as $existingAppointment) {
+                $range = $this->getAppointmentRange($existingAppointment);
 
-            'add_on_id' => $addOn?->id,
+                if ($this->appointmentOverlaps($start, $end, $range['start'], $range['end'])) {
+                    throw ValidationException::withMessages([
+                        'appointment_time' => 'The selected time is no longer available. Please choose another schedule.',
+                    ]);
+                }
+            }
 
-            'addons_price' => $addOnPrice,
+            /*
+            |--------------------------------------------------------------------------
+            | Create appointment
+            |--------------------------------------------------------------------------
+            */
 
-            'addons_duration_minutes' => $addOnDuration,
+            return UsersAppointments::create([
+                'user_id' => Auth::id(),
 
-            'has_previous_operations' => $validated['has_previous_operations'],
+                'service_id' => $service->id,
+                'therapist_id' => $lockedTherapist->id,
 
-            'body_problem' => $validated['body_problem'] ?? null,
+                'service_price' => $servicePrice,
+                'service_duration_minutes' => $serviceDuration,
 
-            'appointment_date' => $validated['appointment_date'],
+                'level' => $validated['level'],
 
-            'appointment_time' => $validated['appointment_time'],
+                'add_on_id' => $addOn?->id,
+                'addons_price' => $addOnPrice,
+                'addons_duration_minutes' => $addOnDuration,
 
-            'appointment_end_time' => $end->format('H:i'),
+                'has_previous_operations' => $validated['has_previous_operations'],
 
-            'payment_method' => $validated['payment_method'],
+                'body_problem' => $validated['body_problem'] ?? null,
 
-            'payment_type' => $paymentType,
+                'appointment_date' => $validated['appointment_date'],
 
-            'amount_paid' => $amountPaid,
+                'appointment_time' => $validated['appointment_time'],
 
-            'payment_amount' => $paymentAmount,
+                'appointment_end_time' => $end->format('H:i'),
 
-            'payment_status' => 'pending',
+                'payment_method' => $validated['payment_method'],
 
-            'status' => $status,
-        ]);
+                'payment_type' => $paymentType,
+
+                'amount_paid' => $amountPaid,
+
+                'payment_amount' => $paymentAmount,
+
+                'payment_status' => 'pending',
+
+                'status' => AppointmentStatus::PENDING,
+            ]);
+        });
 
         /*
         |--------------------------------------------------------------------------
         | GCash
         |--------------------------------------------------------------------------
-        |
-        | PayMongo integration will go here.
-        |
         */
 
         if ($validated['payment_method'] === 'gcash') {
             $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
 
-            $checkout = $this->payMongo->createCheckoutSession(referenceNumber: $referenceNumber, description: 'Padayon Massage Center Appointment ' . $referenceNumber, amount: (int) round($paymentAmount * 100), successUrl: route('user.appointments.payment.success', $appointment), cancelUrl: route('user.appointments.payment.cancel', $appointment), customerName: Auth::user()->name, customerEmail: Auth::user()->email);
+            /*
+            |--------------------------------------------------------------------------
+            | Create PayMongo Checkout Session
+            |--------------------------------------------------------------------------
+            */
+
+            $checkout = $this->payMongo->createCheckoutSession(
+                referenceNumber: $referenceNumber,
+
+                description: 'Padayon Massage Center Appointment ' . $referenceNumber,
+
+                amount: (int) round($paymentAmount * 100),
+
+                successUrl: route('user.appointments.payment.success', $appointment),
+
+                cancelUrl: route('user.appointments.payment.cancel', $appointment),
+
+                customerName: Auth::user()->name,
+
+                customerEmail: Auth::user()->email,
+            );
 
             $checkoutSession = $checkout['data'];
 
+            /*
+            |--------------------------------------------------------------------------
+            | Save PayMongo information
+            |--------------------------------------------------------------------------
+            */
+
             $appointment->update([
                 'paymongo_checkout_session_id' => $checkoutSession['id'],
-                'paymongo_reference_number' => $referenceNumber,
-                'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(),
 
+                'paymongo_reference_number' => $referenceNumber,
+
+                /*
+                | Your scheduler currently expires pending
+                | payments after 1 minute.
+                */
+                'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinute(),
             ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Redirect to PayMongo
+            |--------------------------------------------------------------------------
+            */
 
             $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
 
@@ -797,9 +846,7 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        return redirect()
-            ->route('user.my-appointments')
-            ->with('success', 'Appointment submitted successfully. ' . 'Please wait for confirmation.');
+        return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please wait for confirmation.');
     }
 
     public function paymentSuccess(UsersAppointments $appointment)
@@ -831,18 +878,16 @@ class UserAppointmentController extends Controller
     | Only GCash appointments can be paid again
     |--------------------------------------------------------------------------
     */
-
         if ($appointment->payment_method !== 'gcash') {
             return back()->with('error', 'This appointment does not use GCash payment.');
         }
 
         /*
     |--------------------------------------------------------------------------
-    | Only failed payments can be retried
+    | Only failed or pending payments can be retried
     |--------------------------------------------------------------------------
     */
-
-        if ($appointment->payment_status !== 'failed') {
+        if (!in_array($appointment->payment_status, ['failed', 'pending'])) {
             return back()->with('error', 'This payment cannot be retried.');
         }
 
@@ -851,8 +896,7 @@ class UserAppointmentController extends Controller
     | Appointment must still be usable
     |--------------------------------------------------------------------------
     */
-
-        if ($appointment->status !== AppointmentStatus::FAILED) {
+        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::FAILED])) {
             return back()->with('error', 'This appointment is not available for payment retry.');
         }
 
@@ -861,24 +905,9 @@ class UserAppointmentController extends Controller
     | Create NEW PayMongo Checkout Session
     |--------------------------------------------------------------------------
     */
-
         $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
 
-        $checkout = $this->payMongo->createCheckoutSession(
-            referenceNumber: $referenceNumber,
-
-            description: 'Padayon Massage Center Appointment ' . $referenceNumber,
-
-            amount: (int) round($appointment->payment_amount * 100),
-
-            successUrl: route('user.appointments.payment.success', $appointment),
-
-            cancelUrl: route('user.appointments.payment.cancel', $appointment),
-
-            customerName: Auth::user()->name,
-
-            customerEmail: Auth::user()->email,
-        );
+        $checkout = $this->payMongo->createCheckoutSession(referenceNumber: $referenceNumber, description: 'Padayon Massage Center Appointment ' . $referenceNumber, amount: (int) round($appointment->payment_amount * 100), successUrl: route('user.appointments.payment.success', $appointment), cancelUrl: route('user.appointments.payment.cancel', $appointment), customerName: Auth::user()->name, customerEmail: Auth::user()->email);
 
         $checkoutSession = $checkout['data'];
 
@@ -887,15 +916,21 @@ class UserAppointmentController extends Controller
     | Reset payment attempt
     |--------------------------------------------------------------------------
     */
-
         $appointment->update([
             'paymongo_checkout_session_id' => $checkoutSession['id'],
+
             'paymongo_reference_number' => $referenceNumber,
+
             'paymongo_payment_id' => null,
-            'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(),
+
+            'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(30),
+
             'payment_status' => 'pending',
+
             'amount_paid' => 0,
+
             'paid_at' => null,
+
             'status' => AppointmentStatus::PENDING,
         ]);
 
@@ -904,7 +939,6 @@ class UserAppointmentController extends Controller
     | Redirect to NEW Checkout Session
     |--------------------------------------------------------------------------
     */
-
         $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
 
         return redirect()->away($checkoutUrl);
