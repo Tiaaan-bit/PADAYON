@@ -195,14 +195,6 @@
 
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
 
-                <h3 class="font-semibold text-gray-800">
-                    My Appointment List
-                </h3>
-
-                <span class="text-xs text-gray-400">
-                    {{ $appointments->total() }} total
-                </span>
-
             </div>
 
             @if ($appointments->isEmpty())
@@ -237,24 +229,15 @@
                                     Date
                                 </th>
 
+
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Time
+                                    Service
                                 </th>
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    End Time
-                                </th>
-
-                                <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Service Details
-                                </th>
-
-                                <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Add-on Details
+                                    Add-on
                                 </th>
 
                                 <th
@@ -264,7 +247,7 @@
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Status
+                                    Aappointment Status
                                 </th>
 
                                 <th
@@ -310,20 +293,15 @@
                                     {{-- DATE --}}
                                     <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
                                         {{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}
-                                    </td>
-
-                                    {{-- TIME --}}
-                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
-                                        {{ $appointment->appointment_time
+                                        <p>{{ $appointment->appointment_time
                                             ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
                                             : 'N/A' }}
-                                    </td>
+                                            -
+                                            {{ $appointment->appointment_end_time
+                                                ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
+                                                : 'N/A' }}
+                                        </p>
 
-                                    {{-- END TIME --}}
-                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
-                                        {{ $appointment->appointment_end_time
-                                            ? \Carbon\Carbon::parse($appointment->appointment_end_time)->format('h:i A')
-                                            : 'N/A' }}
                                     </td>
 
                                     {{-- SERVICE --}}
@@ -345,10 +323,6 @@
                                                 mins
                                             </p>
 
-                                            <p class="text-xs font-medium text-gray-500 capitalize">
-                                                Level:
-                                                {{ $appointment->level ?? 'N/A' }}
-                                            </p>
 
                                         </div>
 
@@ -438,36 +412,66 @@
                                     {{-- ACTION --}}
                                     <td class="px-5 py-4" @click.stop>
 
-                                        @if ($appointment->payment_method === 'gcash' && in_array($appointment->payment_status, ['failed', 'pending']))
+                                        <div class="flex flex-col gap-2">
+
                                             {{-- PAY AGAIN --}}
-                                            <form
-                                                action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
-                                                method="POST">
-                                                @csrf
+                                            @if ($appointment->payment_method === 'gcash' && in_array($appointment->payment_status, ['failed', 'pending']))
+                                                <form
+                                                    action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
+                                                    method="POST">
+                                                    @csrf
 
-                                                <button type="submit"
-                                                    class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
-                                                    Pay Again
-                                                </button>
-                                            </form>
-                                        @elseif ($status === AppointmentStatus::PENDING)
+                                                    <button type="submit"
+                                                        class="w-full rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
+                                                        Pay Again
+                                                    </button>
+                                                </form>
+                                            @endif
+
+
+                                            {{-- RESCHEDULE --}}
+                                            @php
+                                                $canReschedule =
+                                                    $status === AppointmentStatus::CONFIRMED &&
+                                                    $appointment->appointment_date &&
+                                                    $appointment->appointment_date->greaterThanOrEqualTo(today());
+                                            @endphp
+
+                                            @if ($canReschedule)
+                                                <a href="{{ route('user.appointments.reschedule', $appointment->id) }}"
+                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-[#849753] hover:bg-[#849753] hover:text-white text-sm font-medium transition">
+                                                    Reschedule
+                                                </a>
+                                            @endif
+
+
+
                                             {{-- CANCEL --}}
-                                            <form action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('PUT')
+                                            @if ($status === AppointmentStatus::PENDING && $appointment->payment_method === 'branch')
+                                                <form
+                                                    action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('PUT')
 
-                                                <button type="submit"
-                                                    onclick="return confirm('Cancel this appointment?')"
-                                                    class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm">
-                                                    Cancel
-                                                </button>
-                                            </form>
-                                        @else
-                                            <span class="text-xs text-gray-400">
-                                                No action
-                                            </span>
-                                        @endif
+                                                    <button type="submit"
+                                                        onclick="return confirm('Cancel this appointment?')"
+                                                        class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            {{-- NO ACTION --}}
+                                            @if (
+                                                !in_array($status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true) &&
+                                                    !($appointment->payment_method === 'gcash' && in_array($appointment->payment_status, ['failed', 'pending'])))
+                                                <span class="text-xs text-gray-400">
+                                                    No action
+                                                </span>
+                                            @endif
+
+                                        </div>
 
                                     </td>
 

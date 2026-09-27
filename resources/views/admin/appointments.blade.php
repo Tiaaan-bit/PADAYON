@@ -304,14 +304,6 @@
                 <div class="px-5 py-4 border-b border-gray-100
                     flex items-center justify-between">
 
-                    <h3 class="font-semibold text-gray-800">
-                        Appointment List
-                    </h3>
-
-                    <span class="text-xs text-gray-400">
-                        {{ $appointments->total() }} total
-                    </span>
-
                 </div>
 
 
@@ -343,7 +335,7 @@
 
                                     <th
                                         class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                        #
+                                        ID
                                     </th>
 
                                     <th
@@ -378,7 +370,8 @@
 
                                     <th
                                         class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                        Status
+                                        Appointment Status
+
                                     </th>
 
                                     <th
@@ -648,7 +641,6 @@
                                         {{-- ================================================= --}}
 
                                         <td class="px-5 py-4">
-
                                             @if ($appointment->status === AppointmentStatus::CONFIRMED)
                                                 <span
                                                     class="inline-flex items-center gap-1.5

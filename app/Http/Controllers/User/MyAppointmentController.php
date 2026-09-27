@@ -9,9 +9,14 @@ use App\Models\UsersAppointments;
 use App\Notifications\AppointmentCancelledNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\User\Appointment\RescheduleAppointment;
+use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class MyAppointmentController extends Controller
 {
+    public function __construct(private RescheduleAppointment $rescheduleAppointment) {}
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -80,8 +85,186 @@ class MyAppointmentController extends Controller
             'status' => AppointmentStatus::CANCELLED,
         ]);
 
+        $appointment->update([
+            'payment_status' => 'unpaid',
+        ]);
+
         $user->notify(new AppointmentCancelledNotification($appointment));
 
         return back()->with('success', 'Appointment cancelled successfully.');
+    }
+    public function showReschedule(UsersAppointments $appointment)
+    {
+        $user = Auth::user();
+
+        abort_unless($appointment->user_id === $user->id, 403);
+
+        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+            return redirect()->route('user.my-appointments')->with('error', 'This appointment cannot be rescheduled.');
+        }
+
+        $appointment->load(['service', 'therapist', 'addOn']);
+
+        return view('user.reschedule-appointment', compact('appointment'));
+    }
+
+    public function availableRescheduleSlots(Request $request, UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+            return response()->json(
+                [
+                    'message' => 'This appointment cannot be rescheduled.',
+                ],
+                422,
+            );
+        }
+
+        $validated = $request->validate([
+            'date' => ['required', 'date_format:Y-m-d'],
+        ]);
+
+        $date = $validated['date'];
+
+        $timezone = 'Asia/Manila';
+
+        $selectedDate = Carbon::createFromFormat('Y-m-d', $date, $timezone)->startOfDay();
+
+        $today = Carbon::now($timezone)->startOfDay();
+
+        if ($selectedDate->lt($today)) {
+            return response()->json([]);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Booking window
+    |--------------------------------------------------------------------------
+    */
+
+        $opening = $selectedDate->copy()->setTime(13, 0, 0);
+
+        $closing = $selectedDate->copy()->addDay()->setTime(1, 0, 0);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Existing duration
+    |--------------------------------------------------------------------------
+    */
+
+        $requiredMinutes = (int) $appointment->service_duration_minutes + (int) $appointment->addons_duration_minutes;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Therapist appointments
+    |--------------------------------------------------------------------------
+    */
+
+        $appointments = UsersAppointments::where('therapist_id', $appointment->therapist_id)
+            ->where('appointment_date', $date)
+            ->where('id', '!=', $appointment->id)
+            ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
+            ->orderBy('appointment_time')
+            ->get();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Generate 30-minute slots
+    |--------------------------------------------------------------------------
+    */
+
+        $slots = [];
+
+        for ($slotStart = $opening->copy(); $slotStart->lt($closing); $slotStart->addMinutes(30)) {
+            /*
+        |--------------------------------------------------------------------------
+        | Don't show past times
+        |--------------------------------------------------------------------------
+        */
+
+            if ($slotStart->isSameDay($today) && $slotStart->lte(Carbon::now($timezone))) {
+                continue;
+            }
+
+            $slotEnd = $slotStart->copy()->addMinutes($requiredMinutes);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Don't allow appointment beyond 1 AM
+        |--------------------------------------------------------------------------
+        */
+
+            if ($slotEnd->gt($closing)) {
+                continue;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Check conflict
+        |--------------------------------------------------------------------------
+        */
+
+            $isAvailable = true;
+
+            foreach ($appointments as $existingAppointment) {
+                $existingDate = Carbon::parse($existingAppointment->appointment_date)->format('Y-m-d');
+
+                $existingStart = $this->appointmentDateTimeForReschedule($existingDate, $existingAppointment->appointment_time);
+
+                $existingEnd = $this->appointmentDateTimeForReschedule($existingDate, $existingAppointment->appointment_end_time);
+
+                if ($existingEnd->lte($existingStart)) {
+                    $existingEnd->addDay();
+                }
+
+                if ($slotStart->lt($existingEnd) && $slotEnd->gt($existingStart)) {
+                    $isAvailable = false;
+                    break;
+                }
+            }
+
+            if (!$isAvailable) {
+                continue;
+            }
+
+            $slots[] = [
+                'start' => $slotStart->format('H:i'),
+                'end' => $slotEnd->format('H:i'),
+                'label' => $slotStart->format('g:i A') . ' - ' . $slotEnd->format('g:i A'),
+            ];
+        }
+
+        return response()->json($slots);
+    }
+    private function appointmentDateTimeForReschedule(string $date, string $time): Carbon
+    {
+        $bookingDate = Carbon::createFromFormat('Y-m-d', $date, 'Asia/Manila')->startOfDay();
+
+        [$hour, $minute] = array_map('intval', explode(':', substr($time, 0, 5)));
+
+        if ($hour === 0) {
+            return $bookingDate->copy()->addDay()->setTime($hour, $minute, 0);
+        }
+
+        return $bookingDate->copy()->setTime($hour, $minute, 0);
+    }
+
+    public function reschedule(Request $request, UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        $validated = $request->validate([
+            'appointment_date' => ['required', 'date_format:Y-m-d'],
+            'appointment_time' => ['required', 'date_format:H:i'],
+        ]);
+
+        try {
+            $this->rescheduleAppointment->execute($appointment, $validated['appointment_date'], $validated['appointment_time']);
+
+            return redirect()->route('user.my-appointments')->with('success', 'Appointment rescheduled successfully.');
+        } catch (ValidationException $e) {
+            throw $e;
+        }
     }
 }

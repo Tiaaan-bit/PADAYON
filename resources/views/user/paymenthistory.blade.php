@@ -128,13 +128,7 @@
             {{-- Table Header --}}
             <div
                 class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <h3 class="font-semibold text-gray-800">
-                    My Payment Records
-                </h3>
-
-                <span class="text-xs text-gray-400">
-                    {{ $payments->total() }} total
-                </span>
+                
             </div>
 
 
@@ -186,12 +180,12 @@
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Service Details
+                                    Service
                                 </th>
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Add-on Details
+                                    Add-on
                                 </th>
 
                                 <th
@@ -352,11 +346,6 @@
                                                 mins
                                             </p>
 
-                                            <p class="text-xs font-medium text-gray-500 capitalize">
-                                                Level:
-                                                {{ $payment->level ?? 'N/A' }}
-                                            </p>
-
                                         </div>
 
                                     </td>
@@ -376,11 +365,6 @@
 
                                             <p class="text-xs text-gray-500">
                                                 {{ $payment->addOn ? $payment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
-                                            </p>
-
-                                            <p class="text-xs font-medium text-gray-500">
-                                                Price:
-                                                ₱{{ number_format($payment->addons_price ?? 0, 2) }}
                                             </p>
 
                                         </div>
@@ -504,10 +488,6 @@
                                                         Payment Pending
                                                     </span>
 
-                                                    <p class="text-xs text-gray-500">
-                                                        Your payment is waiting for confirmation.
-                                                    </p>
-
                                                 </div>
 
                                                 {{-- PAY AGAIN --}}
@@ -560,22 +540,23 @@
                                                 @endif
 
                                             </div>
-                                        @elseif ($payment->payment_method === 'branch')
-                                            {{-- BRANCH --}}
+                                        
+
+
+                                            @elseif ($payment->payment_method === 'branch' && $paymentStatus === 'unpaid')
+                                        
                                             <div class="space-y-1">
 
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                                    Pay at Counter
+                                                    Unpaid
                                                 </span>
 
-                                                <p class="text-xs text-gray-500">
-                                                    Payment will be made at the branch.
-                                                </p>
 
                                             </div>
-                                        @else
+                                        
+                                            @else
                                             <span
                                                 class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
                                                 {{ $paymentStatus ?: 'N/A' }}

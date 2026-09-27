@@ -80,6 +80,9 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         //---User MyAppointment---//
         Route::get('/my-appointments', [MyAppointmentController::class, 'index'])->name('my-appointments');
         Route::put('/my-appointments/{appointment}/cancel', [MyAppointmentController::class, 'cancel'])->name('my-appointments.cancel');
+        Route::get('/my-appointments/{appointment}/reschedule',[MyAppointmentController::class, 'showReschedule'])->name('appointments.reschedule');
+        Route::get('/my-appointments/{appointment}/reschedule/slots',[MyAppointmentController::class, 'availableRescheduleSlots'])->name('appointments.reschedule.slots');
+        Route::put('/my-appointments/{appointment}/reschedule',[MyAppointmentController::class, 'reschedule'])->name('appointments.reschedule.update');
 
         //---User Payment History---//
         Route::get('/payment-history', [PaymentHistoryController::class, 'index'])->name('payment-history');
@@ -150,6 +153,7 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
         //---Admin Transaction Controller---//
         Route::get('/transactions', [AdminTransactionsController::class, 'transactions'])->name('transactions');
+        Route::post('/transactions/{appointment}/mark-paid',[AdminTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
 
         //---Admin Reports Controller---//
         Route::get('/reports', [AdminReportsController::class, 'reports'])->name('reports');
