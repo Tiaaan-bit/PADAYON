@@ -12,30 +12,55 @@ use App\Services\PayMongoService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class UserAppointmentController extends Controller
 {
     private string $timezone = 'Asia/Manila';
-    private int $openingHour = 13; // 1:00 PM
-    private int $closingHour = 1; // 1:00 AM next day
+
+    /**
+     * Main operating hours:
+     *
+     * 12:00 AM - 1:00 AM
+     * 1:00 PM  - 12:00 AM
+     *
+     * The 12:00 AM - 1:00 AM period is represented
+     * as part of the selected calendar date.
+     */
+    private int $openingHour = 13;
+
+    private int $closingHour = 1;
+
     private int $slotInterval = 30;
 
     public function __construct(private PayMongoService $payMongo) {}
 
+    /*
+    |--------------------------------------------------------------------------
+    | Appointment Page
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $services = Services::where('status', 'active')->orderBy('name')->get();
+        $services = Services::query()->where('status', 'active')->orderBy('name')->get();
 
-        $therapists = Therapists::where('status', 'available')->orderBy('name')->get();
+        $therapists = Therapists::query()->where('status', 'available')->orderBy('name')->get();
 
-        $addOns = AddOns::where('status', 'active')->orderBy('name')->get();
+        $addOns = AddOns::query()->where('status', 'active')->orderBy('name')->get();
 
         return view('user.appointment', compact('services', 'therapists', 'addOns'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manila Current Time
+    |--------------------------------------------------------------------------
+    */
 
     private function manilaNow(): Carbon
     {
@@ -44,40 +69,65 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Get booking window
+    | Booking Windows
     |--------------------------------------------------------------------------
     |
     | Example:
     |
-    | September 16
-    | 1:00 PM
-    |     ↓
-    | September 17
-    | 1:00 AM
+    | September 30
     |
+    | 12:00 AM - 1:00 AM
+    |
+    | CLOSED
+    |
+    | 1:00 PM - 12:00 AM
+    |
+    |--------------------------------------------------------------------------
     */
 
-    private function getBookingWindow(string $date): array
+    private function getBookingWindows(string $date): array
     {
         $bookingDate = Carbon::createFromFormat('Y-m-d', $date, $this->timezone)->startOfDay();
 
-        $opening = $bookingDate->copy()->setTime($this->openingHour, 0, 0);
-
-        $closing = $bookingDate->copy()->addDay()->setTime($this->closingHour, 0, 0);
-
         return [
-            'opening' => $opening,
-            'closing' => $closing,
+            [
+                /*
+                |--------------------------------------------------------------------------
+                | First operating window
+                |--------------------------------------------------------------------------
+                |
+                | September 30, 12:00 AM
+                | ->
+                | September 30, 1:00 AM
+                |
+                */
+                'opening' => $bookingDate->copy()->setTime(0, 0, 0),
+
+                'closing' => $bookingDate->copy()->setTime(1, 0, 0),
+            ],
+
+            [
+                /*
+                |--------------------------------------------------------------------------
+                | Second operating window
+                |--------------------------------------------------------------------------
+                |
+                | September 30, 1:00 PM
+                | ->
+                | October 1, 12:00 AM
+                |
+                */
+                'opening' => $bookingDate->copy()->setTime(13, 0, 0),
+
+                'closing' => $bookingDate->copy()->addDay()->setTime(0, 0, 0),
+            ],
         ];
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Convert appointment time to datetime
+    | Build Appointment DateTime
     |--------------------------------------------------------------------------
-    |
-    | 12:00 AM - 12:59 AM belongs to the next calendar day.
-    |
     */
 
     private function appointmentDateTime(string $date, string $time): Carbon
@@ -86,40 +136,74 @@ class UserAppointmentController extends Controller
 
         [$hour, $minute] = array_map('intval', explode(':', substr($time, 0, 5)));
 
-        if ($hour === 0) {
-            return $bookingDate->copy()->addDay()->setTime($hour, $minute, 0);
-        }
-
         return $bookingDate->copy()->setTime($hour, $minute, 0);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Get existing appointments for therapist
+    | Get Therapist Appointments
     |--------------------------------------------------------------------------
     |
-    | Cancelled, failed and rejected appointments do not block the therapist.
+    | We check:
     |
+    | 1. Appointments starting on the selected date.
+    | 2. Appointments starting on the previous date.
+    |
+    | Why?
+    |
+    | Example:
+    |
+    | September 30
+    | 11:30 PM - 12:30 AM
+    |
+    | When October 1 availability is requested,
+    | this appointment must still block:
+    |
+    | October 1
+    | 12:00 AM - 12:30 AM
+    |
+    |--------------------------------------------------------------------------
     */
 
     private function getTherapistAppointments(int $therapistId, string $date)
     {
-        return UsersAppointments::where('therapist_id', $therapistId)
-            ->where('appointment_date', $date)
+        $selectedDate = Carbon::createFromFormat('Y-m-d', $date, $this->timezone)->startOfDay();
+
+        $previousDate = $selectedDate->copy()->subDay()->format('Y-m-d');
+
+        $selectedDateString = $selectedDate->format('Y-m-d');
+
+        return UsersAppointments::query()
+            ->where('therapist_id', $therapistId)
+
+            /*
+            |--------------------------------------------------------------------------
+            | Include selected date AND previous date
+            |--------------------------------------------------------------------------
+            */
+            ->whereIn('appointment_date', [$previousDate, $selectedDateString])
+
+            /*
+            |--------------------------------------------------------------------------
+            | These statuses do NOT block the therapist
+            |--------------------------------------------------------------------------
+            */
             ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
+
+            ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->get();
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Convert existing appointment to datetime range
+    | Existing Appointment DateTime Range
     |--------------------------------------------------------------------------
     */
 
     private function getAppointmentRange(UsersAppointments $appointment): array
     {
-        $appointmentDate = Carbon::parse($appointment->appointment_date)->format('Y-m-d');
+        $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
 
         $start = $this->appointmentDateTime($appointmentDate, $appointment->appointment_time);
 
@@ -127,8 +211,15 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | If end is before/equal to start,
-        | the appointment crosses midnight.
+        | Appointment crosses midnight
+        |--------------------------------------------------------------------------
+        |
+        | Example:
+        |
+        | start = September 30 11:30 PM
+        | end   = September 30 12:30 AM
+        |
+        | Since end <= start, move end to October 1.
         |--------------------------------------------------------------------------
         */
 
@@ -144,7 +235,7 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Check appointment overlap
+    | Appointment Overlap
     |--------------------------------------------------------------------------
     */
 
@@ -155,7 +246,14 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Find next booking after current slot
+    | Find Next Booking
+    |--------------------------------------------------------------------------
+    |
+    | Finds the next appointment that starts after the current slot.
+    |
+    | IMPORTANT:
+    | The $closing parameter prevents the free period from crossing
+    | into another operating window.
     |--------------------------------------------------------------------------
     */
 
@@ -166,9 +264,32 @@ class UserAppointmentController extends Controller
         foreach ($appointments as $appointment) {
             $range = $this->getAppointmentRange($appointment);
 
+            /*
+            |--------------------------------------------------------------------------
+            | Appointment already ended before this slot
+            |--------------------------------------------------------------------------
+            */
+            if ($range['end']->lte($slotStart)) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Appointment starts after this slot
+            |--------------------------------------------------------------------------
+            */
             if ($range['start']->gt($slotStart) && $range['start']->lt($nextBooking)) {
                 $nextBooking = $range['start']->copy();
             }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Never exceed this operating window
+        |--------------------------------------------------------------------------
+        */
+        if ($nextBooking->gt($closing)) {
+            $nextBooking = $closing->copy();
         }
 
         return $nextBooking;
@@ -176,7 +297,7 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Recommended services
+    | Recommended Shorter Services
     |--------------------------------------------------------------------------
     */
 
@@ -186,21 +307,30 @@ class UserAppointmentController extends Controller
 
         $addOnPrice = $selectedAddOn ? (float) $selectedAddOn->price : 0;
 
-        // Get the service currently selected by the user.
-        $currentService = Services::where('status', 'active')->find($currentServiceId);
+        $currentService = Services::query()->where('status', 'active')->find($currentServiceId);
 
         if (!$currentService) {
             return [];
         }
 
-        // Available time for the massage itself.
+        /*
+        |--------------------------------------------------------------------------
+        | Available minutes for the service itself
+        |--------------------------------------------------------------------------
+        */
         $availableServiceMinutes = $availableMinutes - $addOnDuration;
 
         if ($availableServiceMinutes <= 0) {
             return [];
         }
 
-        return Services::where('status', 'active')
+        /*
+        |--------------------------------------------------------------------------
+        | Same service name, shorter duration
+        |--------------------------------------------------------------------------
+        */
+        return Services::query()
+            ->where('status', 'active')
             ->where('name', $currentService->name)
             ->where('duration_minutes', '<', $currentService->duration_minutes)
             ->where('duration_minutes', '<=', $availableServiceMinutes)
@@ -211,9 +341,13 @@ class UserAppointmentController extends Controller
                     'id' => $service->id,
                     'name' => $service->name,
                     'description' => $service->description,
+
                     'price' => (float) $service->price,
+
                     'duration_minutes' => (int) $service->duration_minutes,
+
                     'total_duration' => (int) $service->duration_minutes + $addOnDuration,
+
                     'total_price' => (float) $service->price + $addOnPrice,
                 ];
             })
@@ -223,7 +357,96 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Available slots
+    | Validate Requested Start Time
+    |--------------------------------------------------------------------------
+    */
+
+    private function validateStartTime(string $date, string $time): Carbon
+    {
+        [$hour, $minute] = array_map('intval', explode(':', substr($time, 0, 5)));
+
+        /*
+        |--------------------------------------------------------------------------
+        | Strict 30-minute interval
+        |--------------------------------------------------------------------------
+        */
+        if ($minute !== 0 && $minute !== 30) {
+            throw ValidationException::withMessages([
+                'appointment_time' => 'Appointments can only start on a 30-minute interval.',
+            ]);
+        }
+
+        $start = $this->appointmentDateTime($date, $time);
+
+        $windows = $this->getBookingWindows($date);
+
+        $insideBookingWindow = false;
+
+        foreach ($windows as $window) {
+            if ($start->gte($window['opening']) && $start->lt($window['closing'])) {
+                $insideBookingWindow = true;
+                break;
+            }
+        }
+
+        if (!$insideBookingWindow) {
+            throw ValidationException::withMessages([
+                'appointment_time' => 'Selected appointment time is outside the booking hours.',
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Do not allow past appointments
+        |--------------------------------------------------------------------------
+        */
+        if ($start->lte($this->manilaNow())) {
+            throw ValidationException::withMessages([
+                'appointment_time' => 'Selected appointment time has already passed.',
+            ]);
+        }
+
+        return $start;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check Selected Appointment Availability
+    |--------------------------------------------------------------------------
+    |
+    | $ignoreAppointmentId is used by payAgain().
+    |
+    | Without it, the appointment could conflict with itself.
+    |--------------------------------------------------------------------------
+    */
+
+    private function ensureAppointmentAvailable(int $therapistId, string $date, Carbon $start, Carbon $end, ?int $ignoreAppointmentId = null): void
+    {
+        $appointments = $this->getTherapistAppointments($therapistId, $date);
+
+        foreach ($appointments as $existingAppointment) {
+            /*
+            |--------------------------------------------------------------------------
+            | Ignore current appointment during payment retry
+            |--------------------------------------------------------------------------
+            */
+            if ($ignoreAppointmentId !== null && (int) $existingAppointment->id === $ignoreAppointmentId) {
+                continue;
+            }
+
+            $range = $this->getAppointmentRange($existingAppointment);
+
+            if ($this->appointmentOverlaps($start, $end, $range['start'], $range['end'])) {
+                throw ValidationException::withMessages([
+                    'appointment_time' => 'The selected time is no longer available. Please choose another schedule.',
+                ]);
+            }
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Available Slots
     |--------------------------------------------------------------------------
     */
 
@@ -241,11 +464,11 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Get selected service
+        | Service
         |--------------------------------------------------------------------------
         */
 
-        $service = Services::where('id', $validated['service_id'])->where('status', 'active')->first();
+        $service = Services::query()->where('id', $validated['service_id'])->where('status', 'active')->first();
 
         if (!$service) {
             return response()->json(
@@ -258,11 +481,11 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Get therapist
+        | Therapist
         |--------------------------------------------------------------------------
         */
 
-        $therapist = Therapists::where('id', $validated['therapist_id'])->where('status', 'available')->first();
+        $therapist = Therapists::query()->where('id', $validated['therapist_id'])->where('status', 'available')->first();
 
         if (!$therapist) {
             return response()->json(
@@ -275,14 +498,14 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Get add-on
+        | Add-on
         |--------------------------------------------------------------------------
         */
 
         $addOn = null;
 
         if (!empty($validated['add_on_id'])) {
-            $addOn = AddOns::where('id', $validated['add_on_id'])->where('status', 'active')->first();
+            $addOn = AddOns::query()->where('id', $validated['add_on_id'])->where('status', 'active')->first();
 
             if (!$addOn) {
                 return response()->json(
@@ -296,7 +519,26 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Total required duration
+        | Selected Date
+        |--------------------------------------------------------------------------
+        */
+
+        $selectedDate = Carbon::createFromFormat('Y-m-d', $validated['date'], $this->timezone)->startOfDay();
+
+        $today = $this->manilaNow()->startOfDay();
+
+        if ($selectedDate->lt($today)) {
+            return response()->json(
+                [
+                    'message' => 'Appointment date cannot be in the past.',
+                ],
+                422,
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Duration
         |--------------------------------------------------------------------------
         */
 
@@ -306,20 +548,26 @@ class UserAppointmentController extends Controller
 
         $requiredMinutes = $serviceDuration + $addOnDuration;
 
+        if ($requiredMinutes <= 0) {
+            return response()->json(
+                [
+                    'message' => 'The selected service has an invalid duration.',
+                ],
+                422,
+            );
+        }
+
         /*
         |--------------------------------------------------------------------------
-        | Booking window
+        | Booking Windows
         |--------------------------------------------------------------------------
         */
 
-        $window = $this->getBookingWindow($validated['date']);
-
-        $opening = $window['opening'];
-        $closing = $window['closing'];
+        $windows = $this->getBookingWindows($validated['date']);
 
         /*
         |--------------------------------------------------------------------------
-        | Existing therapist appointments
+        | Existing Therapist Appointments
         |--------------------------------------------------------------------------
         */
 
@@ -327,7 +575,7 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Current Manila time
+        | Current Manila Time
         |--------------------------------------------------------------------------
         */
 
@@ -335,146 +583,245 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Generate slots
+        | IMPORTANT:
+        |
+        | Only skip past slots when the selected date is TODAY.
+        |
+        | Future dates must show their complete schedule.
         |--------------------------------------------------------------------------
         */
 
+        $isToday = $selectedDate->isSameDay($now);
+
         $slots = [];
 
-        for ($slotStart = $opening->copy(); $slotStart->lt($closing); $slotStart->addMinutes($this->slotInterval)) {
-            /*
-            |--------------------------------------------------------------------------
-            | Don't show past times.
-            |--------------------------------------------------------------------------
-            */
+        /*
+        |--------------------------------------------------------------------------
+        | Generate Both Operating Windows
+        |--------------------------------------------------------------------------
+        */
 
-            if ($slotStart->isSameDay($now) && $slotStart->lessThanOrEqualTo($now)) {
-                continue;
-            }
+        foreach ($windows as $window) {
+            $opening = $window['opening']->copy();
+            $closing = $window['closing']->copy();
 
-            /*
-            |--------------------------------------------------------------------------
-            | Actual 30-minute block represented by this slot.
-            |--------------------------------------------------------------------------
-            */
+            for ($slotStart = $opening->copy(); $slotStart->lt($closing); $slotStart->addMinutes($this->slotInterval)) {
+                /*
+                |--------------------------------------------------------------------------
+                | Skip past slots ONLY for today
+                |--------------------------------------------------------------------------
+                */
 
-            $slotBlockEnd = $slotStart->copy()->addMinutes($this->slotInterval);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Check whether another appointment occupies
-            | this exact 30-minute slot.
-            |--------------------------------------------------------------------------
-            */
-
-            $isBooked = false;
-
-            foreach ($appointments as $appointment) {
-                $range = $this->getAppointmentRange($appointment);
-
-                if ($this->appointmentOverlaps($slotStart, $slotBlockEnd, $range['start'], $range['end'])) {
-                    $isBooked = true;
-                    break;
+                if ($isToday && $slotStart->lte($now)) {
+                    continue;
                 }
-            }
 
-            /*
-            |--------------------------------------------------------------------------
-            | BOOKED
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | 30-minute display block
+                |--------------------------------------------------------------------------
+                */
 
-            if ($isBooked) {
+                $slotBlockEnd = $slotStart->copy()->addMinutes($this->slotInterval);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Never allow display block outside window
+                |--------------------------------------------------------------------------
+                |
+                | 12:30 AM -> 1:00 AM = valid
+                |
+                | 12:30 AM -> 1:30 AM = invalid
+                |--------------------------------------------------------------------------
+                */
+
+                if ($slotBlockEnd->gt($closing)) {
+                    $slotBlockEnd = $closing->copy();
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Check whether this block is occupied
+                |--------------------------------------------------------------------------
+                */
+
+                $isBooked = false;
+
+                foreach ($appointments as $appointment) {
+                    $range = $this->getAppointmentRange($appointment);
+
+                    if ($this->appointmentOverlaps($slotStart, $slotBlockEnd, $range['start'], $range['end'])) {
+                        $isBooked = true;
+                        break;
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Date Label
+                |--------------------------------------------------------------------------
+                */
+
+                $dateLabel = $slotStart->format('F j, Y');
+
+                /*
+                |--------------------------------------------------------------------------
+                | BOOKED
+                |--------------------------------------------------------------------------
+                */
+
+                if ($isBooked) {
+                    $slots[] = [
+                        'start' => $slotStart->format('H:i'),
+
+                        'end' => $slotBlockEnd->format('H:i'),
+
+                        'label' => $slotStart->format('g:i A') . ' - ' . $slotBlockEnd->format('g:i A'),
+
+                        'date_label' => $dateLabel,
+
+                        'status' => 'booked',
+
+                        'available_minutes' => 0,
+
+                        'required_minutes' => $requiredMinutes,
+
+                        'message' => 'This time is already reserved by another appointment.',
+
+                        'recommendations' => [],
+                    ];
+
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Find Next Booking
+                |--------------------------------------------------------------------------
+                */
+
+                $nextBookingStart = $this->getNextBookingStart($slotStart, $appointments->all(), $closing);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Continuous Free Period
+                |--------------------------------------------------------------------------
+                */
+
+                $availableMinutes = $slotStart->diffInMinutes($nextBookingStart);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Full Service Fits
+                |--------------------------------------------------------------------------
+                */
+
+                if ($availableMinutes >= $requiredMinutes) {
+                    $slotEnd = $slotStart->copy()->addMinutes($requiredMinutes);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Extra safety check
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if ($slotEnd->lte($closing)) {
+                        $slots[] = [
+                            'start' => $slotStart->format('H:i'),
+
+                            'end' => $slotEnd->format('H:i'),
+
+                            'label' => $slotStart->format('g:i A') . ' - ' . $slotEnd->format('g:i A'),
+
+                            'date_label' => $dateLabel,
+
+                            'status' => 'available',
+
+                            'available_minutes' => $availableMinutes,
+
+                            'required_minutes' => $requiredMinutes,
+
+                            'message' => null,
+
+                            'recommendations' => [],
+                        ];
+
+                        continue;
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Some Free Time Exists But Not Enough
+                |--------------------------------------------------------------------------
+                */
+
+                if ($availableMinutes > 0) {
+                    $recommendations = $this->getRecommendedServices($availableMinutes, $addOn, (int) $service->id);
+
+                    $freeEnd = $slotStart->copy()->addMinutes($availableMinutes);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Never exceed operating window
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if ($freeEnd->gt($closing)) {
+                        $freeEnd = $closing->copy();
+                    }
+
+                    $actualAvailableMinutes = $slotStart->diffInMinutes($freeEnd);
+
+                    $slots[] = [
+                        'start' => $slotStart->format('H:i'),
+
+                        'end' => $freeEnd->format('H:i'),
+
+                        'label' => $slotStart->format('g:i A') . ' - ' . $freeEnd->format('g:i A'),
+
+                        'date_label' => $dateLabel,
+
+                        'status' => 'adjust_service',
+
+                        'available_minutes' => $actualAvailableMinutes,
+
+                        'required_minutes' => $requiredMinutes,
+
+                        'message' => sprintf('This time is available for %d minutes, but your selected services require %d minutes.', $actualAvailableMinutes, $requiredMinutes),
+
+                        'recommendations' => $recommendations,
+                    ];
+
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | No Free Time
+                |--------------------------------------------------------------------------
+                */
+
                 $slots[] = [
                     'start' => $slotStart->format('H:i'),
+
+                    'end' => $slotBlockEnd->format('H:i'),
+
                     'label' => $slotStart->format('g:i A') . ' - ' . $slotBlockEnd->format('g:i A'),
+
+                    'date_label' => $dateLabel,
+
                     'status' => 'booked',
+
                     'available_minutes' => 0,
+
                     'required_minutes' => $requiredMinutes,
-                    'message' => 'This time is already reserved by another appointment.',
+
+                    'message' => 'This time is not available.',
+
                     'recommendations' => [],
                 ];
-
-                continue;
             }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Find next appointment.
-            |--------------------------------------------------------------------------
-            */
-
-            $nextBookingStart = $this->getNextBookingStart($slotStart, $appointments->all(), $closing);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Continuous free minutes
-            |--------------------------------------------------------------------------
-            */
-
-            $availableMinutes = $slotStart->diffInMinutes($nextBookingStart);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Full service fits
-            |--------------------------------------------------------------------------
-            */
-
-            if ($availableMinutes >= $requiredMinutes) {
-                $slotEnd = $slotStart->copy()->addMinutes($requiredMinutes);
-
-                $slots[] = [
-                    'start' => $slotStart->format('H:i'),
-                    'label' => $slotStart->format('g:i A') . ' - ' . $slotEnd->format('g:i A'),
-                    'status' => 'available',
-                    'available_minutes' => $availableMinutes,
-                    'required_minutes' => $requiredMinutes,
-                    'message' => null,
-                    'recommendations' => [],
-                ];
-
-                continue;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Some time exists but not enough for selected service.
-            |--------------------------------------------------------------------------
-            */
-
-            if ($availableMinutes > 0) {
-                $recommendations = $this->getRecommendedServices($availableMinutes, $addOn, (int) $service->id);
-
-                $freeEnd = $slotStart->copy()->addMinutes($availableMinutes);
-
-                $slots[] = [
-                    'start' => $slotStart->format('H:i'),
-                    'label' => $slotStart->format('g:i A') . ' - ' . $freeEnd->format('g:i A'),
-                    'status' => 'adjust_service',
-                    'available_minutes' => $availableMinutes,
-                    'required_minutes' => $requiredMinutes,
-                    'message' => "This time is available for {$availableMinutes} minutes, " . "but your selected services require {$requiredMinutes} minutes.",
-                    'recommendations' => $recommendations,
-                ];
-
-                continue;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | No free time
-            |--------------------------------------------------------------------------
-            */
-
-            $slots[] = [
-                'start' => $slotStart->format('H:i'),
-                'label' => $slotStart->format('g:i A') . ' - ' . $slotBlockEnd->format('g:i A'),
-                'status' => 'booked',
-                'available_minutes' => 0,
-                'required_minutes' => $requiredMinutes,
-                'message' => 'This time is not available.',
-                'recommendations' => [],
-            ];
         }
 
         return response()->json($slots);
@@ -482,30 +829,47 @@ class UserAppointmentController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Store appointment
+    | Store Appointment
     |--------------------------------------------------------------------------
     */
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'service_id' => ['required', 'integer', 'exists:services,id'],
+
+            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
+
+            'level' => ['required', 'in:gentle,mild,hard'],
+
+            'add_on_id' => ['nullable', 'integer', 'exists:add_ons,id'],
+
+            'has_previous_operations' => ['required', 'in:yes,no'],
+
+            'body_problem' => ['nullable', 'string', 'max:2000'],
+
+            'appointment_date' => ['required', 'date_format:Y-m-d'],
+
+            'appointment_time' => ['required', 'date_format:H:i'],
+
+            'payment_method' => ['required', 'in:branch,gcash'],
+
+            'payment_type' => ['nullable', 'required_if:payment_method,gcash', 'in:full,downpayment'],
+        ]);
+
         /*
         |--------------------------------------------------------------------------
-        | Validate request
+        | Date
         |--------------------------------------------------------------------------
         */
 
-        $validated = $request->validate([
-            'service_id' => ['required', 'integer', 'exists:services,id'],
-            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
-            'level' => ['required', 'in:gentle,mild,hard'],
-            'add_on_id' => ['nullable', 'integer', 'exists:add_ons,id'],
-            'has_previous_operations' => ['required', 'in:yes,no'],
-            'body_problem' => ['nullable', 'string', 'max:2000'],
-            'appointment_date' => ['required', 'date_format:Y-m-d'],
-            'appointment_time' => ['required', 'date_format:H:i'],
-            'payment_method' => ['required', 'in:branch,gcash'],
-            'payment_type' => ['nullable', 'required_if:payment_method,gcash', 'in:full,downpayment'],
-        ]);
+        $appointmentDate = Carbon::createFromFormat('Y-m-d', $validated['appointment_date'], $this->timezone)->startOfDay();
+
+        if ($appointmentDate->lt($this->manilaNow()->startOfDay())) {
+            throw ValidationException::withMessages([
+                'appointment_date' => 'Appointment date cannot be in the past.',
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -513,7 +877,7 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $service = Services::where('id', $validated['service_id'])->where('status', 'active')->first();
+        $service = Services::query()->where('id', $validated['service_id'])->where('status', 'active')->first();
 
         if (!$service) {
             throw ValidationException::withMessages([
@@ -527,7 +891,7 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $therapist = Therapists::where('id', $validated['therapist_id'])->where('status', 'available')->first();
+        $therapist = Therapists::query()->where('id', $validated['therapist_id'])->where('status', 'available')->first();
 
         if (!$therapist) {
             throw ValidationException::withMessages([
@@ -544,7 +908,7 @@ class UserAppointmentController extends Controller
         $addOn = null;
 
         if (!empty($validated['add_on_id'])) {
-            $addOn = AddOns::where('id', $validated['add_on_id'])->where('status', 'active')->first();
+            $addOn = AddOns::query()->where('id', $validated['add_on_id'])->where('status', 'active')->first();
 
             if (!$addOn) {
                 throw ValidationException::withMessages([
@@ -555,53 +919,11 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Appointment date
+        | Start Time
         |--------------------------------------------------------------------------
         */
 
-        $appointmentDate = Carbon::createFromFormat('Y-m-d', $validated['appointment_date'], $this->timezone)->startOfDay();
-
-        $today = $this->manilaNow()->startOfDay();
-
-        if ($appointmentDate->lt($today)) {
-            throw ValidationException::withMessages([
-                'appointment_date' => 'Appointment date cannot be in the past.',
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Appointment start
-        |--------------------------------------------------------------------------
-        */
-
-        $start = $this->appointmentDateTime($validated['appointment_date'], $validated['appointment_time']);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Booking window
-        |--------------------------------------------------------------------------
-        */
-
-        $window = $this->getBookingWindow($validated['appointment_date']);
-
-        if ($start->lt($window['opening']) || $start->gte($window['closing'])) {
-            throw ValidationException::withMessages([
-                'appointment_time' => 'Selected appointment time is outside the booking hours.',
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Don't allow past time
-        |--------------------------------------------------------------------------
-        */
-
-        if ($start->lte($this->manilaNow())) {
-            throw ValidationException::withMessages([
-                'appointment_time' => 'Selected appointment time has already passed.',
-            ]);
-        }
+        $start = $this->validateStartTime($validated['appointment_date'], $validated['appointment_time']);
 
         /*
         |--------------------------------------------------------------------------
@@ -615,9 +937,15 @@ class UserAppointmentController extends Controller
 
         $totalDuration = $serviceDuration + $addOnDuration;
 
+        if ($totalDuration <= 0) {
+            throw ValidationException::withMessages([
+                'service_id' => 'The selected service has an invalid duration.',
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
-        | Appointment end
+        | End Time
         |--------------------------------------------------------------------------
         */
 
@@ -625,11 +953,34 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Cannot go beyond 1:00 AM
+        | Booking Window
+        |--------------------------------------------------------------------------
+        |
+        | A service must fit entirely inside ONE operating window.
+        |
+        | It cannot cross:
+        |
+        | 1:00 AM
+        |
+        | or
+        |
+        | 1:00 PM
+        |
         |--------------------------------------------------------------------------
         */
 
-        if ($end->gt($window['closing'])) {
+        $windows = $this->getBookingWindows($validated['appointment_date']);
+
+        $fitsBookingWindow = false;
+
+        foreach ($windows as $window) {
+            if ($start->gte($window['opening']) && $end->lte($window['closing'])) {
+                $fitsBookingWindow = true;
+                break;
+            }
+        }
+
+        if (!$fitsBookingWindow) {
             throw ValidationException::withMessages([
                 'appointment_time' => 'The selected service duration extends beyond the booking hours.',
             ]);
@@ -637,22 +988,19 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Prices
+        | Database Prices
         |--------------------------------------------------------------------------
-        |
-        | Prices always come from the database.
-        |
         */
 
         $servicePrice = (float) $service->price;
 
         $addOnPrice = $addOn ? (float) $addOn->price : 0;
 
-        $totalAmount = $servicePrice + $addOnPrice;
+        $totalAmount = round($servicePrice + $addOnPrice, 2);
 
         /*
         |--------------------------------------------------------------------------
-        | Payment amount
+        | Payment Amount
         |--------------------------------------------------------------------------
         */
 
@@ -660,47 +1008,32 @@ class UserAppointmentController extends Controller
 
         if ($validated['payment_method'] === 'branch') {
             $paymentType = null;
-            $paymentAmount = 0;
+            $paymentAmount = 0.0;
         } elseif ($paymentType === 'downpayment') {
             $paymentAmount = round($totalAmount * 0.5, 2);
         } else {
-            // GCash full payment
             $paymentAmount = $totalAmount;
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Initial payment state
+        | Create Appointment
+        |--------------------------------------------------------------------------
+        |
+        | Lock therapist row.
+        |
+        | Then perform final conflict check.
         |--------------------------------------------------------------------------
         */
 
-        $amountPaid = 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMPORTANT:
-        |
-        | Start database transaction.
-        |
-        | We lock the therapist row so that two users cannot
-        | simultaneously book the same therapist/time.
-        |--------------------------------------------------------------------------
-        */
-
-        $appointment = DB::transaction(function () use ($validated, $service, $therapist, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $paymentType, $paymentAmount, $amountPaid, $start, $end) {
+        $appointment = DB::transaction(function () use ($validated, $therapist, $service, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $paymentType, $paymentAmount, $start, $end) {
             /*
-            |--------------------------------------------------------------------------
-            | LOCK THERAPIST
-            |--------------------------------------------------------------------------
-            |
-            | This is the important concurrency protection.
-            |
-            | If another request is currently booking this therapist,
-            | that request must finish before this one can continue.
-            |
-            */
+                |--------------------------------------------------------------------------
+                | Lock Therapist
+                |--------------------------------------------------------------------------
+                */
 
-            $lockedTherapist = Therapists::where('id', $therapist->id)->where('status', 'available')->lockForUpdate()->first();
+            $lockedTherapist = Therapists::query()->where('id', $therapist->id)->where('status', 'available')->lockForUpdate()->first();
 
             if (!$lockedTherapist) {
                 throw ValidationException::withMessages([
@@ -709,49 +1042,36 @@ class UserAppointmentController extends Controller
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | FINAL SERVER-SIDE CONFLICT CHECK
-            |--------------------------------------------------------------------------
-            |
-            | IMPORTANT:
-            | This check happens AFTER locking the therapist.
-            |
-            | This prevents two simultaneous requests from both
-            | passing the availability check.
-            |
-            */
+                |--------------------------------------------------------------------------
+                | Final Conflict Check
+                |--------------------------------------------------------------------------
+                */
 
-            $existingAppointments = $this->getTherapistAppointments((int) $lockedTherapist->id, $validated['appointment_date']);
-
-            foreach ($existingAppointments as $existingAppointment) {
-                $range = $this->getAppointmentRange($existingAppointment);
-
-                if ($this->appointmentOverlaps($start, $end, $range['start'], $range['end'])) {
-                    throw ValidationException::withMessages([
-                        'appointment_time' => 'The selected time is no longer available. Please choose another schedule.',
-                    ]);
-                }
-            }
+            $this->ensureAppointmentAvailable((int) $lockedTherapist->id, $validated['appointment_date'], $start, $end);
 
             /*
-            |--------------------------------------------------------------------------
-            | Create appointment
-            |--------------------------------------------------------------------------
-            */
+                |--------------------------------------------------------------------------
+                | Create Appointment
+                |--------------------------------------------------------------------------
+                */
 
             return UsersAppointments::create([
                 'user_id' => Auth::id(),
 
                 'service_id' => $service->id,
+
                 'therapist_id' => $lockedTherapist->id,
 
                 'service_price' => $servicePrice,
+
                 'service_duration_minutes' => $serviceDuration,
 
                 'level' => $validated['level'],
 
                 'add_on_id' => $addOn?->id,
+
                 'addons_price' => $addOnPrice,
+
                 'addons_duration_minutes' => $addOnDuration,
 
                 'has_previous_operations' => $validated['has_previous_operations'],
@@ -768,11 +1088,29 @@ class UserAppointmentController extends Controller
 
                 'payment_type' => $paymentType,
 
-                'amount_paid' => $amountPaid,
+                /*
+                    |--------------------------------------------------------------------------
+                    | Webhook updates this after successful PayMongo payment
+                    |--------------------------------------------------------------------------
+                    */
+
+                'amount_paid' => 0,
 
                 'payment_amount' => $paymentAmount,
 
                 'payment_status' => 'pending',
+
+                /*
+                    |--------------------------------------------------------------------------
+                    | Appointment remains pending until:
+                    |
+                    | Branch:
+                    | Admin confirms it.
+                    |
+                    | GCash:
+                    | PayMongo webhook confirms payment.
+                    |--------------------------------------------------------------------------
+                    */
 
                 'status' => AppointmentStatus::PENDING,
             ]);
@@ -780,18 +1118,287 @@ class UserAppointmentController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | GCash
+        | Branch Payment
         |--------------------------------------------------------------------------
         */
 
-        if ($validated['payment_method'] === 'gcash') {
+        if ($validated['payment_method'] === 'branch') {
+            return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please wait for confirmation.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GCash / PayMongo
+        |--------------------------------------------------------------------------
+        */
+
+        try {
             $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
+
+            $checkout = $this->payMongo->createCheckoutSession(
+                referenceNumber: $referenceNumber,
+
+                description: 'Padayon Massage Center Appointment ' . $referenceNumber,
+
+                amount: (int) round($paymentAmount * 100),
+
+                successUrl: route('user.appointments.payment.success', $appointment),
+
+                cancelUrl: route('user.appointments.payment.cancel', $appointment),
+
+                customerName: Auth::user()->name,
+
+                customerEmail: Auth::user()->email,
+            );
+
+            $checkoutSession = $checkout['data'];
+
+            $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
 
             /*
             |--------------------------------------------------------------------------
-            | Create PayMongo Checkout Session
+            | Save PayMongo Information
             |--------------------------------------------------------------------------
             */
+
+            $appointment->update([
+                'paymongo_checkout_session_id' => $checkoutSession['id'],
+
+                'paymongo_reference_number' => $referenceNumber,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Keep this longer than one minute.
+                |--------------------------------------------------------------------------
+                */
+
+                'paymongo_checkout_expires_at' => $this->manilaNow()->addMinutes(30),
+
+                'payment_status' => 'pending',
+            ]);
+
+            return redirect()->away($checkoutUrl);
+        } catch (Throwable $e) {
+            /*
+            |--------------------------------------------------------------------------
+            | PayMongo failed AFTER appointment creation
+            |--------------------------------------------------------------------------
+            |
+            | Release therapist slot by marking appointment FAILED.
+            |--------------------------------------------------------------------------
+            */
+
+            Log::error('PayMongo checkout creation failed.', [
+                'appointment_id' => $appointment->id,
+
+                'user_id' => Auth::id(),
+
+                'error' => $e->getMessage(),
+            ]);
+
+            $appointment->update([
+                'payment_status' => 'failed',
+
+                'status' => AppointmentStatus::FAILED,
+            ]);
+
+            return redirect()->route('user.appointment')->with('error', 'We could not start the GCash payment. Your appointment was not reserved. Please try again.');
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PayMongo Success URL
+    |--------------------------------------------------------------------------
+    |
+    | DO NOT confirm payment here.
+    |
+    | PayMongo webhook is responsible for confirmation.
+    |--------------------------------------------------------------------------
+    */
+
+    public function paymentSuccess(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        return redirect()->route('user.my-appointments')->with('success', 'You returned from PayMongo. Your payment is being verified.');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PayMongo Cancel URL
+    |--------------------------------------------------------------------------
+    */
+
+    public function paymentCancel(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        Log::info('PayMongo cancel URL reached.', [
+            'appointment_id' => $appointment->id,
+
+            'payment_status' => $appointment->payment_status,
+
+            'appointment_status' => $appointment->status,
+
+            'paymongo_checkout_session_id' => $appointment->paymongo_checkout_session_id,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Release appointment
+        |--------------------------------------------------------------------------
+        |
+        | A cancelled checkout must not continue blocking the therapist.
+        |--------------------------------------------------------------------------
+        */
+
+        if ($appointment->payment_method === 'gcash' && $appointment->payment_status === 'pending' && $appointment->status === AppointmentStatus::PENDING) {
+            $appointment->update([
+                'payment_status' => 'failed',
+
+                'status' => AppointmentStatus::FAILED,
+            ]);
+        }
+
+        return redirect()->route('user.my-appointments')->with('error', 'Payment was cancelled. The appointment payment attempt was not completed.');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pay Again
+    |--------------------------------------------------------------------------
+    */
+
+    public function payAgain(UsersAppointments $appointment)
+    {
+        abort_unless($appointment->user_id === Auth::id(), 403);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only GCash
+        |--------------------------------------------------------------------------
+        */
+
+        if ($appointment->payment_method !== 'gcash') {
+            return back()->with('error', 'This appointment does not use GCash payment.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only Pending / Failed Payments
+        |--------------------------------------------------------------------------
+        */
+
+        if (!in_array($appointment->payment_status, ['failed', 'pending'], true)) {
+            return back()->with('error', 'This payment cannot be retried.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Appointment Status
+        |--------------------------------------------------------------------------
+        */
+
+        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::FAILED], true)) {
+            return back()->with('error', 'This appointment is not available for payment retry.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Appointment Must Not Already Be In The Past
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+            $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
+
+            $start = $this->appointmentDateTime($appointmentDate, $appointment->appointment_time);
+
+            if ($start->lte($this->manilaNow())) {
+                return back()->with('error', 'This appointment time has already passed.');
+            }
+        } catch (Throwable $e) {
+            Log::warning('Could not validate appointment time during payment retry.', [
+                'appointment_id' => $appointment->id,
+
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'We could not validate the appointment schedule. Please try again.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Build Appointment Range
+        |--------------------------------------------------------------------------
+        */
+
+        $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
+
+        $start = $this->appointmentDateTime($appointmentDate, $appointment->appointment_time);
+
+        $end = $this->appointmentDateTime($appointmentDate, $appointment->appointment_end_time);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Handle Midnight
+        |--------------------------------------------------------------------------
+        */
+
+        if ($end->lessThanOrEqualTo($start)) {
+            $end->addDay();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Verify Therapist Still Available
+        |--------------------------------------------------------------------------
+        |
+        | IMPORTANT:
+        |
+        | Ignore the current appointment itself.
+        |
+        | Otherwise it would conflict with itself.
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+            DB::transaction(function () use ($appointment, $appointmentDate, $start, $end) {
+                $therapist = Therapists::query()->where('id', $appointment->therapist_id)->where('status', 'available')->lockForUpdate()->first();
+
+                if (!$therapist) {
+                    throw ValidationException::withMessages([
+                        'therapist_id' => 'The therapist is no longer available.',
+                    ]);
+                }
+
+                $this->ensureAppointmentAvailable((int) $therapist->id, $appointmentDate, $start, $end, (int) $appointment->id);
+            });
+        } catch (ValidationException $e) {
+            return back()->with('error', 'This appointment time is no longer available. Please contact the massage center.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Amount
+        |--------------------------------------------------------------------------
+        */
+
+        $paymentAmount = (float) $appointment->payment_amount;
+
+        if ($paymentAmount <= 0) {
+            return back()->with('error', 'Invalid payment amount.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create NEW PayMongo Checkout Session
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+            $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
 
             $checkout = $this->payMongo->createCheckoutSession(
                 referenceNumber: $referenceNumber,
@@ -813,7 +1420,7 @@ class UserAppointmentController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Save PayMongo information
+            | Reset Payment Attempt
             |--------------------------------------------------------------------------
             */
 
@@ -822,125 +1429,42 @@ class UserAppointmentController extends Controller
 
                 'paymongo_reference_number' => $referenceNumber,
 
-                /*
-                | Your scheduler currently expires pending
-                | payments after 1 minute.
-                */
-                'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinute(),
-            ]);
+                'paymongo_payment_id' => null,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Redirect to PayMongo
-            |--------------------------------------------------------------------------
-            */
+                'paymongo_checkout_expires_at' => $this->manilaNow()->addMinutes(30),
+
+                'payment_status' => 'pending',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Do not claim payment was received.
+                |--------------------------------------------------------------------------
+                */
+
+                'amount_paid' => 0,
+
+                'paid_at' => null,
+
+                'status' => AppointmentStatus::PENDING,
+            ]);
 
             $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
 
             return redirect()->away($checkoutUrl);
+        } catch (Throwable $e) {
+            Log::error('PayMongo retry checkout creation failed.', [
+                'appointment_id' => $appointment->id,
+
+                'error' => $e->getMessage(),
+            ]);
+
+            $appointment->update([
+                'payment_status' => 'failed',
+
+                'status' => AppointmentStatus::FAILED,
+            ]);
+
+            return back()->with('error', 'We could not start the payment again. Please try again.');
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pay at branch
-        |--------------------------------------------------------------------------
-        */
-
-        return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please wait for confirmation.');
-    }
-
-    public function paymentSuccess(UsersAppointments $appointment)
-    {
-        abort_unless($appointment->user_id === Auth::id(), 403);
-
-        return redirect()->route('user.my-appointments')->with('success', 'Payment submitted successfully. Your payment is being verified.');
-    }
-
-    public function paymentCancel(UsersAppointments $appointment)
-    {
-        abort_unless($appointment->user_id === Auth::id(), 403);
-
-        Log::info('PayMongo cancel URL reached.', [
-            'appointment_id' => $appointment->id,
-            'payment_status' => $appointment->payment_status,
-            'paymongo_checkout_session_id' => $appointment->paymongo_checkout_session_id,
-        ]);
-
-        return redirect()->route('user.my-appointments')->with('error', 'Payment was cancelled. No payment was completed.');
-    }
-
-    public function payAgain(UsersAppointments $appointment)
-    {
-        abort_unless($appointment->user_id === Auth::id(), 403);
-
-        /*
-    |--------------------------------------------------------------------------
-    | Only GCash appointments can be paid again
-    |--------------------------------------------------------------------------
-    */
-        if ($appointment->payment_method !== 'gcash') {
-            return back()->with('error', 'This appointment does not use GCash payment.');
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Only failed or pending payments can be retried
-    |--------------------------------------------------------------------------
-    */
-        if (!in_array($appointment->payment_status, ['failed', 'pending'])) {
-            return back()->with('error', 'This payment cannot be retried.');
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Appointment must still be usable
-    |--------------------------------------------------------------------------
-    */
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::FAILED])) {
-            return back()->with('error', 'This appointment is not available for payment retry.');
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Create NEW PayMongo Checkout Session
-    |--------------------------------------------------------------------------
-    */
-        $referenceNumber = 'APPT-' . $appointment->id . '-' . strtoupper(Str::random(6));
-
-        $checkout = $this->payMongo->createCheckoutSession(referenceNumber: $referenceNumber, description: 'Padayon Massage Center Appointment ' . $referenceNumber, amount: (int) round($appointment->payment_amount * 100), successUrl: route('user.appointments.payment.success', $appointment), cancelUrl: route('user.appointments.payment.cancel', $appointment), customerName: Auth::user()->name, customerEmail: Auth::user()->email);
-
-        $checkoutSession = $checkout['data'];
-
-        /*
-    |--------------------------------------------------------------------------
-    | Reset payment attempt
-    |--------------------------------------------------------------------------
-    */
-        $appointment->update([
-            'paymongo_checkout_session_id' => $checkoutSession['id'],
-
-            'paymongo_reference_number' => $referenceNumber,
-
-            'paymongo_payment_id' => null,
-
-            'paymongo_checkout_expires_at' => now('Asia/Manila')->addMinutes(30),
-
-            'payment_status' => 'pending',
-
-            'amount_paid' => 0,
-
-            'paid_at' => null,
-
-            'status' => AppointmentStatus::PENDING,
-        ]);
-
-        /*
-    |--------------------------------------------------------------------------
-    | Redirect to NEW Checkout Session
-    |--------------------------------------------------------------------------
-    */
-        $checkoutUrl = $checkoutSession['attributes']['checkout_url'];
-
-        return redirect()->away($checkoutUrl);
     }
 }

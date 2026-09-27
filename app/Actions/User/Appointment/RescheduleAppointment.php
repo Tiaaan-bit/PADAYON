@@ -6,29 +6,45 @@ use App\Enums\Admin\Appointment\AppointmentStatus;
 use App\Models\Therapists;
 use App\Models\UsersAppointments;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class RescheduleAppointment
 {
     private string $timezone = 'Asia/Manila';
 
-    private int $openingHour = 13; // 1:00 PM
+    private int $slotInterval = 30;
 
-    private int $closingHour = 1; // 1:00 AM next day
+    /**
+     * Booking windows for each calendar date:
+     *
+     * 12:00 AM - 1:00 AM
+     * 1:00 PM  - 12:00 AM
+     */
+    private function getBookingWindows(string $date): array
+    {
+        $bookingDate = Carbon::createFromFormat('Y-m-d', $date, $this->timezone)->startOfDay();
+
+        return [
+            [
+                'opening' => $bookingDate->copy()->setTime(0, 0, 0),
+                'closing' => $bookingDate->copy()->setTime(1, 0, 0),
+            ],
+            [
+                'opening' => $bookingDate->copy()->setTime(13, 0, 0),
+                'closing' => $bookingDate->copy()->addDay()->setTime(0, 0, 0),
+            ],
+        ];
+    }
 
     public function execute(UsersAppointments $appointment, string $newDate, string $newTime): UsersAppointments
     {
         $this->validateAppointment($appointment);
 
-        $start = $this->appointmentDateTime($newDate, $newTime);
-
-        $window = $this->getBookingWindow($newDate);
-
         /*
         |--------------------------------------------------------------------------
-        | Validate date
+        | Validate Date
         |--------------------------------------------------------------------------
         */
 
@@ -44,19 +60,45 @@ class RescheduleAppointment
 
         /*
         |--------------------------------------------------------------------------
-        | Validate booking hours
+        | Build Start DateTime
+        |--------------------------------------------------------------------------
+        |
+        | IMPORTANT:
+        |
+        | 12:30 AM stays on the selected calendar date.
+        |
+        | Example:
+        |
+        | September 30 12:30 AM
+        | = September 30 12:30 AM
+        |
+        */
+
+        $start = $this->appointmentDateTime($newDate, $newTime);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate 30-Minute Interval
         |--------------------------------------------------------------------------
         */
 
-        if ($start->lt($window['opening']) || $start->gte($window['closing'])) {
+        if ((int) $start->minute !== 0 && (int) $start->minute !== 30) {
             throw ValidationException::withMessages([
-                'appointment_time' => 'The selected appointment time is outside the booking hours.',
+                'appointment_time' => 'Appointments can only start on a 30-minute interval.',
             ]);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Validate past time
+        | Validate Booking Window
+        |--------------------------------------------------------------------------
+        */
+
+        $this->validateStartInsideBookingWindow($start, $newDate);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Past Time
         |--------------------------------------------------------------------------
         */
 
@@ -68,14 +110,8 @@ class RescheduleAppointment
 
         /*
         |--------------------------------------------------------------------------
-        | Existing appointment duration
+        | Existing Appointment Duration
         |--------------------------------------------------------------------------
-        |
-        | We DO NOT get the current service/add-on again.
-        |
-        | The existing appointment already stores the duration used when
-        | it was originally booked.
-        |
         */
 
         $serviceDuration = (int) ($appointment->service_duration_minutes ?? 0);
@@ -92,26 +128,41 @@ class RescheduleAppointment
 
         /*
         |--------------------------------------------------------------------------
-        | Calculate new end time
+        | Calculate End
         |--------------------------------------------------------------------------
         */
 
         $end = $start->copy()->addMinutes($totalDuration);
 
-        if ($end->gt($window['closing'])) {
+        /*
+        |--------------------------------------------------------------------------
+        | Appointment Must Stay Inside ONE Booking Window
+        |--------------------------------------------------------------------------
+        |
+        | We do not allow an appointment to cross:
+        |
+        | 1:00 AM
+        |
+        | or
+        |
+        | 12:00 AM
+        |
+        */
+
+        if (!$this->fitsInsideBookingWindow($start, $end, $newDate)) {
             throw ValidationException::withMessages([
-                'appointment_time' => 'The selected appointment duration extends beyond the booking hours.',
+                'appointment_time' => 'The selected appointment duration does not fit within the available booking hours.',
             ]);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Lock therapist
+        | Lock Therapist + Final Conflict Check
         |--------------------------------------------------------------------------
         */
 
         $updatedAppointment = DB::transaction(function () use ($appointment, $newDate, $newTime, $start, $end) {
-            $therapist = Therapists::where('id', $appointment->therapist_id)->where('status', 'available')->lockForUpdate()->first();
+            $therapist = Therapists::query()->where('id', $appointment->therapist_id)->where('status', 'available')->lockForUpdate()->first();
 
             if (!$therapist) {
                 throw ValidationException::withMessages([
@@ -120,23 +171,32 @@ class RescheduleAppointment
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Get therapist appointments on new date
-            |--------------------------------------------------------------------------
-            */
+                |--------------------------------------------------------------------------
+                | Get Appointments From Previous + Selected Calendar Date
+                |--------------------------------------------------------------------------
+                |
+                | Previous date is required because an appointment can cross
+                | midnight into the selected date.
+                */
 
-            $existingAppointments = UsersAppointments::where('therapist_id', $appointment->therapist_id)
-                ->where('appointment_date', $newDate)
+            $selectedDate = Carbon::createFromFormat('Y-m-d', $newDate, $this->timezone)->startOfDay();
+
+            $previousDate = $selectedDate->copy()->subDay()->format('Y-m-d');
+
+            $existingAppointments = UsersAppointments::query()
+                ->where('therapist_id', $appointment->therapist_id)
+                ->whereIn('appointment_date', [$previousDate, $newDate])
                 ->where('id', '!=', $appointment->id)
                 ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
+                ->orderBy('appointment_date')
                 ->orderBy('appointment_time')
                 ->get();
 
             /*
-            |--------------------------------------------------------------------------
-            | Final conflict check
-            |--------------------------------------------------------------------------
-            */
+                |--------------------------------------------------------------------------
+                | Final Conflict Check
+                |--------------------------------------------------------------------------
+                */
 
             foreach ($existingAppointments as $existingAppointment) {
                 $existingRange = $this->getAppointmentRange($existingAppointment);
@@ -149,14 +209,14 @@ class RescheduleAppointment
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Update ONLY schedule information
-            |--------------------------------------------------------------------------
-            */
+                |--------------------------------------------------------------------------
+                | Update Only Schedule
+                |--------------------------------------------------------------------------
+                */
 
             $appointment->update([
                 'appointment_date' => $newDate,
-                'appointment_time' => $newTime,
+                'appointment_time' => $start->format('H:i'),
                 'appointment_end_time' => $end->format('H:i'),
             ]);
 
@@ -166,24 +226,29 @@ class RescheduleAppointment
         return $updatedAppointment;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Manila Now
+    |--------------------------------------------------------------------------
+    */
+
     private function manilaNow(): Carbon
     {
         return Carbon::now($this->timezone);
     }
 
-    private function getBookingWindow(string $date): array
-    {
-        $bookingDate = Carbon::createFromFormat('Y-m-d', $date, $this->timezone)->startOfDay();
-
-        $opening = $bookingDate->copy()->setTime($this->openingHour, 0, 0);
-
-        $closing = $bookingDate->copy()->addDay()->setTime($this->closingHour, 0, 0);
-
-        return [
-            'opening' => $opening,
-            'closing' => $closing,
-        ];
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Appointment DateTime
+    |--------------------------------------------------------------------------
+    |
+    | IMPORTANT:
+    |
+    | There is NO special handling for 12 AM.
+    |
+    | 12:30 AM on September 30 means September 30 12:30 AM.
+    |
+    */
 
     private function appointmentDateTime(string $date, string $time): Carbon
     {
@@ -191,22 +256,63 @@ class RescheduleAppointment
 
         [$hour, $minute] = array_map('intval', explode(':', substr($time, 0, 5)));
 
-        /*
-        |--------------------------------------------------------------------------
-        | 12:00 AM - 12:59 AM belongs to the next calendar day
-        |--------------------------------------------------------------------------
-        */
-
-        if ($hour === 0) {
-            return $bookingDate->copy()->addDay()->setTime($hour, $minute, 0);
-        }
-
         return $bookingDate->copy()->setTime($hour, $minute, 0);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Start Inside Booking Window
+    |--------------------------------------------------------------------------
+    */
+
+    private function validateStartInsideBookingWindow(Carbon $start, string $date): void
+    {
+        foreach ($this->getBookingWindows($date) as $window) {
+            if ($start->gte($window['opening']) && $start->lt($window['closing'])) {
+                return;
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'appointment_time' => 'The selected appointment time is outside the booking hours.',
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check Entire Appointment Fits Inside One Window
+    |--------------------------------------------------------------------------
+    */
+
+    private function fitsInsideBookingWindow(Carbon $start, Carbon $end, string $date): bool
+    {
+        foreach ($this->getBookingWindows($date) as $window) {
+            if ($start->gte($window['opening']) && $end->lte($window['closing'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Existing Appointment Range
+    |--------------------------------------------------------------------------
+    |
+    | Example:
+    |
+    | appointment_date = September 30
+    | start = 11:30 PM
+    | end   = 12:30 AM
+    |
+    | End is earlier than start, therefore it moves to October 1.
+    |
+    */
+
     private function getAppointmentRange(UsersAppointments $appointment): array
     {
-        $appointmentDate = Carbon::parse($appointment->appointment_date)->format('Y-m-d');
+        $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
 
         $start = $this->appointmentDateTime($appointmentDate, $appointment->appointment_time);
 
@@ -222,14 +328,26 @@ class RescheduleAppointment
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Appointment Overlap
+    |--------------------------------------------------------------------------
+    */
+
     private function appointmentOverlaps(Carbon $start, Carbon $end, Carbon $existingStart, Carbon $existingEnd): bool
     {
         return $start->lt($existingEnd) && $end->gt($existingStart);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Appointment
+    |--------------------------------------------------------------------------
+    */
+
     private function validateAppointment(UsersAppointments $appointment): void
     {
-        if ($appointment->user_id !== Auth::id()) {
+        if ((int) $appointment->user_id !== (int) Auth::id()) {
             abort(403);
         }
 

@@ -314,7 +314,7 @@
                                 </td>
 
 
-                                    {{-- PAYMENT DETAILS --}}
+                                {{-- PAYMENT DETAILS --}}
                                 <td class="px-4 py-4">
                                     <div class="font-medium text-gray-800">
                                         {{ $paymentMethodLabel }}
@@ -340,9 +340,11 @@
                                         $amountPaid = (float) ($transaction->amount_paid ?? 0);
 
                                         $remainingBalance = max(0, $totalAppointmentAmount - $amountPaid);
+
+                                        $paymentStatus = strtolower((string) ($transaction->payment_status ?? ''));
                                     @endphp
 
-                                    @if ($remainingBalance > 0)
+                                    @if ($paymentStatus !== 'unpaid' && $remainingBalance > 0)
                                         <div class="text-xs text-red-600 mt-1 font-semibold">
                                             Remaining:
                                             ₱{{ number_format($remainingBalance, 2) }}
@@ -369,7 +371,7 @@
 
                                     {{-- APPOINTMENT STATUS --}}
                                     <div>
-                                        Appointment Status: 
+                                        Appointment Status:
                                         @if ($status === 'confirm' || $status === 'confirmed')
                                             <span
                                                 class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -406,7 +408,7 @@
                                     {{-- PAYMENT STATUS --}}
                                     <div class="mt-2">
 
-                                        Payment Status: 
+                                        Payment Status:
                                         @if ($paymentStatus === 'paid')
                                             <span
                                                 class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -1143,15 +1145,13 @@
 
         });
 
-        
-function confirmPaymentAction(paymentType) {
-    return confirm(
-        `Are you sure you want to mark ${paymentType} as fully paid?\n\n` +
-        `This will change the payment type to "Full Payment" and record the full amount paid.`
-    );
-}
 
-
+        function confirmPaymentAction(paymentType) {
+            return confirm(
+                `Are you sure you want to mark ${paymentType} as fully paid?\n\n` +
+                `This will change the payment type to "Full Payment" and record the full amount paid.`
+            );
+        }
     </script>
 
 @endsection

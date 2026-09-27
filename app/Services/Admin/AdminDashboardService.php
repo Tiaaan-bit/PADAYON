@@ -9,11 +9,13 @@ use Illuminate\Support\Collection;
 
 class AdminDashboardService
 {
+    private string $timezone = 'Asia/Manila';
+
     public function __construct(protected DashboardRepositoryInterface $dashboardRepository) {}
 
     public function getDashboardData(): array
     {
-        $today = Carbon::today('Asia/Manila');
+        $today = Carbon::today($this->timezone);
 
         return [
             'appointments' => $this->dashboardRepository->getTodayAppointments($today),
@@ -40,18 +42,117 @@ class AdminDashboardService
     {
         return $appointments
             ->map(function ($appointment) {
+                /*
+                |--------------------------------------------------------------------------
+                | Appointment Date
+                |--------------------------------------------------------------------------
+                |
+                | appointment_date is the REAL calendar date.
+                |
+                | Do NOT move appointments before 1 PM to another day.
+                |
+                */
+
+                $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
+
+                /*
+                |--------------------------------------------------------------------------
+                | Appointment Start
+                |--------------------------------------------------------------------------
+                */
+
+                $start = null;
+
+                if ($appointment->appointment_time) {
+                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_time, $this->timezone)->format('H:i:s'), $this->timezone);
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Appointment End
+                |--------------------------------------------------------------------------
+                */
+
+                $end = null;
+
+                if ($appointment->appointment_end_time && $start) {
+                    $end = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_end_time, $this->timezone)->format('H:i:s'), $this->timezone);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Cross-Midnight Appointment
+                    |--------------------------------------------------------------------------
+                    |
+                    | Example:
+                    |
+                    | Sept 30
+                    | 11:30 PM -> 12:30 AM
+                    |
+                    | End becomes Oct 1.
+                    |
+                    */
+
+                    if ($end->lessThanOrEqualTo($start)) {
+                        $end->addDay();
+                    }
+                }
+
                 return [
                     'id' => $appointment->id,
 
-                    'date' => Carbon::parse($appointment->appointment_date, 'Asia/Manila')->format('Y-m-d'),
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Calendar Date
+                    |--------------------------------------------------------------------------
+                    */
 
-                    'time' => $appointment->appointment_time ? Carbon::parse($appointment->appointment_time, 'Asia/Manila')->format('h:i A') : 'N/A',
+                    'date' => $start ? $start->format('Y-m-d') : $appointmentDate,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Start Time
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'time' => $start ? $start->format('h:i A') : 'N/A',
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | End Time
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'end_time' => $end ? $end->format('h:i A') : null,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Service
+                    |--------------------------------------------------------------------------
+                    */
 
                     'title' => $appointment->service?->name ?? 'Service',
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | User
+                    |--------------------------------------------------------------------------
+                    */
+
                     'user' => $appointment->user?->name ?? 'N/A',
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Therapist
+                    |--------------------------------------------------------------------------
+                    */
+
                     'therapist' => $appointment->therapist?->name ?? 'N/A',
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Status
+                    |--------------------------------------------------------------------------
+                    */
 
                     'status' => match ($appointment->status) {
                         AppointmentStatus::CONFIRMED => 'Confirmed',
@@ -60,6 +161,7 @@ class AdminDashboardService
                         AppointmentStatus::CANCELLED => 'Cancelled',
                         AppointmentStatus::NO_SHOW => 'No Show',
                         AppointmentStatus::FAILED => 'Failed',
+                        default => 'Unknown',
                     },
                 ];
             })
