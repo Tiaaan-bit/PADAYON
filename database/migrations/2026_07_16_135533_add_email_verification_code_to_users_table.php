@@ -22,7 +22,11 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'email_verification_code',
+                'email_verification_code_expires_at',
+            ]);
         });
+        
     }
 };

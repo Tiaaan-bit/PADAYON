@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAddOnsController;
 use App\Http\Controllers\Admin\AdminAppointmentsController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminQuickBookController;
 use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminServicesController;
 use App\Http\Controllers\Admin\AdminTherapistController;
@@ -14,7 +15,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\WalkInRegistrationController;
 use App\Http\Controllers\HomePage\PageController;
+use App\Http\Controllers\Payment\PayMongoWebhookController;
 use App\Http\Controllers\Staff\StaffAppointmentsController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffTherapistController;
@@ -29,7 +32,6 @@ use App\Http\Controllers\User\UserAppointmentController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
-use App\Http\Controllers\Payment\PayMongoWebhookController;
 
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
 
@@ -47,6 +49,7 @@ Route::middleware('guest')->group(function () {
     
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/register/walk-in/{token}',[WalkInRegistrationController::class, 'create'])->name('walk-in.register');
 
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLink'])->name('password.email');
@@ -157,6 +160,12 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
         //---Admin Reports Controller---//
         Route::get('/reports', [AdminReportsController::class, 'reports'])->name('reports');
+
+        Route::get('/quick-book',[AdminQuickBookController::class, 'index'])->name('quick-book');
+        Route::post('/quick-book',[AdminQuickBookController::class, 'store'])->name('quick-book.store');
+        Route::get('/quick-book/available-slots',[AdminQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
+        
+
     });
     
 
@@ -183,9 +192,6 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/therapists', [StaffTherapistController::class, 'index'])->name('therapists');
         Route::put('/therapists/{therapist}', [StaffTherapistController::class, 'update'])->name('therapist.update');
 
-
-
-        
     });
 
 // ── Logout ────────────────────────────────────────────────────────────────────

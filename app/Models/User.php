@@ -12,24 +12,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\Admin\User\UserRole;
 use App\Enums\Admin\User\UserStatus;
+use App\Models\WalkInCustomer;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = ['name', 'email', 'phone', 'password', 'role', 'status', 'is_online', 'last_seen_at', 'email_verified_at', 'email_verification_code', 'email_verification_code_expires_at'];
 
-    /**
-     * The attributes that should be hidden.
-     */
     protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'last_seen_at' => 'datetime',
@@ -137,5 +129,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function walkInCustomers(): HasMany
+    {
+        return $this->hasMany(WalkInCustomer::class, 'registered_user_id');
     }
 }

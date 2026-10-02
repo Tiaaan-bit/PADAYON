@@ -23,7 +23,7 @@
         {{-- About Content --}}
         <div class="text-sm text-slate-600 max-w-lg">
 
-            <h1 class="text-xl uppercase font-semibold text-slate-700">
+            <h1 class="text-xl uppercase font-semibold text-slate-700"> 
                 What we do?
             </h1>
 

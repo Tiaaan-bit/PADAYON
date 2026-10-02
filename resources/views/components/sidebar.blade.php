@@ -170,6 +170,30 @@
 
         </a>
 
+        <a href="{{ route('admin.quick-book') }}" wire:navigate
+            class="flex items-center
+                   rounded-xl
+                   text-sm
+                   font-medium
+                   transition-all
+                   {{ request()->routeIs('admin.quick-book') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+            :class="sidebarOpen
+                ?
+                'gap-3 px-3 py-2.5' :
+                'justify-center px-2 py-3'">
+
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M3 10.5L12 3l9 7.5" />
+                <path d="M5 9.5V21h14V9.5" />
+                <path d="M9 21v-6h6v6" />
+            </svg>
+
+            <span x-show="sidebarOpen" x-cloak class="truncate">
+                Dashboard
+            </span>
+
+        </a>
+
 
         {{-- ===================================================== --}}
         {{-- APPOINTMENTS --}}
