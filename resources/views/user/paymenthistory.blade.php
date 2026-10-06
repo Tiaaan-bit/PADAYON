@@ -118,6 +118,102 @@
 
         </div>
 
+        {{-- ====================================================== --}}
+        {{-- FILTERS --}}
+        {{-- ====================================================== --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+
+            <form method="GET" action="{{ route('user.payment-history') }}"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+                {{-- DATE --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Date
+                    </label>
+
+                    <input type="date" name="date" value="{{ request('date') }}"
+                        class="w-full rounded-lg border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
+                </div>
+
+                {{-- PAYMENT METHOD --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Payment Method
+                    </label>
+
+                    <select name="payment_method"
+                        class="w-full rounded-lg border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
+                        <option value="">All Payment Methods</option>
+
+                        <option value="branch" {{ request('payment_method') === 'branch' ? 'selected' : '' }}>
+                            Pay at Counter
+                        </option>
+
+                        <option value="gcash" {{ request('payment_method') === 'gcash' ? 'selected' : '' }}>
+                            GCash
+                        </option>
+                    </select>
+                </div>
+
+                {{-- PAYMENT STATUS --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Payment Status
+                    </label>
+
+                    <select name="payment_status"
+                        class="w-full rounded-lg border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
+                        <option value="">All Payment Statuses</option>
+
+                        <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>
+                            Paid
+                        </option>
+
+                        <option value="pending" {{ request('payment_status') === 'pending' ? 'selected' : '' }}>
+                            Pending
+                        </option>
+
+                        <option value="failed" {{ request('payment_status') === 'failed' ? 'selected' : '' }}>
+                            Failed
+                        </option>
+
+                        <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>
+                            Unpaid
+                        </option>
+                    </select>
+                </div>
+
+                {{-- AMOUNT --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Amount
+                    </label>
+
+                    <input type="number" name="amount" step="0.01" min="0" value="{{ request('amount') }}"
+                        placeholder="Enter amount"
+                        class="w-full rounded-lg border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
+                </div>
+
+                {{-- BUTTONS --}}
+                <div class="flex items-end gap-2">
+
+                    <button type="submit"
+                        class="flex-1 px-4 py-2.5 rounded-lg bg-[#849753] text-white font-medium hover:bg-[#718441] transition">
+                        Filter
+                    </button>
+
+                    <a href="{{ route('user.payment-history') }}"
+                        class="px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
 
         {{-- ====================================================== --}}
         {{-- PAYMENT RECORDS --}}
@@ -128,7 +224,7 @@
             {{-- Table Header --}}
             <div
                 class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                
+
             </div>
 
 
@@ -170,12 +266,7 @@
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Date
-                                </th>
-
-                                <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Therapist
+                                    Appointment Date
                                 </th>
 
                                 <th
@@ -189,6 +280,11 @@
                                 </th>
 
                                 <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Therapist
+                            </th>
+
+                                <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                     Payment Details
                                 </th>
@@ -196,6 +292,11 @@
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                     Payment Status
+                                </th>
+
+                                <th
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    Action
                                 </th>
 
                             </tr>
@@ -299,17 +400,71 @@
 
 
                                     {{-- ================================================== --}}
-                                    {{-- THERAPIST --}}
+                                    {{-- SERVICE --}}
                                     {{-- ================================================== --}}
 
                                     <td class="px-5 py-4">
 
+                    
+
+                                        <div class="space-y-1 min-w-0">
+
+                                            <p class="font-semibold text-gray-800">
+                                                {{ $payment->service?->name ?? 'N/A' }}
+                                            </p>
+
+                                            <p class="text-xs text-gray-500">
+                                                {{ $payment->service?->duration_minutes ?? '0' }}
+                                                Minutes
+                                            </p>
+                                            <p class="text-xs text-gray-500">
+                                                ₱{{ number_format((float) $payment->service_price, 2) }}
+
+                                            </p>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    {{-- ================================================== --}}
+                                    {{-- ADDON DETAILS --}}
+                                    {{-- ================================================== --}}
+
+                                    <td class="px-5 py-4 text-gray-600">
+
+                                    
+
+                                        <div class="space-y-1 min-w-0">
+
+                                            <p class="font-semibold text-gray-800">
+                                                {{ $payment->addOn?->name ?? 'None' }}
+                                            </p>
+
+                                            <p class="text-xs text-gray-500">
+                                                {{ $payment->addOn ? $payment->addOn->duration_minutes . ' Minutes' : 'No add-on selected' }}
+                                            </p>
+
+                                            <p class="text-xs text-gray-500">
+                                                ₱{{ number_format((float) $payment->addons_price, 2) }}
+
+                                            </p>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    {{-- ================================================== --}}
+                                    {{-- THERAPIST DETAILS --}}
+                                    {{-- ================================================== --}}
+
+                                    <td class="px-5 py-4 text-gray-600">
+
+
+
                                         <div class="flex items-center gap-3 min-w-0">
 
-                                            <div
-                                                class="w-9 h-9 rounded-full bg-[#6F4E37] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                                {{ strtoupper(substr($payment->therapist?->name ?? 'N', 0, 1)) }}
-                                            </div>
 
                                             <div class="min-w-0">
 
@@ -325,54 +480,6 @@
 
 
                                     {{-- ================================================== --}}
-                                    {{-- SERVICE DETAILS --}}
-                                    {{-- ================================================== --}}
-
-                                    <td class="px-5 py-4 text-gray-600">
-
-                                        <div class="space-y-1 min-w-0">
-
-                                            <p class="font-semibold text-gray-800">
-                                                {{ $payment->service?->name ?? 'N/A' }}
-                                            </p>
-
-                                            <p class="text-xs text-gray-500 max-w-60">
-                                                {{ $payment->service?->description ?? 'N/A' }}
-                                            </p>
-
-                                            <p class="text-xs text-gray-500">
-                                                Duration:
-                                                {{ $payment->service?->duration_minutes ?? '0' }}
-                                                mins
-                                            </p>
-
-                                        </div>
-
-                                    </td>
-
-
-                                    {{-- ================================================== --}}
-                                    {{-- ADD-ON DETAILS --}}
-                                    {{-- ================================================== --}}
-
-                                    <td class="px-5 py-4 text-gray-600">
-
-                                        <div class="space-y-1 min-w-0">
-
-                                            <p class="font-semibold text-gray-800">
-                                                {{ $payment->addOn?->name ?? 'None' }}
-                                            </p>
-
-                                            <p class="text-xs text-gray-500">
-                                                {{ $payment->addOn ? $payment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
-                                            </p>
-
-                                        </div>
-
-                                    </td>
-
-
-                                    {{-- ================================================== --}}
                                     {{-- PAYMENT DETAILS --}}
                                     {{-- ================================================== --}}
 
@@ -380,65 +487,18 @@
 
                                         <div class="space-y-2">
 
-                                            {{-- Payment Amount --}}
-                                            <div>
-
-                                                <p class="text-xs text-gray-400">
-                                                    Payment Amount
-                                                </p>
-
-                                                <p class="font-semibold text-gray-800">
-                                                    ₱{{ number_format($payment->payment_amount ?? 0, 2) }}
-                                                </p>
-
-                                            </div>
-
-
-                                            {{-- Amount Paid --}}
-                                            <div>
-
-                                                <p class="text-xs text-gray-400">
-                                                    Amount Paid
-                                                </p>
-
-                                                <p class="font-semibold text-gray-800">
-                                                    ₱{{ number_format($payment->amount_paid ?? 0, 2) }}
-                                                </p>
-
-                                            </div>
-
-
-                                            {{-- Payment Type --}}
-                                            <div>
-
-                                                <p class="text-xs text-gray-400">
-                                                    Payment Type
-                                                </p>
-
-                                                <p class="text-xs font-medium text-gray-600 capitalize">
-                                                    {{ $payment->payment_type ? ucfirst($payment->payment_type) : 'N/A' }}
-                                                </p>
-
-                                            </div>
-
 
                                             {{-- Payment Method --}}
                                             <div>
 
-                                                <p class="text-xs text-gray-400">
-                                                    Method
-                                                </p>
-
                                                 @if ($payment->payment_method === 'branch')
-                                                    <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                                    <span>
+
                                                         Pay at Counter
                                                     </span>
                                                 @elseif ($payment->payment_method === 'gcash')
-                                                    <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                                    <span>
+
                                                         GCash
                                                     </span>
                                                 @else
@@ -449,6 +509,33 @@
                                                 @endif
 
                                             </div>
+
+
+                                            {{-- Payment Type --}}
+                                            <div>
+
+                                                <p class="text-xs font-semibold text-gray-600 capitalize">
+                                                    {{ $payment->payment_type ? ucfirst($payment->payment_type) : 'N/A' }}
+                                                </p>
+
+                                            </div>
+
+
+                                            {{-- Amount Paid --}}
+                                            <div>
+
+
+                                                <p class="font-semibold text-gray-800">
+                                                    Paid: ₱{{ number_format($payment->amount_paid ?? 0, 2) }}
+                                                </p>
+
+                                            </div>
+
+
+
+
+
+
 
                                         </div>
 
@@ -471,9 +558,7 @@
                                                     Paid
                                                 </span>
 
-                                                <p class="text-xs text-gray-500">
-                                                    Payment confirmed
-                                                </p>
+
 
                                             </div>
                                         @elseif ($paymentStatus === 'pending')
@@ -485,25 +570,10 @@
                                                     <span
                                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full whitespace-nowrap">
                                                         <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
-                                                        Payment Pending
+                                                        Pending
                                                     </span>
 
                                                 </div>
-
-                                                {{-- PAY AGAIN --}}
-                                                @if ($payment->payment_method === 'gcash')
-                                                    <form
-                                                        action="{{ route('user.appointments.payment.retry', $payment->id) }}"
-                                                        method="POST" @click.stop>
-                                                        @csrf
-
-                                                        <button type="submit"
-                                                            class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-xs font-medium transition">
-                                                            Pay Again
-                                                        </button>
-
-                                                    </form>
-                                                @endif
 
                                             </div>
                                         @elseif ($paymentStatus === 'failed')
@@ -515,36 +585,13 @@
                                                     <span
                                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap">
                                                         <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                                        Payment Failed
+                                                        Failed
                                                     </span>
-
-                                                    <p class="text-xs text-gray-500">
-                                                        Payment was not completed.
-                                                    </p>
 
                                                 </div>
 
-                                                {{-- PAY AGAIN --}}
-                                                @if ($payment->payment_method === 'gcash')
-                                                    <form
-                                                        action="{{ route('user.appointments.payment.retry', $payment->id) }}"
-                                                        method="POST" @click.stop>
-                                                        @csrf
-
-                                                        <button type="submit"
-                                                            class="rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-xs font-medium transition">
-                                                            Pay Again
-                                                        </button>
-
-                                                    </form>
-                                                @endif
-
                                             </div>
-                                        
-
-
-                                            @elseif ($payment->payment_method === 'branch' && $paymentStatus === 'unpaid')
-                                        
+                                        @elseif ($payment->payment_method === 'branch' && $paymentStatus === 'unpaid')
                                             <div class="space-y-1">
 
                                                 <span
@@ -555,13 +602,43 @@
 
 
                                             </div>
-                                        
-                                            @else
+                                        @else
                                             <span
                                                 class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
                                                 {{ $paymentStatus ?: 'N/A' }}
                                             </span>
                                         @endif
+
+                                    </td>
+
+                                    {{-- ACTION --}}
+                                    <td class="px-5 py-4" @click.stop>
+
+                                        <div class="flex flex-col gap-2">
+
+                                            {{-- PAY AGAIN --}}
+                                            @if ($payment->payment_method === 'gcash' && in_array($payment->payment_status, ['failed', 'pending']))
+                                                <form
+                                                    action="{{ route('user.appointments.payment.retry', $payment->id) }}"
+                                                    method="POST">
+                                                    @csrf
+
+                                                    <button type="submit"
+                                                        class="w-full rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
+                                                        Pay Again
+                                                    </button>
+                                                </form>
+
+
+                                                {{-- NO ACTION --}}
+                                            @else
+                                                <span>
+                                                    No Action
+                                                </span>
+                                            @endif
+
+
+                                        </div>
 
                                     </td>
 
@@ -778,9 +855,8 @@
 
                                         <template x-if="selectedPayment?.paymentStatus === 'paid'">
 
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            <span class="font-bold">
+
                                                 Paid
                                             </span>
 
@@ -789,10 +865,9 @@
 
                                         <template x-if="selectedPayment?.paymentStatus === 'pending'">
 
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded-full">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
-                                                Payment Pending
+                                            <span class="font-bold">
+
+                                                Pending
                                             </span>
 
                                         </template>
@@ -800,10 +875,9 @@
 
                                         <template x-if="selectedPayment?.paymentStatus === 'failed'">
 
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                                Payment Failed
+                                            <span class="font-bold">
+
+                                                Failed
                                             </span>
 
                                         </template>

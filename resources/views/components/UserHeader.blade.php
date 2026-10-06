@@ -13,10 +13,8 @@
         {{-- ================================================= --}}
         <a href="{{ route('user.dashboard') }}" wire:navigate class="flex items-center gap-3 min-w-0">
 
-            {{-- Logo --}}
             <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
-                class="h-12 w-12 object-contain shrink-0">
-
+            class="h-12 w-12 object-contain shrink-0">
 
             {{-- Brand Text --}}
             <div class="leading-tight min-w-0">
@@ -28,14 +26,6 @@
                                    truncate">
                     Padayon Massage Center
                 </h1>
-
-                <p
-                    class="text-xs
-                                   text-gray-500
-                                   truncate">
-                    Blind Massage Specialists
-                </p>
-
             </div>
 
         </a>
@@ -117,12 +107,6 @@
                                        text-gray-800">
                         {{ auth()->user()->name }}
                     </p>
-
-                    <p class="text-xs
-                                       text-gray-500">
-                        My Profile
-                    </p>
-
                 </div>
 
             </a>

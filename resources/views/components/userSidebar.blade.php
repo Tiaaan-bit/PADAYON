@@ -17,127 +17,29 @@
     {{-- SIDEBAR HEADER --}}
     {{-- ========================================================= --}}
 
-    <div class="h-20
-               flex items-center
-               border-b border-white/10
-               transition-all duration-300"
-        :class="sidebarOpen
-            ?
-            'px-4 gap-3' :
-            'justify-center px-2'">
-
+    <div class="relative h-20 w-full flex items-center border-b border-white/10">
 
         {{-- ===================================================== --}}
-        {{-- HAMBURGER BUTTON --}}
+        {{-- HAMBURGER BUTTON - ALWAYS CENTERED --}}
         {{-- ===================================================== --}}
 
         <button type="button" @click="sidebarOpen = !sidebarOpen"
-            class="w-10 h-10
-                   shrink-0
-                   flex items-center justify-center
-                   rounded-xl
-                   text-white
-                   hover:bg-white/10
-                   transition-all"
+            class="absolute left-1/2 -translate-x-1/2
+           w-12 h-12
+           shrink-0
+           flex items-center justify-center
+           rounded-xl
+           text-white
+           hover:bg-white/10
+           transition-all duration-200"
             aria-label="Toggle sidebar">
-
-            {{-- Always Hamburger --}}
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-
             </svg>
-
         </button>
 
-
-        {{-- ===================================================== --}}
-        {{-- SIDEBAR LOGO + TEXT --}}
-        {{-- ===================================================== --}}
-
-        <div x-show="sidebarOpen" x-cloak class="flex items-center
-                   gap-2
-                   min-w-0">
-
-            <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
-                class="h-10 w-10
-                       object-contain
-                       shrink-0">
-
-
-            <div class="leading-tight min-w-0">
-
-                <h1
-                    class="text-white
-                           font-bold
-                           text-sm
-                           truncate">
-                    Padayon Massage Center
-                </h1>
-
-                <p
-                    class="text-white/70
-                           text-[10px]
-                           leading-tight">
-                    Blind Massage Specialists
-                </p>
-
-            </div>
-
-        </div>
-
     </div>
 
-
-    {{-- ========================================================= --}}
-    {{-- USER INFORMATION --}}
-    {{-- ========================================================= --}}
-
-    <div class="flex items-center
-               border-b border-white/10
-               py-4"
-        :class="sidebarOpen
-            ?
-            'gap-3 px-5' :
-            'justify-center px-2'">
-
-
-        {{-- Avatar --}}
-        <div
-            class="w-9 h-9
-                   rounded-full
-                   bg-[#6F4E37]
-                   flex items-center justify-center
-                   text-white
-                   font-bold
-                   text-sm
-                   shrink-0">
-
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-
-        </div>
-
-
-        {{-- User Information --}}
-        <div x-show="sidebarOpen" x-cloak class="overflow-hidden">
-
-            <p
-                class="text-white
-                       text-sm
-                       font-semibold
-                       truncate">
-                {{ auth()->user()->name }}
-            </p>
-
-            <p class="text-white/70
-                       text-xs
-                       truncate">
-                {{ auth()->user()->email }}
-            </p>
-
-        </div>
-
-    </div>
 
 
     {{-- ========================================================= --}}

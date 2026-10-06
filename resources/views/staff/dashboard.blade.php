@@ -1,12 +1,11 @@
 @extends('layouts.staff')
 
-@section('title', 'Padayon Massage Center - Dashboard')
-
+@section('title', 'Padayon Massage Center -Dashboard')
 
 @push('styles')
     <style>
         .calendar-day {
-            min-height: 57px;
+            min-height: 60px;
         }
 
         @media (max-width: 640px) {
@@ -26,10 +25,10 @@
         }
 
         /*
-                    |--------------------------------------------------------------------------
-                    | Calendar Hover Popup
-                    |--------------------------------------------------------------------------
-                    */
+                            |--------------------------------------------------------------------------
+                            | Calendar Hover Popup
+                            |--------------------------------------------------------------------------
+                            */
 
         .calendar-popup {
             visibility: hidden;
@@ -47,10 +46,10 @@
         }
 
         /*
-                    |--------------------------------------------------------------------------
-                    | Calendar Highlight
-                    |--------------------------------------------------------------------------
-                    */
+                            |--------------------------------------------------------------------------
+                            | Calendar Highlight
+                            |--------------------------------------------------------------------------
+                            */
 
         .calendar-highlight {
             opacity: 0;
@@ -64,12 +63,10 @@
     </style>
 @endpush
 
+
 @section('content')
-
     <div x-data="dashboardCalendar(@js($calendarEvents))">
-
         <div class="px-4 sm:px-6 lg:px-8 py-5">
-
 
             {{-- =========================================================
                 MAIN DASHBOARD
@@ -83,13 +80,15 @@
                 <section class="min-w-0">
 
 
-                    {{-- WELCOME IMAGE --}}
+                    {{-- =================================================
+                        WELCOME IMAGE
+                    ================================================== --}}
                     <div
                         class="relative w-full overflow-hidden rounded-2xl bg-white
                         border border-gray-200 shadow-sm
                         h-55 sm:h-75 md:h-100 lg:min-h-125 xl:min-h-125">
 
-                        <img src="{{ asset('build/assets/images/Welcome.webp') }}" alt="Welcome"
+                        <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome"
                             class="absolute inset-0 w-full h-full object-fill object-center">
 
                     </div>
@@ -111,10 +110,6 @@
                                 </h2>
 
                             </div>
-
-                            <p class="text-xs text-gray-500 mt-1">
-                                Currently Available Therapist
-                            </p>
 
                         </div>
 
@@ -206,10 +201,6 @@
                                 <h2 class="text-sm font-semibold text-gray-900">
                                     Today's Appointments
                                 </h2>
-
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Appointment schedule for today
-                                </p>
 
                             </div>
 
@@ -442,7 +433,7 @@
                                                 {{-- STATUS --}}
                                                 <td class="px-5 py-4">
 
-                                                    @if ($appointment->status === 'confirm')
+                                                    @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                                         <span
                                                             class="inline-flex items-center
                                                             gap-1.5 px-2.5 py-1
@@ -460,7 +451,7 @@
                                                             Confirmed
 
                                                         </span>
-                                                    @elseif ($appointment->status === 'pending')
+                                                    @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                                         <span
                                                             class="inline-flex items-center
                                                             gap-1.5 px-2.5 py-1
@@ -516,7 +507,7 @@
                                                             text-gray-500
                                                             text-[10px] font-semibold
                                                             rounded-full whitespace-nowrap">
-                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                        </span>
+                                                            {{ ucfirst($appointment->status?->value ?? 'N/A') }} </span>
                                                     @endif
 
                                                 </td>
@@ -554,8 +545,11 @@
                         <div class="px-4 py-3">
 
                             <h2 class="text-sm font-semibold text-gray-900">
-                                Appointment Calendar
+                                Calendar
                             </h2>
+
+
+
 
                             {{-- Month Navigation --}}
                             <div class="flex items-center justify-between mt-3">
@@ -782,14 +776,9 @@
 
 
                                                         {{-- Therapist --}}
-                                                        <p class="text-[9px]
-                                                            text-gray-400
-                                                            truncate"
-                                                            x-text="
-                                                                'Therapist: ' +
-                                                                event.therapist
-                                                            ">
-                                                        </p>
+
+                                                        <p class="text-[9px] text-gray-400 truncate"
+                                                            x-text="'Therapist: ' + (event.therapist || 'N/A')"></p>
 
                                                     </div>
 
@@ -917,11 +906,6 @@
                                         Upcoming
                                     </h2>
 
-                                    <p class="text-[10px]
-                                        text-gray-500 mt-1">
-                                        Next appointments
-                                    </p>
-
                                 </div>
 
 
@@ -935,7 +919,7 @@
                             <div class="mt-3 space-y-2">
 
                                 @forelse($upcomingAppointments->take(5)
-                                            as $appointment)
+                                                as $appointment)
                                     <div
                                         class="rounded-lg bg-gray-50
                                         border border-gray-100
@@ -989,28 +973,28 @@
 
 
                                             {{-- Status --}}
-                                            @if ($appointment->status === 'confirm')
+                                            @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-green-700">
                                                     Confirmed
                                                 </span>
-                                            @elseif ($appointment->status === 'pending')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-yellow-700">
                                                     Pending
                                                 </span>
-                                            @elseif ($appointment->status === 'rejected')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::REJECTED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-red-700">
                                                     Rejected
                                                 </span>
-                                            @elseif ($appointment->status === 'cancelled')
+                                            @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CANCELLED)
                                                 <span
                                                     class="shrink-0
                                                     text-[9px]
@@ -1022,7 +1006,7 @@
                                                     class="shrink-0
                                                     text-[9px]
                                                     text-gray-500">
-                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }}                                                </span>
+                                                    {{ ucfirst($appointment->status?->value ?? 'N/A') }} </span>
                                             @endif
 
                                         </div>
@@ -1073,8 +1057,8 @@
         </div>
 
     </div>
-@endsection
 
+@endsection
 
 @push('scripts')
     <script>

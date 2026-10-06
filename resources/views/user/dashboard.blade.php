@@ -52,11 +52,6 @@
                             </h2>
 
                         </div>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            We are here to serve you
-                        </p>
-
                     </div>
 
 
@@ -365,28 +360,27 @@
 
 
 
+                
                 {{-- =================================================
-                ANNOUNCEMENTS
-            ================================================== --}}
+     ANNOUNCEMENTS
+================================================== --}}
 
-                <section class="rounded-2xl bg-white border border-gray-200 shadow-sm">
-
+                <section x-data="{ showAllAnnouncements: false }" class="rounded-2xl bg-white border border-gray-200 shadow-sm">
                     <div class="px-4 py-4">
 
+                        {{-- Header --}}
                         <div class="flex items-center gap-2">
-
                             <h2 class="text-sm font-semibold text-gray-900">
                                 Announcements
                             </h2>
-
                         </div>
 
-
+                        {{-- Announcements --}}
                         <div class="mt-4">
 
-                            @forelse($posts as $post)
-                                <article class="py-2">
-
+                            @forelse($posts as $index => $post)
+                                <article x-show="showAllAnnouncements || {{ $index }} < 3" x-transition
+                                    class="py-2">
                                     <h3 class="text-xs font-medium text-gray-900">
                                         {{ $post->title }}
                                     </h3>
@@ -396,7 +390,6 @@
                                             {{ $post->content }}
                                         </p>
                                     @endif
-
                                 </article>
 
                             @empty
@@ -408,67 +401,73 @@
 
                         </div>
 
-                    </div>
+                        {{-- Show More / Show Less Arrow --}}
+                        @if ($posts->count() > 3)
+                            <div class="flex justify-center mt-2">
 
+                                <button type="button" @click="showAllAnnouncements = !showAllAnnouncements"
+                                    class="flex items-center justify-center
+                           w-8 h-8 rounded-full
+                           text-gray-400
+                           hover:text-[#6F4E37]
+                           hover:bg-gray-100
+                           transition"
+                                    :aria-label="showAllAnnouncements
+                                        ?
+                                        'Show fewer announcements' :
+                                        'Show all announcements'">
+
+                                    <svg class="w-4 h-4 transition-transform duration-200"
+                                        :class="{ 'rotate-180': showAllAnnouncements }" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+
+                                </button>
+
+                            </div>
+                        @endif
+
+                    </div>
                 </section>
+                
+
 
                 {{-- =================================================
-                TODAY'S APPOINTMENTS
-            ================================================== --}}
+     TODAY'S APPOINTMENTS
+================================================== --}}
 
-                <section class="rounded-2xl bg-white border border-gray-200 shadow-sm">
-
+                <section x-data="{ showAllToday: false }" class="rounded-2xl bg-white border border-gray-200 shadow-sm">
                     <div class="px-4 py-4">
 
+                        {{-- Header --}}
                         <div class="flex items-center justify-between">
-
                             <div>
-
                                 <h2 class="text-sm font-semibold text-gray-900">
                                     Today's Appointment
                                 </h2>
-
-                                <p class="text-[10px] text-gray-500 mt-1">
-                                    Your appointments for today
-                                </p>
-
                             </div>
-
-                            <span
-                                class="inline-flex items-center justify-center
-                                   min-w-6 h-6 px-2 rounded-full
-                                   bg-[#F4EDDB] text-[#526333]
-                                   text-[10px] font-bold">
-                                {{ $todayAppointments->count() }}
-                            </span>
-
                         </div>
 
-
+                        {{-- Appointments --}}
                         <div class="mt-3 space-y-2">
 
-                            @forelse($todayAppointments as $appointment)
-                                <div
-                                    class="rounded-lg bg-gray-50 border border-gray-100
-                                       px-3 py-3">
-
+                            @forelse($todayAppointments as $index => $appointment)
+                                <div x-show="showAllToday || {{ $index }} < 3" x-transition
+                                    class="rounded-lg bg-gray-50 border border-gray-100 px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
-
                                         <div class="min-w-0">
 
                                             {{-- Service --}}
-
                                             <p
                                                 class="text-xs font-semibold
-                                                   text-gray-900 truncate">
+                                       text-gray-900 truncate">
                                                 {{ $appointment->service->name ?? 'Service' }}
                                             </p>
 
-
                                             {{-- Therapist --}}
-
                                             @if ($appointment->therapist)
                                                 <p class="text-[10px] text-gray-500 mt-1">
                                                     Therapist:
@@ -476,54 +475,44 @@
                                                 </p>
                                             @endif
 
-
                                             {{-- Time --}}
-
                                             <p class="text-[10px] text-gray-500 mt-1">
-
                                                 {{ $appointment->start_datetime->format('h:i A') }}
 
                                                 @if ($appointment->end_datetime)
                                                     -
                                                     {{ $appointment->end_datetime->format('h:i A') }}
                                                 @endif
-
                                             </p>
 
                                         </div>
 
-
                                         {{-- Status --}}
-
                                         @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                             <span
                                                 class="shrink-0 rounded-full
-                                                   bg-green-100 px-2 py-1
-                                                   text-[9px] font-medium
-                                                   text-green-700">
+                                       bg-green-100 px-2 py-1
+                                       text-[9px] font-medium
+                                       text-green-700">
                                                 Confirmed
                                             </span>
                                         @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                             <span
                                                 class="shrink-0 rounded-full
-                                                   bg-yellow-100 px-2 py-1
-                                                   text-[9px] font-medium
-                                                   text-yellow-700">
+                                       bg-yellow-100 px-2 py-1
+                                       text-[9px] font-medium
+                                       text-yellow-700">
                                                 Pending
                                             </span>
                                         @endif
 
                                     </div>
 
-
                                     {{-- Today Label --}}
-
                                     <div class="mt-2">
-
                                         <span class="text-[9px] text-[#849753] font-medium">
                                             Today
                                         </span>
-
                                     </div>
 
                                 </div>
@@ -532,72 +521,89 @@
 
                                 <div
                                     class="rounded-lg bg-gray-50
-                                       border border-gray-100 px-3 py-3">
-
+                           border border-gray-100 px-3 py-3">
                                     <p class="text-[10px] text-gray-500">
                                         No appointments scheduled for today.
                                     </p>
-
                                 </div>
                             @endforelse
 
                         </div>
 
-                    </div>
+                        {{-- Show More / Show Less Arrow --}}
+                        @if ($todayAppointments->count() > 3)
+                            <div class="flex justify-center mt-3">
 
+                                <button type="button" @click="showAllToday = !showAllToday"
+                                    class="flex items-center justify-center
+                           w-8 h-8 rounded-full
+                           text-gray-400
+                           hover:text-[#6F4E37]
+                           hover:bg-gray-100
+                           transition"
+                                    :aria-label="showAllToday
+                                        ?
+                                        'Show fewer appointments' :
+                                        'Show all appointments'">
+
+                                    <svg class="w-4 h-4 transition-transform duration-200"
+                                        :class="{ 'rotate-180': showAllToday }" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+
+                                </button>
+
+                            </div>
+                        @endif
+
+                    </div>
                 </section>
 
 
 
+
+
+
                 {{-- =================================================
-                UPCOMING APPOINTMENTS
-            ================================================== --}}
+     UPCOMING APPOINTMENTS
+================================================== --}}
 
-                <section class="rounded-2xl bg-white border border-gray-200 shadow-sm">
-
+                <section x-data="{ showAll: false }" class="rounded-2xl bg-white border border-gray-200 shadow-sm">
                     <div class="px-4 py-4">
 
+                        {{-- Header --}}
                         <div class="flex items-center justify-between">
-
                             <div>
-
                                 <h2 class="text-sm font-semibold text-gray-900">
                                     Upcoming
                                 </h2>
-
-                                <p class="text-[10px] text-gray-500 mt-1">
-                                    Your future appointments
-                                </p>
-
                             </div>
 
+                            @if ($upcomingAppointments->count() > 3)
+                                <span class="text-[10px] text-gray-400">
+                                    {{ $upcomingAppointments->count() }} appointments
+                                </span>
+                            @endif
                         </div>
 
-
+                        {{-- Appointments --}}
                         <div class="mt-3 space-y-2">
 
-                            @forelse($upcomingAppointments as $appointment)
-                                <div
-                                    class="rounded-lg bg-gray-50 border border-gray-100
-                                       px-3 py-3">
-
+                            @forelse($upcomingAppointments as $index => $appointment)
+                                <div x-show="showAll || {{ $index }} < 3" x-transition
+                                    class="rounded-lg bg-gray-50 border border-gray-100 px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
-
                                         <div class="min-w-0">
 
                                             {{-- Service Name --}}
-
-                                            <p
-                                                class="text-xs font-semibold
-                                                   text-gray-900 truncate">
+                                            <p class="text-xs font-semibold text-gray-900 truncate">
                                                 {{ $appointment->service->name ?? 'Service' }}
                                             </p>
 
-
                                             {{-- Therapist --}}
-
                                             @if ($appointment->therapist)
                                                 <p class="text-[10px] text-gray-500 mt-1">
                                                     Therapist:
@@ -605,72 +611,86 @@
                                                 </p>
                                             @endif
 
-
                                             {{-- Date --}}
-
                                             <p class="text-[10px] text-gray-500 mt-1">
                                                 {{ $appointment->start_datetime->format('D, M d, Y') }}
                                             </p>
 
-
                                             {{-- Time --}}
-
                                             <p class="text-[10px] text-gray-500 mt-1">
-
                                                 {{ $appointment->start_datetime->format('h:i A') }}
 
                                                 @if ($appointment->end_datetime)
                                                     -
                                                     {{ $appointment->end_datetime->format('h:i A') }}
                                                 @endif
-
                                             </p>
 
                                         </div>
 
-
                                         {{-- Status --}}
-
                                         @if ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::CONFIRMED)
                                             <span
                                                 class="shrink-0 rounded-full
-                                                   bg-green-100 px-2 py-1
-                                                   text-[9px] font-medium
-                                                   text-green-700">
+                                       bg-green-100 px-2 py-1
+                                       text-[9px] font-medium
+                                       text-green-700">
                                                 Confirmed
                                             </span>
                                         @elseif ($appointment->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING)
                                             <span
                                                 class="shrink-0 rounded-full
-                                                   bg-yellow-100 px-2 py-1
-                                                   text-[9px] font-medium
-                                                   text-yellow-700">
+                                       bg-yellow-100 px-2 py-1
+                                       text-[9px] font-medium
+                                       text-yellow-700">
                                                 Pending
                                             </span>
                                         @endif
 
                                     </div>
-
                                 </div>
 
                             @empty
 
                                 <div
                                     class="rounded-lg bg-gray-50
-                                       border border-gray-100 px-3 py-3">
-
+                           border border-gray-100 px-3 py-3">
                                     <p class="text-[10px] text-gray-500">
                                         No upcoming appointments.
                                     </p>
-
                                 </div>
                             @endforelse
 
                         </div>
 
-                    </div>
+                        {{-- Show More / Show Less --}}
+                        @if ($upcomingAppointments->count() > 3)
+                            <div class="flex justify-center mt-3">
 
+                                <button type="button" @click="showAll = !showAll"
+                                    class="flex items-center justify-center
+                           w-8 h-8 rounded-full
+                           text-gray-400 hover:text-[#6F4E37]
+                           hover:bg-gray-100
+                           transition"
+                                    :aria-label="showAll ? 'Show fewer appointments' : 'Show all appointments'">
+
+                                    {{-- Arrow --}}
+                                    <svg class="w-4 h-4 transition-transform duration-200"
+                                        :class="{ 'rotate-180': showAll }" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+
+                                </button>
+
+                            </div>
+                        @endif
+
+                    </div>
                 </section>
+
+
 
             </aside>
 
@@ -705,10 +725,10 @@
         }
 
         /*
-                        |--------------------------------------------------------------------------
-                        | Appointment Hover Popup
-                        |--------------------------------------------------------------------------
-                        */
+                                    |--------------------------------------------------------------------------
+                                    | Appointment Hover Popup
+                                    |--------------------------------------------------------------------------
+                                    */
 
         .calendar-popup {
             visibility: hidden;
@@ -726,10 +746,10 @@
         }
 
         /*
-                        |--------------------------------------------------------------------------
-                        | Hover Highlight
-                        |--------------------------------------------------------------------------
-                        */
+                                    |--------------------------------------------------------------------------
+                                    | Hover Highlight
+                                    |--------------------------------------------------------------------------
+                                    */
 
         .calendar-highlight {
             opacity: 0;

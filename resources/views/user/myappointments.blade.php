@@ -226,7 +226,7 @@
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Date
+                                    Appointment Date
                                 </th>
 
 
@@ -247,7 +247,7 @@
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                    Aappointment Status
+                                    Appointment Status
                                 </th>
 
                                 <th
@@ -318,9 +318,9 @@
                                             </p>
 
                                             <p class="text-xs text-gray-500">
-                                                Duration:
+                                        
                                                 {{ $appointment->service?->duration_minutes ?? '0' }}
-                                                mins
+                                                Minutes
                                             </p>
 
 
@@ -338,7 +338,7 @@
                                             </p>
 
                                             <p class="text-xs text-gray-500 wrap-break-word">
-                                                {{ $appointment->addOn ? $appointment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
+                                                {{ $appointment->addOn ? $appointment->addOn->duration_minutes . ' Minutes' : 'No add-on selected' }}
                                             </p>
 
                                         </div>
@@ -349,11 +349,6 @@
                                     <td class="px-5 py-4">
 
                                         <div class="flex items-center gap-3 min-w-0">
-
-                                            <div
-                                                class="w-9 h-9 rounded-full bg-[#6F4E37] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                                {{ strtoupper(substr($appointment->therapist?->name ?? 'N', 0, 1)) }}
-                                            </div>
 
                                             <div class="min-w-0">
 
@@ -414,25 +409,12 @@
 
                                         <div class="flex flex-col gap-2">
 
-                                            {{-- PAY AGAIN --}}
-                                            @if ($appointment->payment_method === 'gcash' && in_array($appointment->payment_status, ['failed', 'pending']))
-                                                <form
-                                                    action="{{ route('user.appointments.payment.retry', $appointment->id) }}"
-                                                    method="POST">
-                                                    @csrf
-
-                                                    <button type="submit"
-                                                        class="w-full rounded-lg bg-[#849753] px-4 py-2 text-white hover:bg-[#6F4E37] text-sm font-medium transition">
-                                                        Pay Again
-                                                    </button>
-                                                </form>
-                                            @endif
-
 
                                             {{-- RESCHEDULE --}}
                                             @php
                                                 $canReschedule =
                                                     $status === AppointmentStatus::CONFIRMED &&
+                                                    $appointment->payment_method === 'gcash' &&
                                                     $appointment->appointment_date &&
                                                     $appointment->appointment_date->greaterThanOrEqualTo(today());
                                             @endphp

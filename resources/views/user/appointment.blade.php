@@ -209,10 +209,6 @@
                                     Choose your service
                                 </h2>
 
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Select the massage service and additional options.
-                                </p>
-
                             </div>
 
 
@@ -465,10 +461,6 @@
                                        focus:ring-[#849753]"
                                     placeholder="Tell us about any pain, discomfort or body concern..."></textarea>
 
-                                <p class="text-xs text-gray-400 mt-1">
-                                    Optional. Maximum 2000 characters.
-                                </p>
-
                             </div>
 
                         </div>
@@ -485,10 +477,6 @@
                                 <h2 class="text-xl font-bold text-gray-800">
                                     Choose your therapist
                                 </h2>
-
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Select your preferred available therapist.
-                                </p>
 
                             </div>
 

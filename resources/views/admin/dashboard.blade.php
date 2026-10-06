@@ -111,10 +111,6 @@
 
                             </div>
 
-                            <p class="text-xs text-gray-500 mt-1">
-                                Currently Available Therapist
-                            </p>
-
                         </div>
 
 
@@ -205,10 +201,6 @@
                                 <h2 class="text-sm font-semibold text-gray-900">
                                     Today's Appointments
                                 </h2>
-
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Appointment schedule for today
-                                </p>
 
                             </div>
 
@@ -553,7 +545,7 @@
                         <div class="px-4 py-3">
 
                             <h2 class="text-sm font-semibold text-gray-900">
-                                Appointment Calendar
+                                Calendar
                             </h2>
 
 
@@ -913,11 +905,6 @@
                                         text-gray-900">
                                         Upcoming
                                     </h2>
-
-                                    <p class="text-[10px]
-                                        text-gray-500 mt-1">
-                                        Next appointments
-                                    </p>
 
                                 </div>
 

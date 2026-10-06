@@ -478,27 +478,27 @@ class PayMongoWebhookController extends Controller
             'paymongo_checkout_session_id' => $checkoutSessionId,
             'paymongo_reference_number' => $referenceNumber,
             'paymongo_payment_id' => $paymentId,
+
+            // Actual amount paid.
+            // For downpayment, this remains the downpayment amount.
             'amount_paid' => $paidAmount,
+
             'payment_status' => 'paid',
             'paid_at' => now('Asia/Manila'),
             'status' => AppointmentStatus::CONFIRMED,
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | 16. Notify user
-        |--------------------------------------------------------------------------
-        */
+        $appointment->refresh();
 
-        $appointment->user->notify(new \App\Notifications\AppointmentConfirmedNotification($appointment));
+        $appointment->load(['user', 'service', 'therapist', 'addOn']);
 
-        Log::info('PayMongo payment confirmed.', [
-            'appointment_id' => $appointment->id,
-            'checkout_session_id' => $checkoutSessionId,
-            'payment_id' => $paymentId,
-            'reference_number' => $referenceNumber,
-            'amount_paid' => $paidAmount,
-        ]);
+        if ($appointment->user) {
+            // Appointment confirmation email
+            $appointment->user->notify(new \App\Notifications\AppointmentConfirmedNotification($appointment));
+
+            // Separate payment / E-Receipt email
+            $appointment->user->notify(new \App\Notifications\AppointmentPaidNotification($appointment));
+        }
 
         /*
         |--------------------------------------------------------------------------

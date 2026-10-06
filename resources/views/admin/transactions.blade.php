@@ -15,10 +15,6 @@
             <h1 class="text-2xl font-bold text-[#2F2420]">
                 Transaction History
             </h1>
-
-            <p class="text-sm text-gray-500 mt-1">
-                View and monitor all appointment payment transactions.
-            </p>
         </div>
 
         {{-- STATISTICS --}}
@@ -141,7 +137,7 @@
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                User
+                                Customer
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
@@ -165,7 +161,11 @@
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Status
+                                Payment Status
+                            </th>
+
+                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                                Action
                             </th>
 
                         </tr>
@@ -267,24 +267,23 @@
                                 {{-- ADD-ON --}}
                                 <td class="px-4 py-4">
 
-                                    @if ($transaction->addOn)
-                                        <div class="font-medium text-gray-800">
-                                            {{ $transaction->addOn->name }}
-                                        </div>
 
-                                        <div class="text-xs text-gray-500">
-                                            {{ $transaction->addons_duration_minutes ?? ($transaction->addOn->duration_minutes ?? 'N/A') }}
-                                            minutes
-                                        </div>
+                                    <div class="space-y-1">
 
-                                        <div class="text-xs text-gray-500">
-                                            ₱{{ number_format((float) $transaction->addons_price, 2) }}
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400">
-                                            No Add-on
-                                        </span>
-                                    @endif
+                                        <p class="font-semibold text-gray-800">
+
+                                            {{ $transaction->addOn->name ?? 'None' }}
+
+                                        </p>
+
+                                        <p class="text-xs text-gray-500">
+
+                                            {{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
+
+                                        </p>
+
+
+                                    </div>
 
                                 </td>
 
@@ -297,7 +296,7 @@
                                 <td class="px-4 py-4">
 
                                     <div class="font-medium text-gray-800">
-                                        {{ $transaction->appointment_date?->format('M d, Y') ?? 'N/A' }}
+                                        {{ $transaction->appointment_date?->format('Y-m-d') ?? 'N/A' }}
                                     </div>
 
                                     <div class="text-xs text-gray-500">
@@ -345,74 +344,30 @@
                                     @endphp
 
                                     @if ($paymentStatus !== 'unpaid' && $remainingBalance > 0)
-                                        <div class="text-xs text-red-600 mt-1 font-semibold">
+                                        <div class="text-xs  mt-1 font-semibold">
                                             Remaining:
                                             ₱{{ number_format($remainingBalance, 2) }}
                                         </div>
                                     @endif
                                 </td>
 
-                                {{-- STATUS --}}
+
+
+                                {{-- PAYMENT STATUS --}}
                                 <td class="px-4 py-4">
-                                    @php
-                                        $isConfirmed = $transaction->status === AppointmentStatus::CONFIRMED;
 
-                                        $isCounterPayment =
-                                            strtolower((string) ($transaction->payment_method ?? '')) === 'branch';
-
-                                        $isDownpayment =
-                                            strtolower((string) ($transaction->payment_type ?? '')) === 'downpayment';
-
-                                        /*
-                                         * Show payment button immediately after confirmation.
-                                         */
-                                        $canCompletePayment = $isConfirmed && $remainingBalance > 0;
-                                    @endphp
-
-                                    {{-- APPOINTMENT STATUS --}}
-                                    <div>
-                                        Appointment Status:
-                                        @if ($status === 'confirm' || $status === 'confirmed')
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                                Confirmed
-                                            </span>
-                                        @elseif ($status === 'pending')
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                                Pending
-                                            </span>
-                                        @elseif ($status === 'rejected')
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                                Rejected
-                                            </span>
-                                        @elseif ($status === 'cancelled')
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                                Cancelled
-                                            </span>
-                                        @elseif ($status === 'no_show' || $status === 'no show')
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
-                                                No Show
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                                {{ ucfirst(str_replace('_', ' ', $status)) }}
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    {{-- PAYMENT STATUS --}}
                                     <div class="mt-2">
-
-                                        Payment Status:
                                         @if ($paymentStatus === 'paid')
                                             <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 
+                                            text-green-700 text-xs
+                                            font-semibold rounded-full
+                                        whitespace-nowrap">
+
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+
                                                 Paid
+
                                             </span>
                                         @elseif ($paymentStatus === 'pending')
                                             <span
@@ -432,28 +387,37 @@
                                         @endif
                                     </div>
 
+                                </td>
+
+
+                                <td>
+
+                                    @php
+                                        $isConfirmed = $transaction->status === AppointmentStatus::CONFIRMED;
+
+                                        $isCounterPayment =
+                                            strtolower((string) ($transaction->payment_method ?? '')) === 'branch';
+
+                                        $isDownpayment =
+                                            strtolower((string) ($transaction->payment_type ?? '')) === 'downpayment';
+
+                                        $canCompletePayment = $isConfirmed && $remainingBalance > 0;
+                                    @endphp
+
+
                                     {{-- PAYMENT ACTION --}}
                                     @if ($canCompletePayment)
                                         <form method="POST"
                                             action="{{ route('admin.transactions.mark-paid', $transaction) }}"
                                             class="mt-3" onclick="event.stopPropagation()"
-                                            onsubmit="return confirmPaymentAction(
-                '{{ $isDownpayment ? 'the remaining balance' : 'the counter payment' }}'
-            )">
+                                            onsubmit="return confirmPaymentAction('{{ $isDownpayment ? 'the remaining balance' : 'the counter payment' }}')">
+
                                             @csrf
 
                                             <button type="submit"
-                                                class="
-                    inline-flex items-center justify-center gap-2
-                    px-3 py-2
-                    rounded-lg
-                    bg-[#849753]
-                    text-white
-                    text-xs
-                    font-semibold
-                    hover:bg-[#718441]
-                    transition
-                ">
+                                                class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#849753] 
+                                                text-white text-xs font-semibold hover:bg-[#718441] transition">
+
                                                 @if ($isDownpayment)
                                                     Full Paid
                                                 @elseif ($isCounterPayment)
@@ -463,7 +427,10 @@
                                                 @endif
                                             </button>
                                         </form>
+                                    @else
+                                        <span> No Action</span>
                                     @endif
+
                                 </td>
 
                             </tr>

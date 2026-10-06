@@ -299,14 +299,6 @@
             <div class="bg-white rounded-2xl border border-gray-200
                 shadow-sm overflow-hidden">
 
-                {{-- Table Header --}}
-
-                <div class="px-5 py-4 border-b border-gray-100
-                    flex items-center justify-between">
-
-                </div>
-
-
                 @if ($appointments->isEmpty())
 
                     <div class="py-16 text-center text-gray-400">
@@ -340,7 +332,7 @@
 
                                     <th
                                         class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                        User
+                                        Customer
                                     </th>
 
                                     <th
@@ -439,17 +431,6 @@
                                         <td class="px-5 py-4">
 
                                             <div class="flex items-center gap-3">
-
-                                                <div
-                                                    class="w-9 h-9 rounded-full
-                                                    bg-[#849753] flex items-center
-                                                    justify-center text-white
-                                                    font-bold text-sm shrink-0">
-
-                                                    {{ strtoupper(substr($appointment->user->name ?? 'N', 0, 1)) }}
-
-                                                </div>
-
                                                 <div>
 
                                                     <p
@@ -492,31 +473,14 @@
                                                 </p>
 
                                                 <p class="text-xs text-gray-500">
-
-                                                    Duration:
-
                                                     {{ $appointment->service->duration_minutes ?? 'N/A' }}
-
-                                                    mins
-
-                                                </p>
-
-                                                <p class="text-xs font-medium text-gray-500">
-
-                                                    Price:
-
-                                                    ₱{{ number_format($appointment->service->price ?? 0, 2) }}
-
+                                                    Minutes
                                                 </p>
 
                                                 <p
                                                     class="text-xs font-medium
                                                     text-gray-500 capitalize">
-
-                                                    Level:
-
                                                     {{ $appointment->level ?? 'N/A' }}
-
                                                 </p>
 
                                             </div>
@@ -542,13 +506,6 @@
 
                                                 </p>
 
-                                                <p class="text-xs font-medium text-gray-500">
-
-                                                    Price:
-
-                                                    ₱{{ number_format($appointment->addons_price ?? 0, 2) }}
-
-                                                </p>
 
                                             </div>
 
@@ -1713,7 +1670,7 @@
             } else if (paymentMethod === 'branch') {
 
                 formattedPaymentMethod =
-                    'Pay at Branch';
+                    'Pay at Counter';
 
             } else if (paymentMethod) {
 

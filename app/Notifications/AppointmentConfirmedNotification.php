@@ -12,10 +12,7 @@ class AppointmentConfirmedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public UsersAppointments $appointment)
-    {
-        //
-    }
+    public function __construct(public UsersAppointments $appointment) {}
 
     public function via($notifiable): array
     {
@@ -28,11 +25,28 @@ class AppointmentConfirmedNotification extends Notification
             ->subject('Your Appointment Is Confirmed')
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('Your appointment has been confirmed.')
-            ->line('Service: ' . ($this->appointment->service->name ?? 'N/A'))
-            ->line('Therapist: ' . ($this->appointment->therapist->name ?? 'N/A'))
-            ->line('Date: ' . optional($this->appointment->appointment_date)->format('F d, Y'))
-            ->line('Time: ' . Carbon::parse($this->appointment->appointment_time)->format('h:i A'))
-            ->line('Add-on: ' . ($this->appointment->addOn->name ?? 'None'))
+            ->line(
+                'Service: ' .
+                ($this->appointment->service?->name ?? 'N/A')
+            )
+            ->line(
+                'Therapist: ' .
+                ($this->appointment->therapist?->name ?? 'N/A')
+            )
+            ->line(
+                'Date: ' .
+                optional($this->appointment->appointment_date)
+                    ->format('F d, Y')
+            )
+            ->line(
+                'Time: ' .
+                Carbon::parse($this->appointment->appointment_time)
+                    ->format('h:i A')
+            )
+            ->line(
+                'Add-on: ' .
+                ($this->appointment->addOn?->name ?? 'None')
+            )
             ->line('Thank you for booking with us.');
     }
 
@@ -40,12 +54,18 @@ class AppointmentConfirmedNotification extends Notification
     {
         return [
             'title' => 'Your Appointment Is Confirmed',
+
             'message' => 'Your appointment has been confirmed.',
-            'service' => $this->appointment->service->name ?? 'N/A',
-            'therapist' => $this->appointment->therapist->name ?? 'N/A',
+
+            'service' => $this->appointment->service?->name ?? 'N/A',
+
+            'therapist' => $this->appointment->therapist?->name ?? 'N/A',
+
             'date' => optional($this->appointment->appointment_date)->format('F d, Y'),
+
             'time' => Carbon::parse($this->appointment->appointment_time)->format('h:i A'),
-            'addon' => $this->appointment->addOn->name ?? 'None',
+
+            'addon' => $this->appointment->addOn?->name ?? 'None',
         ];
     }
 }

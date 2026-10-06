@@ -49,6 +49,10 @@ use App\Repositories\Admin\Transaction\TransactionRepositoryInterface;
 use App\Repositories\Admin\Report\ReportRepository;
 use App\Repositories\Admin\Report\ReportRepositoryInterface;
 
+use App\Repositories\Staff\Dashboard\StaffDashboardRepository;
+use App\Repositories\Staff\Dashboard\StaffDashboardRepositoryInterface;
+
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -72,6 +76,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
 
         $this->app->bind(ReportRepositoryInterface::class, ReportRepository::class);
+
+        
+
+        $this->app->bind(StaffDashboardRepositoryInterface::class, StaffDashboardRepository::class);
+
     }
 
     /**
