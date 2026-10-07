@@ -2,157 +2,46 @@
 {{-- DESKTOP SIDEBAR --}}
 {{-- ============================================================= --}}
 
-<aside
-    class="hidden lg:flex
-           fixed top-0 left-0
-           h-screen
-           bg-[#849753]
-           flex-col
-           z-50
-           transition-all duration-300"
+<aside class="hidden lg:flex fixed top-0 left-0 h-screen bg-[#849753] flex-col z-50 transition-all duration-300"
     :class="sidebarOpen ? 'w-60' : 'w-20'">
 
     {{-- ========================================================= --}}
     {{-- SIDEBAR HEADER --}}
     {{-- ========================================================= --}}
 
-    <div class="h-20
-               flex items-center
-               border-b border-white/10
-               transition-all duration-300"
-        :class="sidebarOpen
-            ?
-            'px-4 gap-3' :
-            'justify-center px-2'">
-
+    <div class="h-20 w-full flex items-center justify-center border-b border-white/10">
         {{-- ===================================================== --}}
         {{-- HAMBURGER BUTTON --}}
         {{-- ===================================================== --}}
 
         <button type="button" @click="sidebarOpen = !sidebarOpen"
-            class="w-10 h-10
-                   shrink-0
-                   flex items-center justify-center
-                   rounded-xl
-                   text-white
-                   hover:bg-white/10
-                   transition-all"
+            class="w-12 h-12 flex items-center justify-center
+               rounded-xl
+               text-white
+               hover:bg-white/10
+               transition-all duration-200"
             aria-label="Toggle sidebar">
-
-            {{-- Always Hamburger --}}
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-
         </button>
-
-
-        {{-- ===================================================== --}}
-        {{-- SIDEBAR LOGO + TEXT --}}
-        {{-- ===================================================== --}}
-
-        <div x-show="sidebarOpen" x-cloak class="flex items-center
-                   gap-2
-                   min-w-0">
-
-            <img src="{{ asset('build/assets/images/logo.png') }}" alt="Padayon Massage Center Logo"
-                class="h-10 w-10
-                       object-contain
-                       shrink-0">
-
-            <div class="leading-tight min-w-0">
-
-                <h1
-                    class="text-white
-                           font-bold
-                           text-sm
-                           truncate">
-                    Padayon Massage Center
-                </h1>
-
-                <p
-                    class="text-white/70
-                           text-[10px]
-                           leading-tight">
-                    Blind Massage Specialists
-                </p>
-
-            </div>
-
-        </div>
-
     </div>
 
-
-    {{-- ========================================================= --}}
-    {{-- ADMIN INFORMATION --}}
-    {{-- ========================================================= --}}
-
-    <div class="flex items-center
-               border-b border-white/10
-               py-4"
-        :class="sidebarOpen
-            ?
-            'gap-3 px-5' :
-            'justify-center px-2'">
-
-        {{-- Avatar --}}
-        <div
-            class="w-9 h-9
-                   rounded-full
-                   bg-[#6F4E37]
-                   flex items-center justify-center
-                   text-white
-                   font-bold
-                   text-sm
-                   shrink-0">
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-        </div>
-
-
-        {{-- Admin Information --}}
-        <div x-show="sidebarOpen" x-cloak class="overflow-hidden">
-
-            <p
-                class="text-white
-                       text-sm
-                       font-semibold
-                       truncate">
-                {{ auth()->user()->name }}
-            </p>
-
-            <p class="text-white/70
-                       text-xs
-                       truncate">
-                {{ auth()->user()->email }}
-            </p>
-
-        </div>
-
-    </div>
 
 
     {{-- ========================================================= --}}
     {{-- NAVIGATION --}}
     {{-- ========================================================= --}}
 
-    <nav class="flex-1
-               overflow-y-auto
-               px-3
-               py-4
-               space-y-1">
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
 
         {{-- ===================================================== --}}
         {{-- DASHBOARD --}}
         {{-- ===================================================== --}}
 
         <a href="{{ route('staff.dashboard') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('staff.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+            class="flex items-center rounded-xl text-sm font-medium transition-all
+                {{ request()->routeIs('staff.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
@@ -171,7 +60,32 @@
         </a>
 
 
+        <a href="{{ route('staff.quick-book') }}" wire:navigate
+            class="flex items-center
+                   rounded-xl
+                   text-sm
+                   font-medium
+                   transition-all
+                   {{ request()->routeIs('staff.quick-book') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+            :class="sidebarOpen
+                ?
+                'gap-3 px-3 py-2.5' :
+                'justify-center px-2 py-3'">
 
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="3" y="4.5" width="18" height="17" rx="2" />
+                <path d="M8 2.5v4M16 2.5v4M3 9h18" />
+                <circle cx="12" cy="15" r="3.5" />
+                <path d="M12 13v2l1.5 1" />
+            </svg>
+
+            <span x-show="sidebarOpen" x-cloak class="truncate">
+                Quick Book
+            </span>
+
+        </a>
+
+        
 
         {{-- ===================================================== --}}
         {{-- APPOINTMENTS --}}
@@ -203,10 +117,6 @@
 
         </a>
 
-
-
-
-
         {{-- ===================================================== --}}
         {{-- TRANSACTIONS --}}
         {{-- ===================================================== --}}
@@ -223,8 +133,7 @@
                 'gap-3 px-3 py-2.5' :
                 'justify-center px-2 py-3'">
 
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                viewBox="0 0 24 24">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <rect x="3" y="5" width="18" height="14" rx="2" />
 
                 <path d="M3 10h18" />
@@ -237,7 +146,7 @@
 
         </a>
 
-        
+
         {{-- ===================================================== --}}
         {{-- THERAPIST --}}
         {{-- ===================================================== --}}
@@ -254,7 +163,8 @@
                 'gap-3 px-3 py-2.5' :
                 'justify-center px-2 py-3'">
 
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="3" />
 
                 <path d="M5 21a7 7 0 0114 0" />
@@ -411,7 +321,7 @@
             </a>
 
 
-           
+
 
             {{-- ================================================= --}}
             {{-- TRANSACTIONS --}}
@@ -434,7 +344,7 @@
                     Pay
                 </span>
 
-                @if (request()->routeIs('staff.transactions*'))
+                @if (request()->routeIs('admin.transactions*'))
                     <span
                         class="w-1 h-1
                                rounded-full
@@ -551,7 +461,6 @@
                 </div>
 
             </div>
-
 
 
 

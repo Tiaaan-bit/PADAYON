@@ -20,6 +20,7 @@ use App\Http\Controllers\HomePage\PageController;
 use App\Http\Controllers\Payment\PayMongoWebhookController;
 use App\Http\Controllers\Staff\StaffAppointmentsController;
 use App\Http\Controllers\Staff\StaffDashboardController;
+use App\Http\Controllers\Staff\StaffQuickBookController;
 use App\Http\Controllers\Staff\StaffTherapistController;
 use App\Http\Controllers\Staff\StaffTransactionsController;
 use App\Http\Controllers\Therapist\TherapistDashboardController;
@@ -161,6 +162,7 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         //---Admin Reports Controller---//
         Route::get('/reports', [AdminReportsController::class, 'reports'])->name('reports');
 
+        //---Admin Quick Book Controller---//
         Route::get('/quick-book',[AdminQuickBookController::class, 'index'])->name('quick-book');
         Route::post('/quick-book',[AdminQuickBookController::class, 'store'])->name('quick-book.store');
         Route::get('/quick-book/available-slots',[AdminQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
@@ -180,6 +182,11 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
         Route::get('/dashboard',[StaffDashboardController::class, 'dashboard'])->name('dashboard');
 
+        //---Admin Quick Book Controller---//
+        Route::get('/quick-book',[StaffQuickBookController::class, 'index'])->name('quick-book');
+        Route::post('/quick-book',[StaffQuickBookController::class, 'store'])->name('quick-book.store');
+        Route::get('/quick-book/available-slots',[StaffQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
+
 
         Route::get('/appointments', [StaffAppointmentsController::class, 'index'])->name('appointments');
         Route::put('/appointments/{appointment}/status', [StaffAppointmentsController::class, 'updateStatus'])->name('appointments.updateStatus');
@@ -187,6 +194,8 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
 
         Route::get('/transactions', [StaffTransactionsController::class, 'transactions'])->name('transactions');
+        Route::post('/transactions/{appointment}/mark-paid',[StaffTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
+
 
 
         Route::get('/therapists', [StaffTherapistController::class, 'index'])->name('therapists');

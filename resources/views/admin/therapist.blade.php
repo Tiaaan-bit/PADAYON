@@ -60,39 +60,56 @@
             
                 async openFeedbackModal(therapistId, therapistName) {
                     this.showFeedbackModal = true;
-            
                     this.feedbackTherapistName = therapistName;
                     this.feedbackList = [];
                     this.feedbackError = '';
                     this.feedbackLoading = true;
             
                     try {
-                        const response = await fetch(
-                            '{{ url('/admin/therapists') }}/' + therapistId + '/feedback', {
-                                method: 'GET',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                },
-                            }
-                        );
+                        const url = '{{ route('admin.therapist.feedback', ['therapist' => '__THERAPIST_ID__']) }}'
+                            .replace('__THERAPIST_ID__', therapistId);
+            
+                        console.log('Loading therapist feedback:', url);
+            
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
             
                         if (!response.ok) {
-                            throw new Error('Unable to load feedback.');
+                            const errorText = await response.text();
+            
+                            console.error('Feedback request failed:', {
+                                status: response.status,
+                                statusText: response.statusText,
+                                url: url,
+                                response: errorText,
+                            });
+            
+                            throw new Error(
+                                `Unable to load feedback. Server returned ${response.status}.`
+                            );
                         }
             
                         const data = await response.json();
             
+                        console.log('Feedback response:', data);
+            
                         this.feedbackTherapistName =
                             data.therapist?.name ?? therapistName;
             
-                        this.feedbackList = data.feedback ?? [];
+                        this.feedbackList = Array.isArray(data.feedback) ?
+                            data.feedback :
+                            [];
             
                     } catch (error) {
-                        console.error(error);
+                        console.error('Feedback error:', error);
             
                         this.feedbackError =
-                            'Unable to load feedback. Please try again.';
+                            error.message || 'Unable to load feedback. Please try again.';
                     } finally {
                         this.feedbackLoading = false;
                     }
@@ -482,8 +499,7 @@
                                             {{-- Delete --}}
 
                                             <form method="POST"
-                                                action="{{ route('admin.therapist.destroy', $therapist) }}"
-                                                class="flex-1">
+                                                action="{{ route('admin.therapist.destroy', $therapist) }}" class="flex-1">
 
                                                 @csrf
 
@@ -1199,20 +1215,20 @@
                                                         fill="currentColor" viewBox="0 0 20 20">
 
                                                         <path d="M9.049 2.927c.3-.921
-                                                        1.603-.921 1.902 0l1.07
-                                                        3.292a1 1 0 00.95.69h3.462
-                                                        c.969 0 1.371 1.24.588
-                                                        1.81l-2.8 2.034a1 1 0
-                                                        00-.364 1.118l1.07 3.292
-                                                        c.3.921-.755 1.688-1.538
-                                                        1.118l-2.8-2.034a1 1
-                                                        0 00-1.176 0l-2.8 2.034
-                                                        c-.783.57-1.838-.197-1.538
-                                                        -1.118l1.07-3.292a1 1
-                                                        0 00-.364-1.118L2.98
-                                                        8.72c-.783-.57-.38-1.81.588
-                                                        -1.81H7.03a1 1 0 00.95-.69
-                                                        l1.07-3.292z" />
+                                                            1.603-.921 1.902 0l1.07
+                                                            3.292a1 1 0 00.95.69h3.462
+                                                            c.969 0 1.371 1.24.588
+                                                            1.81l-2.8 2.034a1 1 0
+                                                            00-.364 1.118l1.07 3.292
+                                                            c.3.921-.755 1.688-1.538
+                                                            1.118l-2.8-2.034a1 1
+                                                            0 00-1.176 0l-2.8 2.034
+                                                            c-.783.57-1.838-.197-1.538
+                                                            -1.118l1.07-3.292a1 1
+                                                            0 00-.364-1.118L2.98
+                                                            8.72c-.783-.57-.38-1.81.588
+                                                            -1.81H7.03a1 1 0 00.95-.69
+                                                            l1.07-3.292z" />
 
                                                     </svg>
 

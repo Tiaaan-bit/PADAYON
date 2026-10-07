@@ -31,7 +31,7 @@ class TherapistUpdateRequest extends FormRequest
 
             'status' => ['required', 'in:available,unavailable'],
 
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

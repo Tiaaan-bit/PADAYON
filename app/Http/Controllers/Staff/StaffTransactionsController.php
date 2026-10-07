@@ -2,44 +2,48 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Actions\Admin\Transaction\MarkTransactionAsPaid;
 use App\Http\Controllers\Controller;
+use App\Repositories\Staff\Transaction\StaffTransactionRepositoryInterface;
 use App\Models\UsersAppointments;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use App\Enums\Admin\Appointment\AppointmentStatus;
 
 class StaffTransactionsController extends Controller
 {
-    public function transactions(Request $request)
+    public function transactions(Request $request, StaffTransactionRepositoryInterface $transactions): View
     {
-        $query = UsersAppointments::with(['user', 'service', 'therapist', 'addOn']);
+        $transactionList = $transactions->getAll($request->input('date'), $request->input('payment_method'), $request->input('amount'));
 
-        if ($request->filled('date')) {
-            $query->whereDate('appointment_date', $request->date);
-        }
+        $totalServicePrice = $transactions->getTotalServicePrice();
 
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
+        $totalAddOnPrice = $transactions->getTotalAddOnPrice();
 
-        if ($request->filled('amount')) {
-            $query->where('amount_paid', $request->amount);
-        }
+        $totalAmountPaid = $transactions->getTotalAmountPaid();
 
-        $transactions = $query->latest()->paginate(5)->withQueryString();
+        return view('staff.transactions', [
+            'transactions' => $transactionList,
+            'totalServicePrice' => $totalServicePrice,
+            'totalAddOnPrice' => $totalAddOnPrice,
+            'totalAmountPaid' => $totalAmountPaid,
+        ]);
+    }
 
-        $allTransactions = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
-            ->latest()
-            ->get();
+    public function markAsPaid(UsersAppointments $appointment, MarkTransactionAsPaid $markTransactionAsPaid)
+    {
+        abort_unless($appointment->status === AppointmentStatus::CONFIRMED, 422, 'Only confirmed appointments can be marked as paid.');
 
-        $totalServicePrice = $allTransactions->sum(function ($transaction) {
-            return $transaction->service->price ?? 0;
-        });
+        $totalAppointmentAmount = (float) $appointment->service_price + (float) $appointment->addons_price;
 
-        $totalAddOnPrice = $allTransactions->sum(function ($transaction) {
-            return $transaction->addons_price ?? 0;
-        });
+        $amountPaid = (float) ($appointment->amount_paid ?? 0);
 
-        $totalAmountPaid = $allTransactions->sum('amount_paid');
+        $remainingBalance = max(0, $totalAppointmentAmount - $amountPaid);
 
-        return view('staff.transactions', compact('transactions', 'totalServicePrice', 'totalAddOnPrice', 'totalAmountPaid'));
+        abort_if($remainingBalance <= 0, 422, 'This appointment is already fully paid.');
+
+        $markTransactionAsPaid->execute($appointment);
+
+        return back()->with('success', 'Payment has been successfully marked as paid.');
     }
 }

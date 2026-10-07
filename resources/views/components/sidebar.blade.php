@@ -72,9 +72,10 @@
                 'justify-center px-2 py-3'">
 
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M3 10.5L12 3l9 7.5" />
-                <path d="M5 9.5V21h14V9.5" />
-                <path d="M9 21v-6h6v6" />
+                <rect x="3" y="4.5" width="18" height="17" rx="2" />
+                <path d="M8 2.5v4M16 2.5v4M3 9h18" />
+                <circle cx="12" cy="15" r="3.5" />
+                <path d="M12 13v2l1.5 1" />
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
