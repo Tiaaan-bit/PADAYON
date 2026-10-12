@@ -15,12 +15,12 @@ class ExpirePendingPayMongoAppointments extends Command
 
     public function handle(): int
     {
-        $appointments = UsersAppointments::query()->where('payment_method', 'gcash')->where('payment_status', 'pending')->where('status', AppointmentStatus::PENDING)->whereNotNull('paymongo_checkout_expires_at')->where('paymongo_checkout_expires_at', '<=', now('Asia/Manila'))->get();
+        $appointments = UsersAppointments::query()->where('payment_method', 'gcash')->where('payment_status', 'pending')->where('status', AppointmentStatus::PENDING->value)->whereNotNull('paymongo_checkout_expires_at')->where('paymongo_checkout_expires_at', '<=', now('Asia/Manila'))->get();
 
         foreach ($appointments as $appointment) {
             $appointment->update([
                 'payment_status' => 'failed',
-                'status' => AppointmentStatus::FAILED,
+                'status' => AppointmentStatus::FAILED->value,
             ]);
 
             Log::info('Expired abandoned PayMongo payment.', [

@@ -1290,8 +1290,8 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (!in_array($appointment->payment_status, ['failed', 'pending'], true)) {
-            return back()->with('error', 'This payment cannot be retried.');
+        if ($appointment->payment_status !== 'pending') {
+            return back()->with('error', 'Only pending payments can be retried.');
         }
 
         /*
@@ -1300,7 +1300,7 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::FAILED], true)) {
+        if ($appointment->status !== AppointmentStatus::PENDING) {
             return back()->with('error', 'This appointment is not available for payment retry.');
         }
 
@@ -1459,9 +1459,7 @@ class UserAppointmentController extends Controller
             ]);
 
             $appointment->update([
-                'payment_status' => 'failed',
-
-                'status' => AppointmentStatus::FAILED,
+                'payment_status' => 'pending',
             ]);
 
             return back()->with('error', 'We could not start the payment again. Please try again.');

@@ -281,7 +281,7 @@
 
                                             <template x-for="event in day.events"
                                                 :key="event.id ??
-                                                    event.date + event.time + event.title">
+                                                    event.date + event.time + event.end_time + event.title + event.description">
 
                                                 <div
                                                     class="rounded-lg bg-gray-50
@@ -293,24 +293,28 @@
                                                         class="flex items-center
                                            justify-between gap-2">
 
-                                                        <p class="text-[10px] font-semibold
-                                               text-[#849753]"
-                                                            x-text="event.time"></p>
+                                           <p
+                                           class="text-[10px] font-semibold text-[#849753]"
+                                           x-text="event.time + ' - ' + event.end_time"
+                                       ></p>
 
                                                         <span
                                                             class="text-[8px] px-1.5 py-0.5
                                                rounded-full
                                                bg-[#849753]/10
                                                text-[#526333]"
-                                                            x-text="event.status"></span>
+                                                            x-text="event.status">
+                                                            
+                                                        </span>
 
                                                     </div>
 
 
                                                     {{-- Service --}}
-                                                    <p class="text-[10px] font-semibold
-                                           text-gray-800 mt-1 truncate"
-                                                        x-text="event.title"></p>
+                                                    <p class="text-[10px] font-semiboldtext-gray-800 mt-1 truncate"
+                                                        x-text="event.title + ' - ' + event.description">
+                                                    
+                                                    </p>
 
 
                                                     {{-- Client --}}
@@ -576,15 +580,9 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h2 class="text-sm font-semibold text-gray-900">
-                                    Upcoming
+                                    Upcoming Appointment
                                 </h2>
                             </div>
-
-                            @if ($upcomingAppointments->count() > 3)
-                                <span class="text-[10px] text-gray-400">
-                                    {{ $upcomingAppointments->count() }} appointments
-                                </span>
-                            @endif
                         </div>
 
                         {{-- Appointments --}}

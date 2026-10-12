@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Actions\User\Appointment\RescheduleAppointment;
 use App\Enums\Admin\Appointment\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UsersAppointments;
 use App\Notifications\AppointmentCancelledNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Actions\User\Appointment\RescheduleAppointment;
-use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
 
 class MyAppointmentController extends Controller
 {
@@ -53,10 +52,14 @@ class MyAppointmentController extends Controller
         $statsQuery = UsersAppointments::where('user_id', $user->id);
 
         $totalAppointments = (clone $statsQuery)->count();
-        $pendingAppointments = (clone $statsQuery)->where('status', 'pending')->count();
-        $confirmedAppointments = (clone $statsQuery)->where('status', 'confirm')->count();
-        $rejectedAppointments = (clone $statsQuery)->where('status', 'rejected')->count();
-        $cancelledAppointments = (clone $statsQuery)->where('status', 'cancelled')->count();
+
+        $pendingAppointments = (clone $statsQuery)->where('status', AppointmentStatus::PENDING)->count();
+
+        $confirmedAppointments = (clone $statsQuery)->where('status', AppointmentStatus::CONFIRMED)->count();
+
+        $rejectedAppointments = (clone $statsQuery)->where('status', AppointmentStatus::REJECTED)->count();
+
+        $cancelledAppointments = (clone $statsQuery)->where('status', AppointmentStatus::CANCELLED)->count();
 
         return view('user.myappointments', compact('appointments', 'totalAppointments', 'pendingAppointments', 'confirmedAppointments', 'rejectedAppointments', 'cancelledAppointments'));
     }
@@ -77,7 +80,7 @@ class MyAppointmentController extends Controller
             return back()->with('error', 'This appointment is already cancelled.');
         }
 
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+        if ($appointment->status !== AppointmentStatus::PENDING || $appointment->payment_method !== 'branch') {
             return back()->with('error', 'This appointment cannot be cancelled.');
         }
 
@@ -99,7 +102,9 @@ class MyAppointmentController extends Controller
 
         abort_unless($appointment->user_id === $user->id, 403);
 
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+        $appointmentDate = Carbon::parse($appointment->appointment_date, 'Asia/Manila');
+
+        if ($appointment->status !== AppointmentStatus::CONFIRMED || $appointment->payment_method !== 'gcash' || $appointmentDate->lt(Carbon::today('Asia/Manila'))) {
             return redirect()->route('user.my-appointments')->with('error', 'This appointment cannot be rescheduled.');
         }
 
@@ -112,7 +117,7 @@ class MyAppointmentController extends Controller
     {
         abort_unless($appointment->user_id === Auth::id(), 403);
 
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+        if ($appointment->status !== AppointmentStatus::CONFIRMED || $appointment->payment_method !== 'gcash') {
             return response()->json(
                 [
                     'message' => 'This appointment cannot be rescheduled.',
@@ -242,17 +247,19 @@ class MyAppointmentController extends Controller
     {
         abort_unless($appointment->user_id === Auth::id(), 403);
 
+        $appointmentDate = Carbon::parse($appointment->appointment_date, 'Asia/Manila');
+
+        if ($appointment->status !== AppointmentStatus::CONFIRMED || $appointment->payment_method !== 'gcash' || $appointmentDate->lt(Carbon::today('Asia/Manila'))) {
+            return redirect()->route('user.my-appointments')->with('error', 'This appointment cannot be rescheduled.');
+        }
+
         $validated = $request->validate([
             'appointment_date' => ['required', 'date_format:Y-m-d'],
             'appointment_time' => ['required', 'date_format:H:i'],
         ]);
 
-        try {
-            $this->rescheduleAppointment->execute($appointment, $validated['appointment_date'], $validated['appointment_time']);
+        $this->rescheduleAppointment->execute($appointment, $validated['appointment_date'], $validated['appointment_time']);
 
-            return redirect()->route('user.my-appointments')->with('success', 'Appointment rescheduled successfully.');
-        } catch (ValidationException $e) {
-            throw $e;
-        }
+        return redirect()->route('user.my-appointments')->with('success', 'Appointment rescheduled successfully.');
     }
 }

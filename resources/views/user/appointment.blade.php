@@ -86,10 +86,6 @@
                             Book an Appointment
                         </h1>
 
-                        <p class="text-sm text-gray-500 mt-1">
-                            Complete the steps below to schedule your massage.
-                        </p>
-
                     </div>
 
 
@@ -564,11 +560,6 @@
                                     Choose your schedule
                                 </h2>
 
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Available times are calculated using the selected
-                                    service duration and therapist's current bookings.
-                                </p>
-
                             </div>
 
 
@@ -584,56 +575,6 @@
                                     class="w-full rounded-xl border-gray-300
                                        focus:border-[#849753]
                                        focus:ring-[#849753]">
-
-                            </div>
-
-
-                            {{-- DURATION --}}
-
-                            <div x-show="selectedService"
-                                class="mb-6 p-4 rounded-2xl
-                                   bg-[#849753]/10
-                                   border border-[#849753]/20">
-
-                                <div class="flex justify-between items-center gap-4">
-
-                                    <div>
-
-                                        <p class="text-sm text-gray-500">
-                                            Required appointment duration
-                                        </p>
-
-                                        <p class="text-lg font-bold text-gray-800">
-
-                                            <span x-text="totalDuration"></span>
-                                            minutes
-
-                                        </p>
-
-                                    </div>
-
-
-                                    <div class="text-right">
-
-                                        <p class="text-sm text-gray-500">
-                                            Service + Add-on
-                                        </p>
-
-                                        <p class="font-semibold text-[#849753]">
-
-                                            <span x-text="selectedService?.duration_minutes || 0"></span>
-
-                                            +
-
-                                            <span x-text="selectedAddOn?.duration_minutes || 0"></span>
-
-                                            min
-
-                                        </p>
-
-                                    </div>
-
-                                </div>
 
                             </div>
 
@@ -657,49 +598,10 @@
                             {{-- LEGEND --}}
 
                             <div x-show="!loadingSlots && appointment_date && availableSlots.length"
-                                class="mb-5 p-4 rounded-2xl
-                                   bg-gray-50 border border-gray-200">
-
+                                class="mb-5 p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center">
                                 <p class="text-xs font-bold text-gray-500 uppercase mb-3">
-                                    Schedule Status
+                                    Appointment Time
                                 </p>
-
-                                <div class="flex flex-wrap gap-4">
-
-                                    <div class="flex items-center gap-2">
-
-                                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
-
-                                        <span class="text-sm text-gray-600">
-                                            Available
-                                        </span>
-
-                                    </div>
-
-
-                                    <div class="flex items-center gap-2">
-
-                                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
-
-                                        <span class="text-sm text-gray-600">
-                                            Booked
-                                        </span>
-
-                                    </div>
-
-
-                                    <div class="flex items-center gap-2">
-
-                                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-
-                                        <span class="text-sm text-gray-600">
-                                            Adjust service
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
                             </div>
 
 
@@ -721,344 +623,290 @@
                             </div>
 
 
+
+
                             {{-- SLOT LIST --}}
-
-                            <div x-show="!loadingSlots && availableSlots.length" class="space-y-3">
-
+                            <div x-show="!loadingSlots && availableSlots.length"
+                                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                                 <template x-for="slot in availableSlots" :key="slot.start + '-' + slot.status">
+                                    <div class="h-full">
 
-                                    <div>
-
-                                        {{-- AVAILABLE --}}
-
+                                        {{-- =====================================================
+                                             AVAILABLE
+                                        ====================================================== --}}
                                         <template x-if="slot.status === 'available'">
-
                                             <button type="button" @click="selectSlot(slot)"
-                                                class="w-full text-left
-                                                   border-2 rounded-2xl p-4
-                                                   transition duration-200"
+                                                class="w-full h-full text-left border-2 rounded-2xl p-4 transition duration-200"
                                                 :class="appointment_time === slot.start ?
                                                     'border-[#849753] bg-[#849753]/10 ring-2 ring-[#849753]/20' :
-                                                    'border-green-200 bg-green-50 hover:border-[#849753]'">
-
-                                                <div class="flex items-center justify-between gap-4">
-
-                                                    <div class="flex items-center gap-4">
-
-                                                        <div
-                                                            class="w-11 h-11 rounded-full
-                                                               bg-green-100
-                                                               text-green-600
-                                                               flex items-center
-                                                               justify-center
-                                                               text-lg shrink-0">
-                                                            ✓
-                                                        </div>
-
-                                                        <div>
-                                                            <p class="font-bold text-gray-800" x-text="slot.label">
-                                                            </p>
-
-                                                            <p class="text-xs text-gray-500 mt-1"
-                                                                x-text="slot.date_label">
-                                                            </p>
-
-                                                            <p class="text-sm text-green-600 mt-1">
-                                                                Full service duration is available
-                                                            </p>
-                                                        </div>
-
-                                                    </div>
-
-
-                                                    <span
-                                                        class="px-3 py-1 rounded-full
-                                                           bg-green-100
-                                                           text-green-700
-                                                           text-xs font-bold">
-                                                        AVAILABLE
-                                                    </span>
-
+                                                    'border-green-200 bg-green-50 hover:border-[#849753] hover:shadow-sm'">
+                                                <div class="w-full">
+                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                        x-text="slot.label"></p>
                                                 </div>
+
+                                                <div x-show="appointment_time === slot.start" x-transition
+                                                    class="mt-2 flex w-full justify-center">
+                                                    <span
+                                                        class="inline-flex items-center rounded-full bg-[#849753] px-2.5 py-1 text-xs font-semibold text-white">
+                                                        Selected
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </template>
+
+
+                                        {{-- =====================================================
+                                             BOOKED
+                                        ====================================================== --}}
+                                        <template x-if="slot.status === 'booked'">
+                                            <div
+                                                class="w-full h-full border-2 border-red-200 rounded-2xl bg-red-50 p-4 opacity-80">
+                                                <div class="w-full">
+                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                        x-text="slot.label"></p>
+                                                </div>
+                                            </div>
+                                        </template>
+
+
+                                        {{-- =====================================================
+                                             ADJUST SERVICE TIME
+                                        ====================================================== --}}
+                                        <template x-if="slot.status === 'adjust_service'">
+                                            <button type="button"
+                                                @click="
+                                                    selectedAdjustSlot = slot;
+                                                    showAdjustServiceModal = true;
+                                                "
+                                                class="w-full h-full text-left border-2 border-amber-300 rounded-2xl bg-amber-50 p-4 transition duration-200 hover:border-amber-500 hover:shadow-sm">
+                                                <div class="w-full">
+                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                        x-text="slot.label"></p>
+                                                </div>
+
 
                                             </button>
-
                                         </template>
 
-
-                                        {{-- BOOKED --}}
-
-                                        <template x-if="slot.status === 'booked'">
-
-                                            <div
-                                                class="w-full border-2 border-red-200
-                                                   rounded-2xl p-4 bg-red-50">
-
-                                                <div class="flex items-center justify-between gap-4">
-
-                                                    <div class="flex items-center gap-4">
-
-                                                        <div
-                                                            class="w-11 h-11 rounded-full
-                                                               bg-red-100
-                                                               text-red-600
-                                                               flex items-center
-                                                               justify-center
-                                                               text-lg shrink-0">
-                                                            ✕
-                                                        </div>
-
-                                                        <div>
-                                                            <p class="font-bold text-gray-800" x-text="slot.label">
-                                                            </p>
-
-                                                            <p class="text-xs text-gray-500 mt-1"
-                                                                x-text="slot.date_label">
-                                                            </p>
-
-                                                            <p class="text-sm text-red-600 mt-1">
-                                                                ⚠️ This time is already booked.
-                                                            </p>
-                                                        </div>
-
-                                                    </div>
+                                    </div>
+                                </template>
+                            </div>
 
 
-                                                    <span
-                                                        class="px-3 py-1 rounded-full
-                                                           bg-red-100
-                                                           text-red-700
-                                                           text-xs font-bold">
-                                                        BOOKED
-                                                    </span>
+                            {{-- =============================================================
+                                 ADJUST SERVICE TIME MODAL
+                            ============================================================= --}}
+                            <div x-show="showAdjustServiceModal" x-cloak x-transition.opacity
+                                class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                @keydown.escape.window="showAdjustServiceModal = false">
+                                {{-- BACKDROP --}}
+                                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                                    @click="showAdjustServiceModal = false"></div>
 
-                                                </div>
+                                {{-- MODAL --}}
+                                <div x-show="showAdjustServiceModal" x-transition @click.stop
+                                    class="relative w-full max-w-lg max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl">
 
-                                            </div>
+                                    {{-- HEADER --}}
+                                    <div
+                                        class="flex items-start justify-between gap-4 border-b border-gray-100 p-5 sm:p-6">
 
-                                        </template>
+                                        <div>
+                                            <h3 class="text-lg sm:text-xl font-bold text-gray-900">
+                                                Adjust Service Time
+                                            </h3>
 
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                The selected service is longer than the available time.
+                                            </p>
+                                        </div>
 
-                                        {{-- ADJUST SERVICE --}}
+                                        <button type="button" @click="showAdjustServiceModal = false"
+                                            class="shrink-0 rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+                                            aria-label="Close">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
 
-                                        <template x-if="slot.status === 'adjust_service'">
-
-                                            <div
-                                                class="w-full border-2 border-amber-300
-                                                   rounded-2xl bg-amber-50 overflow-hidden">
-
-                                                <div class="p-4">
-
-                                                    <div class="flex items-start justify-between gap-4">
-
-                                                        <div class="flex items-start gap-4">
-
-                                                            <div
-                                                                class="w-11 h-11 rounded-full
-                                                                   bg-amber-100
-                                                                   text-amber-700
-                                                                   flex items-center
-                                                                   justify-center
-                                                                   text-lg shrink-0">
-                                                                ⚠️
-                                                            </div>
-
-                                                            <div>
-                                                                <p class="font-bold text-gray-800" x-text="slot.label">
-                                                                </p>
-
-                                                                <p class="text-xs text-gray-500 mt-1"
-                                                                    x-text="slot.date_label">
-                                                                </p>
-
-                                                                <p class="text-sm font-semibold text-amber-700 mt-1">
-                                                                    Adjust your service time
-                                                                </p>
-
-                                                                <p class="text-sm text-gray-600 mt-1"
-                                                                    x-text="slot.message">
-                                                                </p>
-                                                            </div>
-
-                                                        </div>
+                                    </div>
 
 
-                                                        <span
-                                                            class="px-3 py-1 rounded-full
-                                                               bg-amber-100
-                                                               text-amber-700
-                                                               text-xs font-bold">
-                                                            ADJUST
+                                    {{-- CONTENT --}}
+                                    <div class="max-h-[65vh] overflow-y-auto">
+
+                                        {{-- TIME INFORMATION --}}
+                                        <div class="p-5 sm:p-6">
+
+                                            <div class="grid grid-cols-2 gap-3">
+
+                                                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                                                    <p class="text-xs text-gray-500">
+                                                        Available time
+                                                    </p>
+
+                                                    <p class="mt-1 text-lg font-bold text-gray-800">
+                                                        <span x-text="selectedAdjustSlot?.available_minutes ?? 0"></span>
+                                                        <span class="text-sm font-medium text-gray-500">
+                                                            min
                                                         </span>
-
-                                                    </div>
-
-
-                                                    <div class="grid grid-cols-2 gap-3 mt-4">
-
-                                                        <div class="bg-white rounded-xl p-3 border border-amber-100">
-
-                                                            <p class="text-xs text-gray-500">
-                                                                Available time
-                                                            </p>
-
-                                                            <p class="font-bold text-gray-800 mt-1">
-
-                                                                <span x-text="slot.available_minutes"></span>
-
-                                                                min
-
-                                                            </p>
-
-                                                        </div>
-
-
-                                                        <div class="bg-white rounded-xl p-3 border border-amber-100">
-
-                                                            <p class="text-xs text-gray-500">
-                                                                Required time
-                                                            </p>
-
-                                                            <p class="font-bold text-gray-800 mt-1">
-
-                                                                <span x-text="slot.required_minutes"></span>
-
-                                                                min
-
-                                                            </p>
-
-                                                        </div>
-
-                                                    </div>
-
+                                                    </p>
                                                 </div>
 
+                                                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                                                    <p class="text-xs text-gray-500">
+                                                        Required time
+                                                    </p>
 
-                                                {{-- RECOMMENDATIONS --}}
-
-                                                <template
-                                                    x-if="
-                                                    slot.recommendations &&
-                                                    slot.recommendations.length
-                                                ">
-
-                                                    <div
-                                                        class="border-t border-amber-200
-                                                           bg-amber-100/50 p-4">
-
-                                                        <p
-                                                            class="text-sm font-bold
-                                                               text-amber-900 mb-3">
-                                                            💡 Try a shorter service:
-                                                        </p>
-
-
-                                                        <div class="space-y-2">
-
-                                                            <template x-for="recommendation in slot.recommendations"
-                                                                :key="recommendation.id">
-
-                                                                <button type="button"
-                                                                    @click="
-                                                                    selectRecommendedService(
-                                                                        recommendation.id,
-                                                                        slot.start
-                                                                    )
-                                                                "
-                                                                    class="w-full text-left
-                                                                       bg-white rounded-xl
-                                                                       border border-amber-200
-                                                                       p-3 hover:border-[#849753]
-                                                                       transition">
-
-                                                                    <div class="flex justify-between gap-3">
-
-                                                                        <div>
-
-                                                                            <p class="font-semibold text-gray-800"
-                                                                                x-text="recommendation.name"></p>
-
-                                                                            <p class="text-xs text-gray-500 mt-1">
-
-                                                                                <span
-                                                                                    x-text="recommendation.duration_minutes"></span>
-
-                                                                                min service
-
-                                                                                +
-
-                                                                                <span
-                                                                                    x-text="selectedAddOn?.duration_minutes || 0"></span>
-
-                                                                                min add-on
-
-                                                                                =
-
-                                                                                <span class="font-semibold"
-                                                                                    x-text="recommendation.total_duration"></span>
-
-                                                                                min total
-
-                                                                            </p>
-
-                                                                        </div>
-
-
-                                                                        <div class="text-right shrink-0">
-
-                                                                            <p class="font-bold text-[#849753]">
-
-                                                                                ₱<span
-                                                                                    x-text="formatMoney(recommendation.total_price)"></span>
-
-                                                                            </p>
-
-                                                                            <p
-                                                                                class="text-xs text-[#849753]
-                                                                                   font-semibold mt-1">
-                                                                                Choose
-                                                                            </p>
-
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                </button>
-
-                                                            </template>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                </template>
-
-
-                                                <template
-                                                    x-if="
-                                                    !slot.recommendations ||
-                                                    !slot.recommendations.length
-                                                ">
-
-                                                    <div
-                                                        class="border-t border-amber-200
-                                                           p-4 text-sm text-amber-800">
-                                                        No shorter service is available
-                                                        for this time. Please choose another
-                                                        schedule.
-                                                    </div>
-
-                                                </template>
+                                                    <p class="mt-1 text-lg font-bold text-gray-800">
+                                                        <span x-text="selectedAdjustSlot?.required_minutes ?? 0"></span>
+                                                        <span class="text-sm font-medium text-gray-500">
+                                                            min
+                                                        </span>
+                                                    </p>
+                                                </div>
 
                                             </div>
 
+                                        </div>
+
+
+                                        {{-- RECOMMENDATIONS --}}
+                                        <template
+                                            x-if="
+                                                selectedAdjustSlot &&
+                                                selectedAdjustSlot.recommendations &&
+                                                selectedAdjustSlot.recommendations.length
+                                            ">
+                                            <div class="border-t border-amber-200 bg-amber-50/50 p-5 sm:p-6">
+
+                                                <div class="mb-4">
+                                                    <h4 class="text-sm font-bold text-amber-900">
+                                                        Try a shorter service
+                                                    </h4>
+
+                                                    <p class="text-xs text-amber-700 mt-1">
+                                                        Choose a service that fits within the available time.
+                                                    </p>
+                                                </div>
+
+
+                                                <div class="space-y-3">
+
+                                                    <template x-for="recommendation in selectedAdjustSlot.recommendations"
+                                                        :key="recommendation.id">
+                                                        <button type="button"
+                                                            @click="
+                                                                selectRecommendedService(
+                                                                    recommendation.id,
+                                                                    selectedAdjustSlot.start
+                                                                );
+                            
+                                                                showAdjustServiceModal = false;
+                                                            "
+                                                            class="w-full text-left rounded-2xl border border-amber-200 bg-white p-4 transition hover:border-[#849753] hover:ring-2 hover:ring-[#849753]/10">
+
+                                                            <div class="flex items-start justify-between gap-4">
+
+                                                                <div class="min-w-0">
+
+                                                                    <p class="font-semibold text-gray-800"
+                                                                        x-text="recommendation.name"></p>
+
+                                                                    <p class="text-xs text-gray-500 mt-1">
+
+                                                                        <span
+                                                                            x-text="recommendation.duration_minutes"></span>
+
+                                                                        min service
+
+                                                                        +
+
+                                                                        <span
+                                                                            x-text="selectedAddOn?.duration_minutes || 0"></span>
+
+                                                                        min add-on
+
+                                                                        =
+
+                                                                        <span class="font-semibold"
+                                                                            x-text="recommendation.total_duration"></span>
+
+                                                                        min total
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div class="text-right shrink-0">
+
+                                                                    <p class="font-bold text-[#849753]">
+                                                                        ₱<span
+                                                                            x-text="formatMoney(recommendation.total_price)"></span>
+                                                                    </p>
+
+                                                                    <p class="text-xs text-[#849753] font-semibold mt-1">
+                                                                        Choose
+                                                                    </p>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </button>
+                                                    </template>
+
+                                                </div>
+
+                                            </div>
+                                        </template>
+
+
+                                        {{-- NO RECOMMENDATION --}}
+                                        <template
+                                            x-if="
+                                                selectedAdjustSlot &&
+                                                (
+                                                    !selectedAdjustSlot.recommendations ||
+                                                    !selectedAdjustSlot.recommendations.length
+                                                )
+                                            ">
+                                            <div class="border-t border-amber-200 p-5 sm:p-6">
+
+                                                <div class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">
+                                                    <p class="font-semibold">
+                                                        No shorter service is available.
+                                                    </p>
+
+                                                    <p class="mt-1 text-xs">
+                                                        Please choose another schedule or select a different service.
+                                                    </p>
+                                                </div>
+
+                                            </div>
                                         </template>
 
                                     </div>
 
-                                </template>
 
+                                    {{-- FOOTER --}}
+                                    <div class="border-t border-gray-100 bg-gray-50 p-4 sm:p-5">
+
+                                        <button type="button" @click="showAdjustServiceModal = false"
+                                            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100">
+                                            Cancel
+                                        </button>
+
+                                    </div>
+
+                                </div>
                             </div>
+
+
 
 
                             {{-- NO SLOTS --}}
@@ -1115,10 +963,6 @@
                                     Payment
                                 </h2>
 
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Choose how you would like to pay.
-                                </p>
-
                             </div>
 
 
@@ -1136,16 +980,8 @@
                                            peer-checked:bg-[#849753]/5">
 
                                         <h3 class="font-semibold">
-                                            Pay at Branch
+                                            Pay at Counter
                                         </h3>
-
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Pay directly at the massage center.
-                                        </p>
-
-                                        <p class="text-sm font-semibold text-[#849753] mt-3">
-                                            Payment due at branch
-                                        </p>
 
                                     </div>
 
@@ -1165,9 +1001,6 @@
                                             GCash
                                         </h3>
 
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Pay securely through PayMongo.
-                                        </p>
 
                                     </div>
 
@@ -1297,15 +1130,6 @@
                                     </div>
 
 
-                                    <div x-show="payment_method === 'branch'" class="text-sm text-gray-600">
-
-                                        No online payment is required.
-                                        Your appointment will be submitted as
-                                        <strong>pending</strong> until confirmed
-                                        by the branch.
-
-                                    </div>
-
                                 </div>
 
                             </div>
@@ -1374,18 +1198,13 @@
 
             <div class="xl:col-span-1">
 
-                <div class="bg-white rounded-3xl shadow-lg
-                       sticky top-6 overflow-hidden">
+                <div class="bg-white rounded-3xl shadow-lg sticky top-6 overflow-hidden">
 
                     <div class="p-6 bg-[#849753] text-white">
 
                         <h2 class="text-xl font-bold">
                             Booking Summary
                         </h2>
-
-                        <p class="text-sm opacity-90 mt-1">
-                            Your appointment details
-                        </p>
 
                     </div>
 
@@ -1402,20 +1221,20 @@
 
                             <div class="flex justify-between gap-3 mt-1">
 
-                                <div>
 
-                                    <p class="font-semibold text-gray-800" x-text="selectedServiceName || 'Not selected'">
-                                    </p>
+                                <div>
+                                    <p class="font-semibold text-gray-800"
+                                        x-text="selectedService?.name || 'Not selected'"></p>
+
+                                    <p class="text-sm text-gray-600 mt-1"
+                                        x-text="selectedService?.description || 'No description available'"></p>
 
                                     <p x-show="selectedService" class="text-xs text-gray-500 mt-1">
-
                                         <span x-text="selectedService?.duration_minutes || 0"></span>
-
                                         minutes
-
                                     </p>
-
                                 </div>
+
 
                                 <button type="button" @click="goToStep(1)" class="text-xs text-[#849753] font-semibold">
                                     Change
@@ -1654,6 +1473,7 @@
                 |--------------------------------------------------------------------------
                 */
 
+
                 step: 1,
 
                 submitting: false,
@@ -1668,6 +1488,7 @@
                 therapists,
                 addOns,
 
+
                 availableSlots: [],
 
                 loadingSlots: false,
@@ -1679,6 +1500,9 @@
                 storeUrl,
 
                 today: manilaToday,
+
+                showAdjustServiceModal: false,
+                selectedAdjustSlot: null,
 
                 /*
                 |--------------------------------------------------------------------------
@@ -2145,7 +1969,7 @@
                     if (
                         this.payment_method === 'branch'
                     ) {
-                        return 'Pay at Branch';
+                        return 'Pay at Counter';
                     }
 
                     return 'Not selected';

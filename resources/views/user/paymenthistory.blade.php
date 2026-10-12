@@ -280,9 +280,9 @@
                                 </th>
 
                                 <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                Therapist
-                            </th>
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    Therapist
+                                </th>
 
                                 <th
                                     class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
@@ -345,8 +345,7 @@
 
                                         addonPrice: @js(number_format($payment->addons_price ?? 0, 2)),
 
-                                        paymentAmount: @js(number_format($payment->payment_amount ?? 0, 2)),
-
+                                        paymentAmount: @js(number_format((float) $payment->service_price + (float) $payment->addons_price, 2)),
                                         amountPaid: @js(number_format($payment->amount_paid ?? 0, 2)),
 
                                         paymentType: @js($payment->payment_type ? ucfirst($payment->payment_type) : 'N/A'),
@@ -405,7 +404,7 @@
 
                                     <td class="px-5 py-4">
 
-                    
+
 
                                         <div class="space-y-1 min-w-0">
 
@@ -433,7 +432,7 @@
 
                                     <td class="px-5 py-4 text-gray-600">
 
-                                    
+
 
                                         <div class="space-y-1 min-w-0">
 
@@ -514,9 +513,22 @@
                                             {{-- Payment Type --}}
                                             <div>
 
-                                                <p class="text-xs font-semibold text-gray-600 capitalize">
-                                                    {{ $payment->payment_type ? ucfirst($payment->payment_type) : 'N/A' }}
-                                                </p>
+                                                @if ($payment->payment_type === 'full')
+                                                    <span>
+
+                                                        Full Payment
+                                                    </span>
+                                                @elseif ($payment->payment_type === 'downpayment')
+                                                    <span>
+
+                                                        Down Payment
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                        {{ ucfirst($payment->payment_type ?? 'N/A') }}
+                                                    </span>
+                                                @endif
 
                                             </div>
 
@@ -583,8 +595,8 @@
                                                 <div class="space-y-1">
 
                                                     <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                                                         Failed
                                                     </span>
 
@@ -595,8 +607,8 @@
                                             <div class="space-y-1">
 
                                                 <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-full whitespace-nowrap">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                                                     Unpaid
                                                 </span>
 
@@ -617,7 +629,7 @@
                                         <div class="flex flex-col gap-2">
 
                                             {{-- PAY AGAIN --}}
-                                            @if ($payment->payment_method === 'gcash' && in_array($payment->payment_status, ['failed', 'pending']))
+                                            @if ($payment->payment_method === 'gcash' && in_array($payment->payment_status, [ 'pending']))
                                                 <form
                                                     action="{{ route('user.appointments.payment.retry', $payment->id) }}"
                                                     method="POST">

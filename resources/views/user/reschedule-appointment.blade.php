@@ -87,7 +87,7 @@
                             </p>
 
                             <p class="mt-1 font-semibold text-gray-800">
-                                {{ $appointment->appointment_date?->format('F d, Y') }}
+                                {{ $appointment->appointment_date?->format('Y-m-d') }}
                             </p>
                         </div>
 
@@ -104,20 +104,7 @@
                             </p>
                         </div>
 
-                        <div class="rounded-xl bg-[#F4EDDB] p-4">
-
-                            <p class="text-sm font-semibold text-[#6F4E37]">
-                                What can you change?
-                            </p>
-
-                            <p class="text-sm text-gray-600 mt-1">
-                                Only your appointment date and time can be changed.
-                                Your service, therapist, add-on, duration, price,
-                                and payment remain unchanged.
-                            </p>
-
-                        </div>
-
+                
                     </div>
 
                 </div>

@@ -204,11 +204,13 @@
                 'justify-center px-2 py-3'">
 
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <circle cx="9" cy="8" r="3" />
 
-                <circle cx="12" cy="8" r="3" />
+                <path d="M3 21a6 6 0 0112 0" />
 
-                <path d="M5 21a7 7 0 0114 0" />
+                <path d="M16 11a3 3 0 100-6" />
 
+                <path d="M16 14a5 5 0 015 5" />
             </svg>
 
 
@@ -227,37 +229,6 @@
                    border-t
                    border-white/10"></div>
 
-
-        {{-- ===================================================== --}}
-        {{-- NOTIFICATIONS --}}
-        {{-- ===================================================== --}}
-
-        <a href="{{ route('user.notifications') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('user.notifications*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-
-                <path d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-
-                <path d="M10 21h4" />
-
-            </svg>
-
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Notifications
-            </span>
-
-        </a>
 
 
         {{-- ===================================================== --}}
