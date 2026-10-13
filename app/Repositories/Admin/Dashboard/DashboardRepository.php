@@ -2,83 +2,143 @@
 
 namespace App\Repositories\Admin\Dashboard;
 
-use App\Models\Post;
+use App\Enums\Admin\Appointment\AppointmentStatus;
+use App\Models\Services;
 use App\Models\Therapists;
-use App\Models\User;
 use App\Models\UsersAppointments;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
-
-    private string $timezone = 'Asia/Manila';
-
-
+    /**
+     * Appointments scheduled for the selected day.
+     */
     public function getTodayAppointments(Carbon $today): Collection
     {
-        return UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
+        return UsersAppointments::query()
+            ->with(['user', 'walkInCustomer', 'service', 'therapist', 'addOn'])
             ->whereDate('appointment_date', $today->toDateString())
             ->orderBy('appointment_time')
             ->get();
     }
 
-
+    /**
+     * Total appointments scheduled for today.
+     */
     public function getTodayAppointmentsCount(Carbon $today): int
     {
         return UsersAppointments::query()->whereDate('appointment_date', $today->toDateString())->count();
     }
 
-
-    public function getConfirmedAppointmentsCount(Carbon $today): int
-    {
-        return UsersAppointments::query()->whereDate('appointment_date', $today->toDateString())->where('status', 'confirm')->count();
-    }
-
-
+    /**
+     * Pending appointments scheduled for today.
+     */
     public function getPendingAppointmentsCount(Carbon $today): int
     {
-        return UsersAppointments::query()->whereDate('appointment_date', $today->toDateString())->where('status', 'pending')->count();
+        return UsersAppointments::query()->whereDate('appointment_date', $today->toDateString())->where('status', AppointmentStatus::PENDING->value)->count();
     }
 
-    public function getActiveUsersCount(): int
+    /**
+     * Actual revenue recorded as received on the selected day.
+     *
+     * amount_paid = amount received.
+     * paid_at = date/time the received amount was recorded.
+     *
+     * Do not require payment_status = paid because a downpayment
+     * can exist while the remaining balance is still outstanding.
+     */
+    public function getTodayRevenue(Carbon $today): float
     {
-        return User::query()->where('role', 'user')->where('status', 'active')->count();
+        return (float) UsersAppointments::query()->whereNotNull('paid_at')->whereDate('paid_at', $today->toDateString())->where('amount_paid', '>', 0)->sum('amount_paid');
     }
 
-
-    public function getUpcomingAppointments(Carbon $today): Collection
+    /**
+     * Revenue grouped by day for the requested date range.
+     */
+    public function getWeeklyRevenue(Carbon $startOfWeek, Carbon $endOfWeek): Collection
     {
-        return UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
-            ->whereDate('appointment_date', '>', $today->toDateString())
-            ->whereNotIn('status', ['cancelled', 'rejected', 'failed', 'no show'])
-            ->orderBy('appointment_date')
-            ->orderBy('appointment_time')
+        return UsersAppointments::query()
+            ->selectRaw('DATE(paid_at) as revenue_date')
+            ->selectRaw('SUM(amount_paid) as total_revenue')
+            ->whereNotNull('paid_at')
+            ->whereBetween('paid_at', [$startOfWeek->copy()->startOfDay(), $endOfWeek->copy()->endOfDay()])
+            ->where('amount_paid', '>', 0)
+            ->groupBy(DB::raw('DATE(paid_at)'))
+            ->orderBy('revenue_date')
             ->get();
     }
 
     /**
-     * Get available therapists.
+     * Appointment status counts for today.
      */
-    public function getAvailableTherapists(): Collection
+    public function getAppointmentStatistics(Carbon $today): Collection
     {
-        return Therapists::query()->where('status', 'available')->orderBy('name')->get();
+        return UsersAppointments::query()->select('status')->selectRaw('COUNT(*) as total')->whereDate('appointment_date', $today->toDateString())->groupBy('status')->get();
     }
 
-    public function getCalendarEvents(): Collection
+    /**
+     * Retrieve therapists for the status panel.
+     */
+    public function getTherapists(): Collection
     {
-        return UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])
-            ->whereIn('status', ['pending', 'confirm'])
-            ->orderBy('appointment_date')
-            ->orderBy('appointment_time')
+        return Therapists::query()->orderBy('name')->get();
+    }
+
+    /**
+     * Find therapists who have a confirmed appointment in progress now.
+     *
+     * The appointment status stored in the database is "confirm".
+     */
+    public function getBusyTherapistIds(Carbon $now): Collection
+    {
+        return UsersAppointments::query()->whereNotNull('therapist_id')->whereDate('appointment_date', $now->toDateString())->where('status', AppointmentStatus::CONFIRMED->value)->where('appointment_time', '<=', $now->format('H:i:s'))->where('appointment_end_time', '>', $now->format('H:i:s'))->pluck('therapist_id')->unique()->values();
+    }
+
+    /**
+     * Appointments requiring the admin's attention.
+     */
+    public function getNeedsAttention(Carbon $today): Collection
+    {
+        return UsersAppointments::query()
+            ->with(['user', 'walkInCustomer', 'service', 'therapist'])
+            ->whereDate('appointment_date', $today->toDateString())
+            ->where(function ($query) {
+                $query->where('status', AppointmentStatus::PENDING->value)->orWhereIn('payment_status', ['pending', 'failed']);
+            })
+            ->orderByDesc('created_at')
+            ->limit(8)
             ->get();
     }
 
     /**
-     * Get published posts.
+     * Most-booked services based on appointments scheduled today.
      */
-    public function getPosts(): Collection
+    public function getPopularServices(Carbon $today): Collection
     {
-        return Post::with('author')->whereNotNull('published_at')->latest('published_at')->get();
+        return Services::query()
+            ->withCount([
+                'appointments as appointments_count' => function ($query) use ($today) {
+                    $query->whereDate('appointment_date', $today->toDateString());
+                },
+            ])
+            ->orderByDesc('appointments_count')
+            ->limit(5)
+            ->get();
+    }
+
+    /**
+     * Recent activity represented by recently created appointments.
+     *
+     * This avoids assuming that a separate activity-log table exists.
+     */
+    public function getRecentActivity(): Collection
+    {
+        return UsersAppointments::query()
+            ->with(['user', 'walkInCustomer', 'service', 'therapist'])
+            ->latest('created_at')
+            ->limit(6)
+            ->get();
     }
 }

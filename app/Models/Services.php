@@ -15,4 +15,9 @@ class Services extends Model
         'duration_minutes' => 'integer',
         'price' => 'decimal:2',
     ];
+
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\UsersAppointments::class, 'service_id');
+    }
 }

@@ -173,7 +173,7 @@
                     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
 
                         <h3 class="font-semibold text-gray-800">
-                            All Add Ons
+                            
                         </h3>
 
                         <button type="button" @click="openAddModal()"

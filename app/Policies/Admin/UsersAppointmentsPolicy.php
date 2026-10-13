@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Policies\Admin;
 
 use App\Models\User;
@@ -13,6 +12,11 @@ class UsersAppointmentsPolicy
     }
 
     public function cancel(User $user, UsersAppointments $appointment): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function markPaid(User $user, UsersAppointments $appointment): bool
     {
         return $user->isAdmin();
     }

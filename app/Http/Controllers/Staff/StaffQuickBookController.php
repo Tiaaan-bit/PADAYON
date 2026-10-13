@@ -125,39 +125,72 @@ class StaffQuickBookController extends Controller
         foreach ($windows as $window) {
             $cursor = $window['start']->copy();
 
-            while ($cursor->copy()->addMinutes($requiredMinutes)->lte($window['end'])) {
+            while ($cursor->lt($window['end'])) {
                 $slotStart = $cursor->copy();
-
-                $slotEnd = $cursor->copy()->addMinutes($requiredMinutes);
 
                 if ($date->isSameDay($now) && $slotStart->lte($now)) {
                     $cursor->addMinutes($this->slotInterval);
-
                     continue;
                 }
 
+                // Find whether this start is already booked and find
+                // the next appointment or closing time.
                 $isBooked = false;
+                $gapEnd = $window['end']->copy();
 
                 foreach ($appointments as $appointment) {
                     [$existingStart, $existingEnd] = $this->getAppointmentRange($appointment);
 
-                    if ($slotStart->lt($existingEnd) && $slotEnd->gt($existingStart)) {
+                    // Ignore appointments that do not intersect this business window.
+                    if ($existingEnd->lte($window['start']) || $existingStart->gte($window['end'])) {
+                        continue;
+                    }
+
+                    // This start time is inside an existing appointment.
+                    if ($slotStart->gte($existingStart) && $slotStart->lt($existingEnd)) {
                         $isBooked = true;
                         break;
                     }
+
+                    // Find the nearest upcoming appointment.
+                    if ($existingStart->gt($slotStart) && $existingStart->lt($gapEnd)) {
+                        $gapEnd = $existingStart->copy();
+                    }
                 }
 
-                $slots[] = [
-                    'time' => $slotStart->format('H:i'),
+                if ($isBooked) {
+                    $slots[] = [
+                        'time' => $slotStart->format('H:i'),
+                        'start' => $slotStart->format('Y-m-d H:i:s'),
+                        'end' => $slotStart->copy()->addMinutes($requiredMinutes)->format('Y-m-d H:i:s'),
+                        'label' => $this->formatTimeRange($slotStart, $slotStart->copy()->addMinutes($requiredMinutes)),
+                        'status' => 'booked',
+                    ];
 
-                    'start' => $slotStart->format('Y-m-d H:i:s'),
+                    $cursor->addMinutes($this->slotInterval);
+                    continue;
+                }
 
-                    'end' => $slotEnd->format('Y-m-d H:i:s'),
+                $availableMinutes = (int) $slotStart->diffInMinutes($gapEnd);
+                $canFitFullDuration = $availableMinutes >= $requiredMinutes;
 
-                    'label' => $this->formatTimeRange($slotStart, $slotEnd),
+                // Only offer adjustment when at least one 30-minute interval
+                // is available, but the complete service will not fit.
+                $adjustedMinutes = min($requiredMinutes, intdiv($availableMinutes, $this->slotInterval) * $this->slotInterval);
 
-                    'status' => $isBooked ? 'booked' : 'available',
-                ];
+                if ($adjustedMinutes >= $this->slotInterval) {
+                    $slotEnd = $canFitFullDuration ? $slotStart->copy()->addMinutes($requiredMinutes) : $slotStart->copy()->addMinutes($adjustedMinutes);
+
+                    $slots[] = [
+                        'time' => $slotStart->format('H:i'),
+                        'start' => $slotStart->format('Y-m-d H:i:s'),
+                        'end' => $slotEnd->format('Y-m-d H:i:s'),
+                        'label' => $this->formatTimeRange($slotStart, $slotEnd),
+                        'status' => $canFitFullDuration ? 'available' : 'adjust_duration',
+                        'available_minutes' => $availableMinutes,
+                        'adjusted_minutes' => $adjustedMinutes,
+                    ];
+                }
 
                 $cursor->addMinutes($this->slotInterval);
             }

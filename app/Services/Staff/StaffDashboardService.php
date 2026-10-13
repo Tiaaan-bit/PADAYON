@@ -35,6 +35,8 @@ class StaffDashboardService
             'calendarEvents' => $this->formatCalendarEvents($this->dashboardRepository->getCalendarEvents()),
 
             'posts' => $this->dashboardRepository->getPosts(),
+
+            'image_posts' => $this->dashboardRepository->getImagePosts(),
         ];
     }
 

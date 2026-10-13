@@ -43,6 +43,9 @@ use App\Repositories\Admin\Transaction\TransactionRepositoryInterface;
 use App\Repositories\Admin\Report\ReportRepository;
 use App\Repositories\Admin\Report\ReportRepositoryInterface;
 
+use App\Models\ImagePost;
+use App\Policies\Admin\ImagePostPolicy;
+
 class AdminServiceProvider extends ServiceProvider
 {
     /**
@@ -83,5 +86,8 @@ class AdminServiceProvider extends ServiceProvider
         Gate::policy(AddOns::class, AddOnPolicy::class);
 
         Gate::policy(Therapists::class, TherapistPolicy::class);
+
+        Gate::policy(ImagePost::class, ImagePostPolicy::class);
+
     }
 }

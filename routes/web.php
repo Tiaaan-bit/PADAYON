@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminServicesController;
 use App\Http\Controllers\Admin\AdminTherapistController;
 use App\Http\Controllers\Admin\AdminTransactionsController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Admin\ImagePostController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -123,6 +124,9 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
         Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
         Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+        Route::post('/image-posts', [ImagePostController::class, 'store'])->name('image-posts.store');
+        Route::put('/image-posts/{imagePost}', [ImagePostController::class, 'update'])->name('image-posts.update');
+        Route::delete('/image-posts/{imagePost}', [ImagePostController::class, 'destroy'])->name('image-posts.destroy');
 
         //---Admin User Controller---//
         Route::get('/users', [AdminUsersController::class, 'users'])->name('users');

@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Admin;
 
@@ -7,6 +7,7 @@ use App\Actions\Admin\Post\DeletePost;
 use App\Actions\Admin\Post\UpdatePost;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PostRequest;
+use App\Models\ImagePost;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -17,7 +18,9 @@ class PostController extends Controller
     {
         $posts = Post::with('author')->whereNotNull('published_at')->latest('published_at')->paginate(10);
 
-        return view('admin.posts', compact('posts'));
+        $imagePosts = ImagePost::with('author')->whereNotNull('published_at')->where('published_at', '<=', now('Asia/Manila'))->latest('published_at')->get();
+
+        return view('admin.posts', compact('posts', 'imagePosts'));
     }
 
     public function store(PostRequest $request, CreatePost $createPost): RedirectResponse

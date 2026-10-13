@@ -448,33 +448,36 @@
 
                                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 
-                                        <template x-for="slot in earlySlots" :key="slot.start">
 
+                                        <template x-for="slot in earlySlots" :key="slot.start">
                                             <button type="button" @click="selectSlot(slot)"
                                                 :disabled="slot.status !== 'available'"
                                                 :class="{
                                                     'border-[#849753] bg-[#849753] text-white shadow-sm': selectedTime ===
-                                                        slot.time &&
-                                                        slot.status === 'available',
+                                                        slot.time && slot.status === 'available',
                                                 
                                                     'border-gray-200 bg-white text-gray-700 hover:border-[#849753] hover:bg-[#849753]/5': selectedTime !==
-                                                        slot.time &&
-                                                        slot.status === 'available',
+                                                        slot.time && slot.status === 'available',
                                                 
                                                     'cursor-not-allowed border-red-200 bg-red-50 text-red-400': slot
-                                                        .status === 'booked'
+                                                        .status === 'booked',
+                                                
+                                                    'cursor-not-allowed border-amber-300 bg-amber-50 text-amber-700': slot
+                                                        .status === 'adjust_duration'
                                                 }"
                                                 class="rounded-xl border px-3 py-3 text-center text-sm font-semibold transition">
-
-                                                <span x-text="slot.label"></span>
+                                                <span class="block" x-text="slot.label"></span>
 
                                                 <span x-show="slot.status === 'booked'"
                                                     class="mt-1 block text-[10px] font-medium">
                                                     Booked
                                                 </span>
 
+                                                <span x-show="slot.status === 'adjust_duration'"
+                                                    class="mt-1 block text-[10px] font-semibold">
+                                                    Adjust Duration
+                                                </span>
                                             </button>
-
                                         </template>
 
                                     </div>
@@ -485,33 +488,36 @@
 
                                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 
-                                        <template x-for="slot in mainSlots" :key="slot.start">
 
+                                        <template x-for="slot in mainSlots" :key="slot.start">
                                             <button type="button" @click="selectSlot(slot)"
                                                 :disabled="slot.status !== 'available'"
                                                 :class="{
                                                     'border-[#849753] bg-[#849753] text-white shadow-sm': selectedTime ===
-                                                        slot.time &&
-                                                        slot.status === 'available',
+                                                        slot.time && slot.status === 'available',
                                                 
                                                     'border-gray-200 bg-white text-gray-700 hover:border-[#849753] hover:bg-[#849753]/5': selectedTime !==
-                                                        slot.time &&
-                                                        slot.status === 'available',
+                                                        slot.time && slot.status === 'available',
                                                 
                                                     'cursor-not-allowed border-red-200 bg-red-50 text-red-400': slot
-                                                        .status === 'booked'
+                                                        .status === 'booked',
+                                                
+                                                    'cursor-not-allowed border-amber-300 bg-amber-50 text-amber-700': slot
+                                                        .status === 'adjust_duration'
                                                 }"
                                                 class="rounded-xl border px-3 py-3 text-center text-sm font-semibold transition">
-
-                                                <span x-text="slot.label"></span>
+                                                <span class="block" x-text="slot.label"></span>
 
                                                 <span x-show="slot.status === 'booked'"
                                                     class="mt-1 block text-[10px] font-medium">
                                                     Booked
                                                 </span>
 
+                                                <span x-show="slot.status === 'adjust_duration'"
+                                                    class="mt-1 block text-[10px] font-semibold">
+                                                    Adjust Duration
+                                                </span>
                                             </button>
-
                                         </template>
 
                                     </div>
@@ -1105,8 +1111,7 @@
 
                         this.slots =
                             Array.isArray(data.slots) ?
-                            data.slots :
-                            [];
+                            data.slots : [];
 
                         this.slotsLoaded = true;
 

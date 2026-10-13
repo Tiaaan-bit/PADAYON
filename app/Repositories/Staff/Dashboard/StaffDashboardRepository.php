@@ -2,12 +2,14 @@
 
 namespace App\Repositories\Staff\Dashboard;
 
+use App\Models\ImagePost;
 use App\Models\Post;
 use App\Models\Therapists;
 use App\Models\User;
 use App\Models\UsersAppointments;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+
 
 class StaffDashboardRepository implements StaffDashboardRepositoryInterface
 {
@@ -80,5 +82,11 @@ class StaffDashboardRepository implements StaffDashboardRepositoryInterface
     public function getPosts(): Collection
     {
         return Post::with('author')->whereNotNull('published_at')->latest('published_at')->get();
+    }
+
+    public function getImagePosts(): Collection
+    {
+        return ImagePost::query()->whereNotNull('published_at')->where('published_at', '<=', now('Asia/Manila'))->latest('published_at')->get();
+
     }
 }

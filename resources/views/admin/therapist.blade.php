@@ -334,7 +334,6 @@
                     <div class="flex items-center justify-between mb-4">
 
                         <h3 class="font-semibold text-gray-800">
-                            All Therapists
                         </h3>
 
                         <button type="button" @click="openAddModal()"

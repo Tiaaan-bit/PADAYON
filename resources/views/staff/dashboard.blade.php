@@ -25,10 +25,10 @@
         }
 
         /*
-                            |--------------------------------------------------------------------------
-                            | Calendar Hover Popup
-                            |--------------------------------------------------------------------------
-                            */
+                                        |--------------------------------------------------------------------------
+                                        | Calendar Hover Popup
+                                        |--------------------------------------------------------------------------
+                                        */
 
         .calendar-popup {
             visibility: hidden;
@@ -46,10 +46,10 @@
         }
 
         /*
-                            |--------------------------------------------------------------------------
-                            | Calendar Highlight
-                            |--------------------------------------------------------------------------
-                            */
+                                        |--------------------------------------------------------------------------
+                                        | Calendar Highlight
+                                        |--------------------------------------------------------------------------
+                                        */
 
         .calendar-highlight {
             opacity: 0;
@@ -83,14 +83,89 @@
                     {{-- =================================================
                         WELCOME IMAGE
                     ================================================== --}}
-                    <div
-                        class="relative w-full overflow-hidden rounded-2xl bg-white
-                        border border-gray-200 shadow-sm
-                        h-55 sm:h-75 md:h-100 lg:min-h-125 xl:min-h-125">
+                    <div x-data="{
+                        images: @js(
+    $image_posts
+        ->map(
+            fn($imagePost) => [
+                'url' => asset('storage/' . $imagePost->image_path),
+                'alt' => 'Update from Padayon Massage Center',
+            ],
+        )
+        ->values(),
+),
+                        currentIndex: 0,
+                        timer: null,
+                    
+                        startSlider() {
+                            if (this.images.length > 1) {
+                                this.timer = setInterval(() => {
+                                    this.currentIndex =
+                                        (this.currentIndex + 1) % this.images.length;
+                                }, 5000);
+                            }
+                        },
+                    
+                        stopSlider() {
+                            if (this.timer) {
+                                clearInterval(this.timer);
+                                this.timer = null;
+                            }
+                        },
+                    
+                        next() {
+                            this.currentIndex =
+                                (this.currentIndex + 1) % this.images.length;
+                        },
+                    
+                        previous() {
+                            this.currentIndex =
+                                (this.currentIndex - 1 + this.images.length) %
+                                this.images.length;
+                        }
+                    }" x-init="startSlider()" @mouseenter="stopSlider()" @mouseleave="startSlider()"
+                        @keydown.left.prevent="previous()" @keydown.right.prevent="next()" tabindex="0"
+                        aria-label="Padayon image announcements slider"
+                        class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
+                           h-55 sm:h-75 md:h-100 lg:min-h-125
+                           xl:min-h-[calc(100vh-150px)]">
+                        {{-- Display the posted images --}}
+                        <template x-if="images.length > 0">
+                            <div class="absolute inset-0">
+                                <template x-for="(image, index) in images" :key="image.url">
+                                    <img x-show="currentIndex === index" x-transition.opacity.duration.500ms
+                                        :src="image.url" :alt="image.alt"
+                                        class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
+                                        h-55 sm:h-75 md:h-100 lg:min-h-125
+                                        xl:min-h-[calc(100vh-150px)]"
+                                        :loading="index === 0 ? 'eager' : 'lazy'">
+                                </template>
 
-                        <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome"
-                            class="absolute inset-0 w-full h-full object-fill object-center">
 
+                                {{-- Slide indicators --}}
+                                <div x-show="images.length > 1"
+                                    class="absolute bottom-4 left-0 right-0 z-10 flex justify-center gap-2">
+                                    <template x-for="(image, index) in images" :key="image.url">
+                                        <button type="button" @click.stop="currentIndex = index"
+                                            :aria-label="'Show image ' + (index + 1)"
+                                            :aria-current="currentIndex === index ? 'true' : 'false'"
+                                            :class="currentIndex === index ?
+                                                'w-6 bg-white' :
+                                                'w-2 bg-white/60 hover:bg-white'"
+                                            class="h-2 rounded-full transition-all"></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- Fallback when the admin has not posted any images --}}
+                        <template x-if="images.length === 0">
+                            <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome to Padayon Massage Center"
+                                loading="eager"
+                                class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
+                                h-55 sm:h-75 md:h-100 lg:min-h-125
+                                xl:min-h-[calc(100vh-150px)]">
+                        </template>
                     </div>
 
 
@@ -919,7 +994,7 @@
                             <div class="mt-3 space-y-2">
 
                                 @forelse($upcomingAppointments->take(5)
-                                                as $appointment)
+                                                            as $appointment)
                                     <div
                                         class="rounded-lg bg-gray-50
                                         border border-gray-100

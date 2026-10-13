@@ -10,7 +10,7 @@ class TransactionRepository implements TransactionRepositoryInterface
 {
     public function getAll(?string $date = null, ?string $paymentMethod = null, ?string $amount = null): LengthAwarePaginator
     {
-        $query = UsersAppointments::with(['user', 'service', 'therapist', 'addOn']);
+        $query = UsersAppointments::with(['user', 'walkInCustomer', 'service', 'therapist', 'addOn'])->latest();
 
         if ($date) {
             $query->whereDate('appointment_date', $date);

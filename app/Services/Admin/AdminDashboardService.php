@@ -9,163 +9,149 @@ use Illuminate\Support\Collection;
 
 class AdminDashboardService
 {
-    private string $timezone = 'Asia/Manila';
-
     public function __construct(protected DashboardRepositoryInterface $dashboardRepository) {}
 
     public function getDashboardData(): array
     {
-        $today = Carbon::today($this->timezone);
+        $now = Carbon::now('Asia/Manila');
+        $today = $now->copy()->startOfDay();
+
+        $startOfWeek = $now->copy()->startOfWeek();
+        $endOfWeek = $now->copy()->endOfWeek();
+
+        $appointments = $this->dashboardRepository->getTodayAppointments($today);
+
+        $therapists = $this->prepareTherapistStatuses($this->dashboardRepository->getTherapists(), $this->dashboardRepository->getBusyTherapistIds($now));
+
+        $weeklyRevenue = $this->prepareWeeklyRevenue($this->dashboardRepository->getWeeklyRevenue($startOfWeek, $endOfWeek), $startOfWeek);
+
+        $appointmentStatistics = $this->prepareAppointmentStatistics($this->dashboardRepository->getAppointmentStatistics($today));
 
         return [
-            'appointments' => $this->dashboardRepository->getTodayAppointments($today),
+            'now' => $now,
+            'todayAppointments' => $appointments,
 
             'todayAppointmentsCount' => $this->dashboardRepository->getTodayAppointmentsCount($today),
 
-            'confirmedAppointmentsCount' => $this->dashboardRepository->getConfirmedAppointmentsCount($today),
-
             'pendingAppointmentsCount' => $this->dashboardRepository->getPendingAppointmentsCount($today),
 
-            'activeUsersCount' => $this->dashboardRepository->getActiveUsersCount(),
+            'todayRevenue' => $this->dashboardRepository->getTodayRevenue($today),
 
-            'upcomingAppointments' => $this->dashboardRepository->getUpcomingAppointments($today),
+            'therapists' => $therapists,
 
-            'therapists' => $this->dashboardRepository->getAvailableTherapists(),
+            'availableTherapistsCount' => $therapists->where('dashboard_status', 'available')->count(),
 
-            'calendarEvents' => $this->formatCalendarEvents($this->dashboardRepository->getCalendarEvents()),
+            'busyTherapistsCount' => $therapists->where('dashboard_status', 'busy')->count(),
 
-            'posts' => $this->dashboardRepository->getPosts(),
+            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'offline')->count(),
+
+            'needsAttention' => $this->dashboardRepository->getNeedsAttention($today),
+
+            'weeklyRevenue' => $weeklyRevenue,
+
+            'weeklyRevenueTotal' => $weeklyRevenue->sum('amount'),
+
+            'weeklyRevenueMaximum' => max(1, (float) $weeklyRevenue->max('amount')),
+
+            'appointmentStatistics' => $appointmentStatistics,
+
+            'popularServices' => $this->dashboardRepository->getPopularServices($today),
+
+            'recentActivity' => $this->dashboardRepository->getRecentActivity(),
         ];
     }
 
-    protected function formatCalendarEvents(Collection $appointments): array
+    /**
+     * Determine whether each therapist is available, busy, or offline.
+     *
+     * The database status is still the source of availability.
+     * "Busy" is calculated from a confirmed appointment in progress.
+     */
+    protected function prepareTherapistStatuses(Collection $therapists, Collection $busyTherapistIds): Collection
     {
-        return $appointments
-            ->map(function ($appointment) {
-                /*
-                |--------------------------------------------------------------------------
-                | Appointment Date
-                |--------------------------------------------------------------------------
-                |
-                | appointment_date is the REAL calendar date.
-                |
-                | Do NOT move appointments before 1 PM to another day.
-                |
-                */
+        $busyIds = $busyTherapistIds->map(fn($id) => (int) $id)->all();
 
-                $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
+        return $therapists->map(function ($therapist) use ($busyIds) {
+            if (in_array((int) $therapist->id, $busyIds, true)) {
+                $dashboardStatus = 'busy';
+            } elseif ($therapist->status === 'available') {
+                $dashboardStatus = 'available';
+            } else {
+                $dashboardStatus = 'offline';
+            }
 
-                /*
-                |--------------------------------------------------------------------------
-                | Appointment Start
-                |--------------------------------------------------------------------------
-                */
+            $therapist->setAttribute('dashboard_status', $dashboardStatus);
 
-                $start = null;
+            return $therapist;
+        });
+    }
 
-                if ($appointment->appointment_time) {
-                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_time, $this->timezone)->format('H:i:s'), $this->timezone);
-                }
+    /**
+     * Build a complete Monday-to-Sunday series, including days with
+     * zero revenue.
+     */
+    protected function prepareWeeklyRevenue(Collection $revenueRows, Carbon $startOfWeek): Collection
+    {
+        $revenueByDate = $revenueRows->keyBy('revenue_date');
 
-                /*
-                |--------------------------------------------------------------------------
-                | Appointment End
-                |--------------------------------------------------------------------------
-                */
+        $days = collect();
 
-                $end = null;
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $dateKey = $date->toDateString();
 
-                if ($appointment->appointment_end_time && $start) {
-                    $end = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_end_time, $this->timezone)->format('H:i:s'), $this->timezone);
+            $row = $revenueByDate->get($dateKey);
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Cross-Midnight Appointment
-                    |--------------------------------------------------------------------------
-                    |
-                    | Example:
-                    |
-                    | Sept 30
-                    | 11:30 PM -> 12:30 AM
-                    |
-                    | End becomes Oct 1.
-                    |
-                    */
+            $days->push([
+                'date' => $dateKey,
+                'label' => $date->format('D'),
+                'amount' => (float) ($row->total_revenue ?? 0),
+            ]);
+        }
 
-                    if ($end->lessThanOrEqualTo($start)) {
-                        $end->addDay();
-                    }
-                }
+        return $days;
+    }
 
-                return [
-                    'id' => $appointment->id,
+    /**
+     * Present status counts in a consistent order.
+     */
+    protected function prepareAppointmentStatistics(Collection $statistics): Collection
+    {
+        $counts = $statistics->keyBy(function ($row) {
+            return $row->status instanceof AppointmentStatus ? $row->status->value : (string) $row->status;
+        });
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Calendar Date
-                    |--------------------------------------------------------------------------
-                    */
+        return collect([
+            [
+                'status' => AppointmentStatus::PENDING->value,
+                'label' => AppointmentStatus::PENDING->label(),
+            ],
+            [
+                'status' => AppointmentStatus::CONFIRMED->value,
+                'label' => AppointmentStatus::CONFIRMED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::REJECTED->value,
+                'label' => AppointmentStatus::REJECTED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::CANCELLED->value,
+                'label' => AppointmentStatus::CANCELLED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::NO_SHOW->value,
+                'label' => AppointmentStatus::NO_SHOW->label(),
+            ],
+            [
+                'status' => AppointmentStatus::FAILED->value,
+                'label' => AppointmentStatus::FAILED->label(),
+            ],
+        ])->map(function (array $item) use ($counts) {
+            $row = $counts->get($item['status']);
 
-                    'date' => $start ? $start->format('Y-m-d') : $appointmentDate,
+            $item['count'] = (int) ($row->total ?? 0);
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Start Time
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'time' => $start ? $start->format('h:i A') : 'N/A',
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | End Time
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'end_time' => $end ? $end->format('h:i A') : null,
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Service
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'title' => $appointment->service?->name ?? 'Service',
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | User
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'user' => $appointment->user?->name ?? 'N/A',
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Therapist
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'therapist' => $appointment->therapist?->name ?? 'N/A',
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Status
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'status' => match ($appointment->status) {
-                        AppointmentStatus::CONFIRMED => 'Confirmed',
-                        AppointmentStatus::PENDING => 'Pending',
-                        AppointmentStatus::REJECTED => 'Rejected',
-                        AppointmentStatus::CANCELLED => 'Cancelled',
-                        AppointmentStatus::NO_SHOW => 'No Show',
-                        AppointmentStatus::FAILED => 'Failed',
-                        default => 'Unknown',
-                    },
-                ];
-            })
-            ->values()
-            ->all();
+            return $item;
+        });
     }
 }

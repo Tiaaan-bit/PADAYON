@@ -25,4 +25,7 @@ interface StaffDashboardRepositoryInterface
 
     public function getPosts(): Collection;
 
+    public function getImagePosts(): Collection;
+
+
 }

@@ -13,44 +13,66 @@
         {{-- PAGE HEADER --}}
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-[#2F2420]">
-                Transaction History
+                Manage Transactions
             </h1>
         </div>
 
         {{-- STATISTICS --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 
-            {{-- TOTAL SERVICE PRICE --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                <p class="text-sm text-gray-500">
-                    Total Service Price
-                </p>
 
-                <p class="text-2xl font-bold text-[#6F4E37] mt-1">
-                    ₱{{ number_format($totalServicePrice, 2) }}
-                </p>
+            <div class="bg-white rounded-xl border border-gray-200
+            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+
+                <div class="text-center">
+
+                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                        ₱{{ number_format($totalServicePrice, 2) }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 font-medium mt-0.5">
+                        Total Service Price
+                    </p>
+
+                </div>
+
             </div>
 
-            {{-- TOTAL ADD-ON PRICE --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                <p class="text-sm text-gray-500">
-                    Total Add-on Price
-                </p>
 
-                <p class="text-2xl font-bold text-[#849753] mt-1">
-                    ₱{{ number_format($totalAddOnPrice, 2) }}
-                </p>
+
+            <div class="bg-white rounded-xl border border-gray-200
+            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+
+                <div class="text-center">
+
+                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                        ₱{{ number_format($totalAddOnPrice, 2) }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 font-medium mt-0.5">
+                        Total Add-on Price
+                    </p>
+
+                </div>
+
             </div>
 
-            {{-- TOTAL AMOUNT PAID --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                <p class="text-sm text-gray-500">
-                    Total Amount Paid
-                </p>
 
-                <p class="text-2xl font-bold text-green-600 mt-1">
-                    ₱{{ number_format($totalAmountPaid, 2) }}
-                </p>
+            <div class="bg-white rounded-xl border border-gray-200
+            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
+
+                <div class="text-center">
+
+                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
+                        ₱{{ number_format($totalAmountPaid, 2) }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 font-medium mt-0.5">
+                        Total Amount Paid
+                    </p>
+
+                </div>
+
             </div>
 
         </div>
@@ -130,42 +152,42 @@
 
                     <thead class="bg-gray-50 border-b border-gray-200">
 
-                        <tr>
+                        <tr class="bg-gray-50 text-left">
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
                                 ID
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Customer
+                                CUSTOMER
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Service Details
+                                SERVICE DETAILS
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Add-on Details
+                                ADDO-ON DETAILS
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Therapist
+                                THERAPIST
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Appointment Time
+                                APPOINTMENT TIME
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Payment Details
+                                PAYMENT DETAILS
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Payment Status
+                                PAYMENT STATUS
                             </th>
 
                             <th class="px-4 py-3 text-left font-semibold text-gray-600">
-                                Action
+                                ACTION
                             </th>
 
                         </tr>
@@ -210,13 +232,17 @@
                                 data-service-duration="{{ $transaction->service_duration_minutes ?? ($transaction->service?->duration_minutes ?? 'N/A') }}"
                                 data-service-price="{{ number_format((float) $transaction->service_price, 2) }}"
                                 data-level="{{ $transaction->level ?? 'N/A' }}"
-                                data-addon-name="{{ $transaction->addOn?->name ?? 'N/A' }}"
-                                data-addon-duration="{{ $transaction->addons_duration_minutes ?? ($transaction->addOn?->duration_minutes ?? 'N/A') }}"
+                                data-addon-name="{{ $transaction->addOn?->name ?? 'None' }}"
+                                data-addon-duration="{{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}"
                                 data-addon-price="{{ number_format((float) $transaction->addons_price, 2) }}"
                                 data-therapist="{{ $transaction->therapist?->name ?? 'N/A' }}"
-                                data-date="{{ $transaction->appointment_date?->format('M d, Y') ?? 'N/A' }}"
-                                data-start-time="{{ $transaction->appointment_time ?? 'N/A' }}"
-                                data-end-time="{{ $transaction->appointment_end_time ?? 'N/A' }}"
+                                data-date="{{ $transaction->appointment_date?->format('Y-m-d') ?? 'N/A' }}"
+                                data-start-time="{{ $transaction->appointment_time
+                                    ? \Carbon\Carbon::parse($transaction->appointment_time)->format('h:i A')
+                                    : 'N/A' }}"
+                                data-end-time="{{ $transaction->appointment_end_time
+                                    ? \Carbon\Carbon::parse($transaction->appointment_end_time)->format('h:i A')
+                                    : 'N/A' }}"
                                 data-payment-method="{{ $paymentMethodLabel }}"
                                 data-payment-type="{{ $paymentTypeLabel }}"
                                 data-payment-amount="{{ number_format((float) ($transaction->payment_amount ?? 0), 2) }}"
@@ -224,7 +250,7 @@
                                 data-payment-status="{{ $paymentStatus }}"
                                 data-payment-status-label="{{ $paymentStatusLabel }}"
                                 data-payment-reference="{{ $transaction->paymongo_reference_number ?? 'N/A' }}"
-                                data-paid-at="{{ $transaction->paid_at?->format('M d, Y h:i A') ?? 'Not paid' }}"
+                                data-paid-at="{{ $transaction->paid_at ? $transaction->paid_at->timezone('Asia/Manila')->format('Y-m-d h:i A') : 'N/A' }}"
                                 data-status="{{ $status }}">
 
                                 {{-- ID --}}
@@ -236,7 +262,8 @@
                                 <td class="px-4 py-4">
 
                                     <div class="font-medium text-gray-800">
-                                        {{ $transaction->user?->name ?? 'N/A' }}
+                                        {{ $transaction->walkInCustomer?->name ?? ($transaction->user?->name ?? 'N/A') }}
+
                                     </div>
 
                                     <div class="text-xs text-gray-500">
@@ -343,8 +370,8 @@
                                         $paymentStatus = strtolower((string) ($transaction->payment_status ?? ''));
                                     @endphp
 
-                                    @if ($paymentStatus !== 'unpaid' && $remainingBalance > 0)
-                                        <div class="text-xs  mt-1 font-semibold">
+                                    @if (!in_array($paymentStatus, ['unpaid', 'failed']) && $remainingBalance > 0)
+                                        <div class="text-xs mt-1 font-semibold text-red-600">
                                             Remaining:
                                             ₱{{ number_format($remainingBalance, 2) }}
                                         </div>
@@ -371,18 +398,51 @@
                                             </span>
                                         @elseif ($paymentStatus === 'pending')
                                             <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                                                class="inline-flex items-center gap-1.5
+                                        px-2.5 py-1 bg-yellow-50
+                                        border border-yellow-200
+                                        text-yellow-700 text-xs
+                                        font-semibold rounded-full
+                                        whitespace-nowrap">
+
+                                                <span
+                                                    class="w-1.5 h-1.5 rounded-full
+                                            bg-yellow-400"></span>
+
                                                 Pending
+
                                             </span>
                                         @elseif ($paymentStatus === 'failed')
                                             <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                                class="inline-flex items-center gap-1.5
+                                px-2.5 py-1 bg-gray-100
+                                border border-gray-200
+                                text-gray-600 text-xs
+                                font-semibold rounded-full
+                                whitespace-nowrap">
+
+                                                <span
+                                                    class="w-1.5 h-1.5 rounded-full
+                                    bg-gray-500"></span>
+
                                                 Failed
+
                                             </span>
                                         @else
                                             <span
-                                                class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                class="inline-flex items-center gap-1.5
+                                px-2.5 py-1 bg-gray-100
+                                border border-gray-200
+                                text-gray-600 text-xs
+                                font-semibold rounded-full
+                                whitespace-nowrap">
+
+                                                <span
+                                                    class="w-1.5 h-1.5 rounded-full
+                                    bg-gray-500"></span>
+
                                                 Unpaid
+
                                             </span>
                                         @endif
                                     </div>
@@ -401,7 +461,10 @@
                                         $isDownpayment =
                                             strtolower((string) ($transaction->payment_type ?? '')) === 'downpayment';
 
-                                        $canCompletePayment = $isConfirmed && $remainingBalance > 0;
+                                        $canCompletePayment =
+                                            $isConfirmed &&
+                                            $remainingBalance > 0 &&
+                                            ($isCounterPayment || $isDownpayment);
                                     @endphp
 
 
@@ -464,365 +527,322 @@
     </div>
 
 
+
     {{-- TRANSACTION MODAL --}}
-    <div id="transactionModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+    {{-- TRANSACTION MODAL --}}
+    <div id="transactionModal" class="hidden fixed inset-0 z-9999 overflow-y-auto" role="dialog" aria-modal="true"
+        aria-labelledby="transactionModalTitle">
+        {{-- Dark Overlay --}}
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeTransactionModal()"></div>
 
-        <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+        {{-- Modal Position: ONE wrapper only --}}
+        <div class="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto p-4">
 
-            {{-- MODAL HEADER --}}
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-
-                <div>
-
-                    <h2 class="text-xl font-bold text-[#2F2420]">
-                        Transaction Details
-                    </h2>
-
-                    <p class="text-sm text-gray-500">
-                        Transaction #<span id="modalTransactionId">N/A</span>
-                    </p>
-
-                </div>
-
-                <button type="button" onclick="closeTransactionModal()"
-                    class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition">
-                    ✕
-                </button>
-
-            </div>
-
-
-            {{-- MODAL CONTENT --}}
-            <div class="p-6 space-y-6">
-
-                {{-- CUSTOMER INFORMATION --}}
-                <div>
-
-                    <h3 class="text-sm font-semibold text-[#6F4E37] mb-3">
-                        Customer Information
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
+            {{-- Modal Box --}}
+            <div class="relative my-auto w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl"
+                onclick="event.stopPropagation()">
+                {{-- Modal Header --}}
+                <div class="sticky top-0 bg-white z-10 px-6 py-5
+                   border-b border-gray-100">
+                    <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-xs text-gray-500">
-                                Name
+                            <p
+                                class="text-xs font-semibold text-[#849753]
+                              uppercase tracking-wide">
+                                Transaction Details
                             </p>
 
-                            <p id="modalUserName" class="font-medium text-gray-800">
-                                N/A
-                            </p>
+                            <h2 id="transactionModalTitle" class="text-2xl font-bold text-gray-800 mt-1">
+                                Transaction #<span id="modalTransactionId">N/A</span>
+                            </h2>
                         </div>
 
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Email
-                            </p>
-
-                            <p id="modalUserEmail" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
-
+                        <button type="button" onclick="closeTransactionModal()"
+                            class="text-gray-400 hover:text-gray-700
+                           text-3xl font-bold leading-none ml-4"
+                            aria-label="Close">
+                            &times;
+                        </button>
                     </div>
-
                 </div>
 
+                {{-- Modal Content --}}
+                <div class="p-6 space-y-6">
 
-                {{-- TRANSACTION INFORMATION --}}
-                <div>
+                    {{-- CUSTOMER INFORMATION --}}
+                    <div>
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                           uppercase tracking-wide mb-3">
+                            Customer Information
+                        </h3>
 
-                    <h3 class="text-sm font-semibold text-[#6F4E37] mb-3">
-                        Transaction Information
-                    </h3>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div class="flex items-center gap-4">
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Appointment Date
-                            </p>
 
-                            <p id="modalDate" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
+                                <div class="min-w-0">
+                                    <p id="modalUserName" class="font-bold text-gray-800 wrap-break-word">
+                                        N/A
+                                    </p>
 
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Appointment Time
-                            </p>
-
-                            <p id="modalTime" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Therapist
-                            </p>
-
-                            <p id="modalTherapist" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Appointment Status
-                            </p>
-
-                            <div id="modalStatus">
-                                N/A
+                                    <p id="modalUserEmail" class="text-sm text-gray-500 break-all">
+                                        N/A
+                                    </p>
+                                </div>
                             </div>
                         </div>
-
                     </div>
 
-                </div>
+                    {{-- TRANSACTION INFORMATION --}}
+                    <div>
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                           uppercase tracking-wide mb-3">
+                            Transaction Information
+                        </h3>
 
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                {{-- SERVICE INFORMATION --}}
-                <div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Appointment Date
+                                </p>
+                                <p id="modalDate" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
 
-                    <h3 class="text-sm font-semibold text-[#6F4E37] mb-3">
-                        Service Information
-                    </h3>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Appointment Time
+                                </p>
+                                <p id="modalTime" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Therapist
+                                </p>
+                                <p id="modalTherapist" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
 
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Service
-                            </p>
-
-                            <p id="modalService" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Massage Level
-                            </p>
-
-                            <p id="modalLevel" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-                        </div>
-
-                        <div class="sm:col-span-2">
-
-                            <p class="text-xs text-gray-500">
-                                Description
-                            </p>
-
-                            <p id="modalServiceDescription" class="text-gray-700">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Duration
-                            </p>
-
-                            <p id="modalServiceDuration" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Service Price
-                            </p>
-
-                            <p id="modalServicePrice" class="font-medium text-gray-800">
-                                ₱0.00
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- ADD-ON INFORMATION --}}
-                <div>
-
-                    <h3 class="text-sm font-semibold text-[#6F4E37] mb-3">
-                        Add-on Information
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Add-on
-                            </p>
-
-                            <p id="modalAddon" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Duration
-                            </p>
-
-                            <p id="modalAddonDuration" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Add-on Price
-                            </p>
-
-                            <p id="modalAddonPrice" class="font-medium text-gray-800">
-                                ₱0.00
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- PAYMENT INFORMATION --}}
-                <div>
-
-                    <h3 class="text-sm font-semibold text-[#6F4E37] mb-3">
-                        Payment Information
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                        {{-- PAYMENT METHOD --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Payment Method
-                            </p>
-
-                            <p id="modalPaymentMethod" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        {{-- PAYMENT TYPE --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Payment Type
-                            </p>
-
-                            <p id="modalPaymentType" class="font-medium text-gray-800">
-                                N/A
-                            </p>
-
-                        </div>
-
-                        {{-- PAYMENT AMOUNT --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Payment Amount
-                            </p>
-
-                            <p id="modalPaymentAmount" class="font-medium text-gray-800">
-                                ₱0.00
-                            </p>
-
-                        </div>
-
-                        {{-- AMOUNT PAID --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Amount Paid
-                            </p>
-
-                            <p id="modalAmountPaid" class="font-medium text-green-600">
-                                ₱0.00
-                            </p>
-
-                        </div>
-
-                        {{-- PAYMENT STATUS --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Payment Status
-                            </p>
-
-                            <div id="modalPaymentStatus">
-                                N/A
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Appointment Status
+                                </p>
+                                <div id="modalStatus" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </div>
                             </div>
 
                         </div>
+                    </div>
 
-                        {{-- PAYMENT REFERENCE --}}
-                        <div>
+                    {{-- SERVICE INFORMATION --}}
+                    <div>
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                           uppercase tracking-wide mb-3">
+                            Service Information
+                        </h3>
 
-                            <p class="text-xs text-gray-500">
-                                Payment Reference
-                            </p>
+                        <div class="bg-gray-50 rounded-xl p-4 space-y-4">
 
-                            <p id="modalPaymentReference" class="font-medium text-gray-800 break-all">
-                                N/A
-                            </p>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Service
+                                </p>
+                                <p id="modalService" class="mt-1 font-semibold text-gray-800">
+                                    N/A
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Description
+                                </p>
+                                <p id="modalServiceDescription" class="mt-1 text-sm text-gray-600">
+                                    N/A
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Duration
+                                    </p>
+                                    <p id="modalServiceDuration" class="mt-1 font-semibold text-gray-800">
+                                        N/A
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Price
+                                    </p>
+                                    <p id="modalServicePrice" class="mt-1 font-semibold text-gray-800">
+                                        ₱0.00
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Level
+                                    </p>
+                                    <p id="modalLevel" class="mt-1 font-semibold text-gray-800 capitalize">
+                                        N/A
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ADD-ON INFORMATION --}}
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
+                            Add-on Information
+                        </h3>
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Add-on
+                                    </p>
+                                    <p id="modalAddon" class="mt-1 font-semibold text-gray-800">
+                                        None
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Duration
+                                    </p>
+                                    <p id="modalAddonDuration" class="mt-1 font-semibold text-gray-800">
+                                        N/A
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Price
+                                    </p>
+                                    <p id="modalAddonPrice" class="mt-1 font-semibold text-gray-800">
+                                        ₱0.00
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- PAYMENT INFORMATION --}}
+                    <div>
+                        <h3
+                            class="text-sm font-bold text-gray-800
+                           uppercase tracking-wide mb-3">
+                            Payment Information
+                        </h3>
+
+                        <div class="bg-gray-50 rounded-xl p-4">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Payment Method
+                                    </p>
+                                    <p id="modalPaymentMethod" class="mt-1 font-semibold text-gray-800">
+                                        N/A
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Payment Type
+                                    </p>
+                                    <p id="modalPaymentType" class="mt-1 font-semibold text-gray-800">
+                                        N/A
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Payment Amount
+                                    </p>
+                                    <p id="modalPaymentAmount" class="mt-1 font-semibold text-gray-800">
+                                        ₱0.00
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Amount Paid
+                                    </p>
+                                    <p id="modalAmountPaid" class="mt-1 font-semibold text-gray-800">
+                                        ₱0.00
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Payment Status
+                                    </p>
+                                    <div id="modalPaymentStatus" class="mt-1">
+                                        N/A
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs text-gray-400 uppercase font-semibold">
+                                        Paid Date
+                                    </p>
+                                    <p id="modalPaidAt" class="mt-1 font-semibold text-gray-800">
+                                        Not paid
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-4">
+                                <p class="text-xs text-gray-400 uppercase font-semibold">
+                                    Payment Reference
+                                </p>
+                                <p id="modalPaymentReference" class="mt-1 text-sm font-medium text-gray-800 break-all">
+                                    N/A
+                                </p>
+                            </div>
 
                         </div>
-
-                        {{-- PAID AT --}}
-                        <div>
-
-                            <p class="text-xs text-gray-500">
-                                Paid At
-                            </p>
-
-                            <p id="modalPaidAt" class="font-medium text-gray-800">
-                                Not paid
-                            </p>
-
-                        </div>
-
                     </div>
 
                 </div>
 
+                {{-- Modal Footer --}}
+                <div
+                    class="sticky bottom-0 bg-white border-t border-gray-100
+                   px-6 py-4 flex justify-end">
+                    <button type="button" onclick="closeTransactionModal()"
+                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300
+                       text-gray-700 font-semibold rounded-lg transition">
+                        Close
+                    </button>
+                </div>
+
             </div>
-
-
-            {{-- MODAL FOOTER --}}
-            <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
-
-                <button type="button" onclick="closeTransactionModal()"
-                    class="px-5 py-2.5 rounded-lg bg-[#6F4E37] text-white font-medium hover:bg-[#5c402e] transition">
-                    Close
-                </button>
-
-            </div>
-
         </div>
-
     </div>
+    </div>
+
 
 
     <script>
@@ -873,12 +893,12 @@
 
             // Add-on
             document.getElementById('modalAddon').textContent =
-                row.dataset.addonName || 'N/A';
+                row.dataset.addonName || 'None';
 
             document.getElementById('modalAddonDuration').textContent =
                 row.dataset.addonDuration &&
                 row.dataset.addonDuration !== 'N/A' ?
-                `${row.dataset.addonDuration} minutes` :
+                `${row.dataset.addonDuration} ` :
                 'N/A';
 
             document.getElementById('modalAddonPrice').textContent =
@@ -945,7 +965,7 @@
                 case 'confirmed':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        <span>
                             Confirmed
                         </span>
                     `;
@@ -956,7 +976,7 @@
                 case 'pending':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                        <span >
                             Pending
                         </span>
                     `;
@@ -967,7 +987,7 @@
                 case 'rejected':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        <span >
                             Rejected
                         </span>
                     `;
@@ -978,7 +998,7 @@
                 case 'cancelled':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        <span>
                             Cancelled
                         </span>
                     `;
@@ -990,7 +1010,7 @@
                 case 'no_show':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                        <span >
                             No Show
                         </span>
                     `;
@@ -1001,7 +1021,7 @@
                 case 'failed':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        <span >
                             Failed
                         </span>
                     `;
@@ -1035,7 +1055,7 @@
                 case 'paid':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        <span >
                             Paid
                         </span>
                     `;
@@ -1046,7 +1066,7 @@
                 case 'pending':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                        <span>
                             Pending
                         </span>
                     `;
@@ -1057,7 +1077,7 @@
                 case 'failed':
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        <span> 
                             Failed
                         </span>
                     `;
@@ -1068,7 +1088,7 @@
                 default:
 
                     html = `
-                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        <span >
                             Unpaid
                         </span>
                     `;

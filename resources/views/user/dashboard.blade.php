@@ -24,15 +24,115 @@
                 WELCOME IMAGE
             ================================================== --}}
 
-                <div
-                    class="relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-sm
-                    h-55 sm:h-75 md:h-100 lg:min-h-125
-                    xl:min-h-[calc(100vh-150px)]">
 
-                    <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome" loading="eager"
-                        class="absolute inset-0 w-full h-full object-cover object-center">
+                <div x-data="{
+                    images: @js(
+    $imagePosts
+        ->map(
+            fn($imagePost) => [
+                'url' => asset('storage/' . $imagePost->image_path),
+                'alt' => 'Update from Padayon Massage Center',
+            ],
+        )
+        ->values(),
+),
+                    currentIndex: 0,
+                    timer: null,
+                
+                    startSlider() {
+                        if (this.images.length > 1) {
+                            this.timer = setInterval(() => {
+                                this.currentIndex =
+                                    (this.currentIndex + 1) % this.images.length;
+                            }, 5000);
+                        }
+                    },
+                
+                    stopSlider() {
+                        if (this.timer) {
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    },
+                
+                    next() {
+                        this.currentIndex =
+                            (this.currentIndex + 1) % this.images.length;
+                    },
+                
+                    previous() {
+                        this.currentIndex =
+                            (this.currentIndex - 1 + this.images.length) %
+                            this.images.length;
+                    }
+                }" x-init="startSlider()" @mouseenter="stopSlider()" @mouseleave="startSlider()"
+                    @keydown.left.prevent="previous()" @keydown.right.prevent="next()" tabindex="0"
+                    aria-label="Padayon image announcements slider"
+                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
+                       h-55 sm:h-75 md:h-100 lg:min-h-125
+                       xl:min-h-[calc(100vh-150px)]">
+                    {{-- Display the posted images --}}
+                    <template x-if="images.length > 0">
+                        <div class="absolute inset-0">
+                            <template x-for="(image, index) in images" :key="image.url">
+                                <img x-show="currentIndex === index" x-transition.opacity.duration.500ms
+                                    :src="image.url" :alt="image.alt"
+                                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
+                                    h-55 sm:h-75 md:h-100 lg:min-h-125
+                                    xl:min-h-[calc(100vh-150px)]"                                    :loading="index === 0 ? 'eager' : 'lazy'">
+                            </template>
 
+                            {{-- Previous and next buttons --}}
+                            <template x-if="images.length > 1">
+                                <div>
+                                    <button type="button" @click.stop="previous()" aria-label="Previous image"
+                                        class="absolute left-3 top-1/2 z-10 -translate-y-1/2
+                                           rounded-full bg-black/50 p-3 text-white
+                                           transition hover:bg-black/75">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <button type="button" @click.stop="next()" aria-label="Next image"
+                                        class="absolute right-3 top-1/2 z-10 -translate-y-1/2
+                                           rounded-full bg-black/50 p-3 text-white
+                                           transition hover:bg-black/75">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+
+                            {{-- Slide indicators --}}
+                            <div x-show="images.length > 1"
+                                class="absolute bottom-4 left-0 right-0 z-10 flex justify-center gap-2">
+                                <template x-for="(image, index) in images" :key="image.url">
+                                    <button type="button" @click.stop="currentIndex = index"
+                                        :aria-label="'Show image ' + (index + 1)"
+                                        :aria-current="currentIndex === index ? 'true' : 'false'"
+                                        :class="currentIndex === index ?
+                                            'w-6 bg-white' :
+                                            'w-2 bg-white/60 hover:bg-white'"
+                                        class="h-2 rounded-full transition-all"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    {{-- Fallback when the admin has not posted any images --}}
+                    <template x-if="images.length === 0">
+                        <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome to Padayon Massage Center"
+                            loading="eager" class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
+                            h-55 sm:h-75 md:h-100 lg:min-h-125
+                            xl:min-h-[calc(100vh-150px)]">
+                    </template>
                 </div>
+
+
 
 
                 {{-- =================================================
@@ -281,7 +381,8 @@
 
                                             <template x-for="event in day.events"
                                                 :key="event.id ??
-                                                    event.date + event.time + event.end_time + event.title + event.description">
+                                                    event.date + event.time + event.end_time + event.title + event
+                                                    .description">
 
                                                 <div
                                                     class="rounded-lg bg-gray-50
@@ -293,10 +394,8 @@
                                                         class="flex items-center
                                            justify-between gap-2">
 
-                                           <p
-                                           class="text-[10px] font-semibold text-[#849753]"
-                                           x-text="event.time + ' - ' + event.end_time"
-                                       ></p>
+                                                        <p class="text-[10px] font-semibold text-[#849753]"
+                                                            x-text="event.time + ' - ' + event.end_time"></p>
 
                                                         <span
                                                             class="text-[8px] px-1.5 py-0.5
@@ -304,7 +403,7 @@
                                                bg-[#849753]/10
                                                text-[#526333]"
                                                             x-text="event.status">
-                                                            
+
                                                         </span>
 
                                                     </div>
@@ -313,7 +412,7 @@
                                                     {{-- Service --}}
                                                     <p class="text-[10px] font-semiboldtext-gray-800 mt-1 truncate"
                                                         x-text="event.title + ' - ' + event.description">
-                                                    
+
                                                     </p>
 
 
@@ -364,7 +463,7 @@
 
 
 
-                
+
                 {{-- =================================================
      ANNOUNCEMENTS
 ================================================== --}}
@@ -434,7 +533,7 @@
 
                     </div>
                 </section>
-                
+
 
 
                 {{-- =================================================
@@ -723,10 +822,10 @@
         }
 
         /*
-                                    |--------------------------------------------------------------------------
-                                    | Appointment Hover Popup
-                                    |--------------------------------------------------------------------------
-                                    */
+                                        |--------------------------------------------------------------------------
+                                        | Appointment Hover Popup
+                                        |--------------------------------------------------------------------------
+                                        */
 
         .calendar-popup {
             visibility: hidden;
@@ -744,10 +843,10 @@
         }
 
         /*
-                                    |--------------------------------------------------------------------------
-                                    | Hover Highlight
-                                    |--------------------------------------------------------------------------
-                                    */
+                                        |--------------------------------------------------------------------------
+                                        | Hover Highlight
+                                        |--------------------------------------------------------------------------
+                                        */
 
         .calendar-highlight {
             opacity: 0;

@@ -168,18 +168,7 @@
             {{-- Users Table --}}
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
-                {{-- Table Header --}}
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-
-                    <h3 class="font-semibold text-gray-800">
-                        All Users
-                    </h3>
-
-                    <span class="text-xs text-gray-400">
-                        {{ $users->total() }} total
-                    </span>
-
-                </div>
+             
 
                 {{-- Empty State --}}
                 @if ($users->isEmpty())

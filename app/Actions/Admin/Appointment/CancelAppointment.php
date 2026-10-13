@@ -9,9 +9,7 @@ use App\Repositories\Admin\Appointment\AppointmentRepositoryInterface;
 
 class CancelAppointment
 {
-    public function __construct(
-        protected AppointmentRepositoryInterface $appointmentRepository
-    ) {}
+    public function __construct(protected AppointmentRepositoryInterface $appointmentRepository) {}
 
     public function execute(UsersAppointments $appointment): UsersAppointments
     {
@@ -23,22 +21,14 @@ class CancelAppointment
 
         $appointment = $this->appointmentRepository->cancel($appointment);
 
-    
         $appointment->update([
             'payment_status' => 'unpaid',
         ]);
 
-
         $appointment->refresh();
 
-
-        AppointmentStatusChanged::dispatch(
-            $appointment,
-            $oldStatus,
-            AppointmentStatus::CANCELLED
-        );
+        AppointmentStatusChanged::dispatch($appointment, $oldStatus, AppointmentStatus::CANCELLED);
 
         return $appointment;
     }
 }
-

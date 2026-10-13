@@ -36,7 +36,7 @@
         @include('components.AdminHeader')
 
 
-        <main class="min-h-screenpb-20lg:pb-6">
+        <main class="min-h-screen pb-24 lg:pb-6">
 
             @yield('content')
 
