@@ -10,7 +10,7 @@ class StaffAppointmentRepository implements StaffAppointmentRepositoryInterface
 {
     public function getAppointmentPageData(array $filters): array
     {
-        $query = UsersAppointments::with(['user', 'service', 'therapist', 'addOn'])->latest();
+        $query = UsersAppointments::with(['user', 'walkInCustomer', 'service', 'therapist', 'addOn'])->latest();
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);

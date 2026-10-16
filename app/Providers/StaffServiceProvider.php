@@ -37,7 +37,6 @@ class StaffServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
         Gate::define('staff.therapist.viewAny', function (User $user): bool {
             return $user->isStaff();
         });
@@ -50,14 +49,19 @@ class StaffServiceProvider extends ServiceProvider
             return $user->isStaff();
         });
 
-
-
-
         Gate::define('staff.appointment.updateStatus', function (User $user, UsersAppointments $appointment): bool {
             return $user->isStaff();
         });
 
         Gate::define('staff.appointment.cancel', function (User $user, UsersAppointments $appointment): bool {
+            return $user->isStaff();
+        });
+
+        Gate::define('staff.appointment.updateStatus', function (User $user, UsersAppointments $appointment): bool {
+            return $user->isStaff();
+        });
+
+        Gate::define('staff.transaction.markPaid', function (User $user, UsersAppointments $appointment): bool {
             return $user->isStaff();
         });
     }

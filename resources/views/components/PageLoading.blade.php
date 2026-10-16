@@ -1,112 +1,82 @@
-<div id="page-loading-screen"
-    class="fixed inset-0 z-99999 hidden items-center justify-center
-               bg-black/30 backdrop-blur-sm">
 
+<div
+    id="page-loading-screen"
+    class="fixed inset-0 z-99999 hidden items-center justify-center bg-black/30 backdrop-blur-sm"
+    role="status"
+    aria-live="polite"
+>
     <div class="flex flex-col items-center gap-4">
-
-        {{-- Spinner --}}
         <div
-            class="w-14 h-14 rounded-full
-                       border-4 border-white/40
-                       border-t-[#6F4E37]
-                       animate-spin">
-        </div>
+            class="h-14 w-14 animate-spin rounded-full border-4 border-white/40 border-t-[#6F4E37]"
+        ></div>
 
-        {{-- Loading Text --}}
-        <p class="text-white font-semibold text-sm drop-shadow-lg">
+        <p class="text-sm font-semibold text-white drop-shadow-lg">
             Loading...
         </p>
-
     </div>
-
 </div>
 
 <script>
-    let loadingTimer = null;
+    (() => {
+        const loaderId = 'page-loading-screen';
 
+        function showLoader() {
+            const loader = document.getElementById(loaderId);
+            if (!loader) return;
 
-    /*
-    |--------------------------------------------------------------------------
-    | BEFORE NAVIGATION
-    |--------------------------------------------------------------------------
-    */
-
-    document.addEventListener('livewire:navigate', () => {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Always close sidebar when changing page
-        |--------------------------------------------------------------------------
-        */
-
-        window.dispatchEvent(
-            new CustomEvent('close-sidebar')
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Loading screen
-        |--------------------------------------------------------------------------
-        */
-
-        const loadingScreen =
-            document.getElementById('page-loading-screen');
-
-        if (!loadingScreen) {
-            return;
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
         }
 
-        clearTimeout(loadingTimer);
+        function hideLoader() {
+            const loader = document.getElementById(loaderId);
+            if (!loader) return;
 
-        loadingTimer = setTimeout(() => {
-
-            loadingScreen.classList.remove('hidden');
-
-            loadingScreen.classList.add('flex');
-
-        }, 150);
-
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | AFTER NAVIGATION
-    |--------------------------------------------------------------------------
-    */
-
-    document.addEventListener('livewire:navigated', () => {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Make absolutely sure sidebar stays closed
-        |--------------------------------------------------------------------------
-        */
-
-        window.dispatchEvent(
-            new CustomEvent('close-sidebar')
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hide loading screen
-        |--------------------------------------------------------------------------
-        */
-
-        const loadingScreen =
-            document.getElementById('page-loading-screen');
-
-        clearTimeout(loadingTimer);
-
-        if (!loadingScreen) {
-            return;
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
         }
 
-        loadingScreen.classList.add('hidden');
+        // Show loader for normal internal link navigation.
+        document.addEventListener('click', (event) => {
+            const link = event.target.closest('a[href]');
+            if (!link) return;
 
-        loadingScreen.classList.remove('flex');
+            // Ignore modified clicks, new tabs, and non-left clicks.
+            if (
+                event.button !== 0 ||
+                event.ctrlKey ||
+                event.metaKey ||
+                event.shiftKey ||
+                event.altKey
+            ) return;
 
-    });
+            // Ignore links that should not trigger a page loader.
+            if (
+                link.target === '_blank' ||
+                link.hasAttribute('download') ||
+                link.hasAttribute('data-no-loader') ||
+                link.getAttribute('href')?.startsWith('#') ||
+                link.getAttribute('href')?.startsWith('javascript:')
+            ) return;
+
+            const url = new URL(link.href, window.location.href);
+
+            if (
+                url.origin !== window.location.origin ||
+                url.href === window.location.href
+            ) return;
+
+            // Allow other click handlers to cancel navigation.
+            if (event.defaultPrevented) return;
+
+            showLoader();
+        }, true);
+
+        // Hide loader when the new page has loaded.
+        window.addEventListener('pageshow', hideLoader);
+
+        // Hide loader when returning through browser back/forward cache.
+        window.addEventListener('pagehide', () => {});
+
+    })();
 </script>

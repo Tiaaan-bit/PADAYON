@@ -4,7 +4,11 @@
 
 @section('content')
 
+
+
     <div class="px-4 sm:px-6 lg:px-8 py-5" x-data="dashboardCalendar(@js($calendarEvents))">
+
+
 
         {{-- =========================================================
         MAIN DASHBOARD
@@ -80,31 +84,6 @@
                                     class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
                                     h-55 sm:h-75 md:h-100 lg:min-h-125
                                     xl:min-h-[calc(100vh-150px)]"                                    :loading="index === 0 ? 'eager' : 'lazy'">
-                            </template>
-
-                            {{-- Previous and next buttons --}}
-                            <template x-if="images.length > 1">
-                                <div>
-                                    <button type="button" @click.stop="previous()" aria-label="Previous image"
-                                        class="absolute left-3 top-1/2 z-10 -translate-y-1/2
-                                           rounded-full bg-black/50 p-3 text-white
-                                           transition hover:bg-black/75">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                                        </svg>
-                                    </button>
-
-                                    <button type="button" @click.stop="next()" aria-label="Next image"
-                                        class="absolute right-3 top-1/2 z-10 -translate-y-1/2
-                                           rounded-full bg-black/50 p-3 text-white
-                                           transition hover:bg-black/75">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                </div>
                             </template>
 
                             {{-- Slide indicators --}}

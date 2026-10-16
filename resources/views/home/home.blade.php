@@ -11,13 +11,11 @@
 
     <section class="px-4 py-16 pt-30">
 
-        <div
-            class="flex flex-col lg:flex-row items-center lg:items-start gap-12 max-w-7xl mx-auto -mt-10">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 max-w-7xl mx-auto -mt-10">
 
 
             {{-- TEXT --}}
-            <div
-                class="flex-1 lg:max-w-2xl lg:pr-12 order-1 lg:order-2">
+            <div class="flex-1 lg:max-w-2xl lg:pr-12 order-1 lg:order-2">
 
                 <h2
                     class="text-4xl sm:text-5xl lg:text-[48px] xl:text-[56px] font-bold bg-[#849753] bg-clip-text text-transparent mt-6 leading-tight">
@@ -42,8 +40,7 @@
 
 
                 {{-- Get Started --}}
-                <a
-                    href="{{ route('login') }}"
+                <a href="{{ route('login') }}"
                     class="inline-block px-8 py-4 mt-5 text-base lg:text-lg bg-[#849753] rounded-full text-slate-50 hover:bg-[#2F2420] font-medium shadow-lg hover:shadow-xl transition-all duration-300">
 
                     Get Started
@@ -54,39 +51,25 @@
 
 
             {{-- IMAGE SLIDER --}}
-            <div
-                class="flex-1 lg:max-w-2xl order-2 lg:order-1 w-full pt-20">
+            <div class="flex-1 lg:max-w-2xl order-2 lg:order-1 w-full pt-20">
 
-                <div
-                    class="w-full max-w-3xl mx-auto lg:mx-0 overflow-hidden relative">
+                <div class="w-full max-w-3xl mx-auto lg:mx-0 overflow-hidden relative">
 
-                    <div
-                        class="flex transition-transform duration-500 ease-in-out"
-                        id="slider">
+                    <div class="flex transition-transform duration-500 ease-in-out" id="slider">
 
-                        <img
-                            src="{{ asset('build/assets/images/image-1.webp') }}"
-                            class="w-full shrink-0 rounded-lg"
+                        <img src="{{ asset('build/assets/images/image-1.webp') }}" class="w-full shrink-0 rounded-lg"
                             alt="Padayon Massage Center">
 
-                        <img
-                            src="{{ asset('build/assets/images/image-2.webp') }}"
-                            class="w-full shrink-0 rounded-lg"
+                        <img src="{{ asset('build/assets/images/image-2.webp') }}" class="w-full shrink-0 rounded-lg"
                             alt="Padayon Massage Center">
 
-                        <img
-                            src="{{ asset('build/assets/images/image-3.webp') }}"
-                            class="w-full shrink-0 rounded-lg"
+                        <img src="{{ asset('build/assets/images/image-3.webp') }}" class="w-full shrink-0 rounded-lg"
                             alt="Padayon Massage Center">
 
-                        <img
-                            src="{{ asset('build/assets/images/image-4.webp') }}"
-                            class="w-full shrink-0 rounded-lg"
+                        <img src="{{ asset('build/assets/images/image-4.webp') }}" class="w-full shrink-0 rounded-lg"
                             alt="Padayon Massage Center">
 
-                        <img
-                            src="{{ asset('build/assets/images/image-5.webp') }}"
-                            class="w-full shrink-0 rounded-lg"
+                        <img src="{{ asset('build/assets/images/image-5.webp') }}" class="w-full shrink-0 rounded-lg"
                             alt="Padayon Massage Center">
 
                     </div>
@@ -95,9 +78,7 @@
 
 
                 {{-- SLIDER DOTS --}}
-                <div
-                    class="flex items-center justify-center space-x-2 mt-6"
-                    id="dot-indicators">
+                <div class="flex items-center justify-center space-x-2 mt-6" id="dot-indicators">
 
                     <span
                         class="dot-indicator w-3 h-3 bg-black/20 rounded-full cursor-pointer hover:bg-black/50 transition-all duration-300"
@@ -137,16 +118,13 @@
     {{-- THERAPISTS SECTION --}}
     {{-- ========================================================= --}}
 
-    <section
-        class="flex items-center px-6 py-16 text-black bg-[#F4EDDB] md:px-16 lg:px-24 xl:px-32 pt-32">
+    <section class="flex items-center px-6 py-16 text-black bg-[#F4EDDB] md:px-16 lg:px-24 xl:px-32 pt-32">
 
-        <div
-            class="grid items-center w-full grid-cols-1 gap-12 mx-auto max-w-7xl lg:grid-cols-2 lg:gap-16">
+        <div class="grid items-center w-full grid-cols-1 gap-12 mx-auto max-w-7xl lg:grid-cols-2 lg:gap-16">
 
 
             {{-- LEFT CONTENT --}}
-            <div
-                class="flex flex-col items-center gap-6 lg:items-start">
+            <div class="flex flex-col items-center gap-6 lg:items-start">
 
                 <h2
                     class="max-w-lg text-4xl md:text-5xl leading-tight text-center lg:text-left font-bold bg-[#849753] bg-clip-text text-transparent">
@@ -157,8 +135,7 @@
                 </h2>
 
 
-                <p
-                    class="font-bold max-w-md text-xl text-center text-black lg:text-left">
+                <p class="font-bold max-w-md text-xl text-center text-black lg:text-left">
 
                     Ang pahinga mo, ang aming misyon.
                     Serbisyong may puso, dignidad, at malasakit
@@ -175,62 +152,19 @@
 
 
             {{-- RIGHT IMAGE GALLERY --}}
-            <div
-                class="grid max-w-md grid-cols-3 gap-4 mx-auto lg:mx-0">
-
-
-                {{-- COLUMN 1 --}}
-                <div class="flex flex-col gap-4 pt-12">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-1.webp') }}"
-                        alt="Massage Therapist">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-2.webp') }}"
-                        alt="Massage Therapist">
-
+            <div x-data="{images: @js($therapists->filter(fn($therapist) => $therapist->image)->map(fn($therapist) => 
+            ['url' => asset('storage/' . $therapist->image),'alt' => 'Massage Therapist',],)->values(),),}">
+                
+                <div class="grid max-w-md grid-cols-3 gap-4 mx-auto lg:mx-0">
+                    <template x-for="(image, index) in images" :key="image.url">
+                        <img :src="image.url" :alt="image.alt"
+                            class="w-full h-42 rounded-2xl object-cover transition transform hover:-translate-y-1"
+                            :class="{
+                                'mt-12': index % 3 === 0,
+                                'mt-8': index % 3 === 2
+                            }">
+                    </template>
                 </div>
-
-
-                {{-- COLUMN 2 --}}
-                <div class="flex flex-col gap-4">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-4.webp') }}"
-                        alt="Massage Therapist">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-4.webp') }}"
-                        alt="Massage Therapist">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-5.webp') }}"
-                        alt="Massage Therapist">
-
-                </div>
-
-
-                {{-- COLUMN 3 --}}
-                <div class="flex flex-col gap-4 pt-8">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-6.webp') }}"
-                        alt="Massage Therapist">
-
-                    <img
-                        class="transition transform w-35 h-42 rounded-2xl hover:-translate-y-1"
-                        src="{{ asset('build/assets/images/Therapist-7.webp') }}"
-                        alt="Massage Therapist">
-
-                </div>
-
             </div>
 
         </div>
@@ -242,16 +176,13 @@
     {{-- WHY CHOOSE US SECTION --}}
     {{-- ========================================================= --}}
 
-    <section
-        class="py-24 lg:py-32 bg-[#F4EDDB]">
+    <section class="py-24 lg:py-32 bg-[#F4EDDB]">
 
-        <div
-            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
 
             {{-- HEADER --}}
-            <div
-                class="text-center mb-20 lg:mb-24">
+            <div class="text-center mb-20 lg:mb-24">
 
                 <h1
                     class="text-4xl md:text-5xl lg:text-6xl font-bold bg-[#849753] bg-clip-text text-transparent mb-8 leading-tight">
@@ -267,16 +198,14 @@
 
 
             {{-- TOP 3 BOXES --}}
-            <div
-                class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-16 lg:mb-20">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-16 lg:mb-20">
 
 
                 {{-- BOX 1 --}}
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3
-                        class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
 
                         Authentic Filipino healing touch
 
@@ -289,8 +218,7 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3
-                        class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
 
                         Skilled Blind Massage Specialists
 
@@ -303,8 +231,7 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3
-                        class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
 
                         Stress & anxiety relief
 
@@ -316,16 +243,14 @@
 
 
             {{-- BOTTOM 2 BOXES --}}
-            <div
-                class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
 
 
                 {{-- BOX 4 --}}
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3
-                        class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
 
                         Comforting and quiet space
 
@@ -338,8 +263,7 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3
-                        class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
 
                         Helps support sustainable livelihood
                         for the visually impaired
@@ -362,132 +286,130 @@
 {{-- ========================================================= --}}
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+            const slider = document.getElementById('slider');
 
-        const slider = document.getElementById('slider');
+            const dots = document.querySelectorAll(
+                '#dot-indicators .dot-indicator'
+            );
 
-        const dots = document.querySelectorAll(
-            '#dot-indicators .dot-indicator'
-        );
+            if (!slider || dots.length === 0) {
+                return;
+            }
 
-        if (!slider || dots.length === 0) {
-            return;
-        }
+            let currentSlide = 0;
 
-        let currentSlide = 0;
+            const totalSlides = dots.length;
 
-        const totalSlides = dots.length;
-
-        let autoSlideInterval;
-
-
-        // Go to specific slide
-        function goToSlide(index) {
-
-            currentSlide = index;
-
-            const translateX = -index * 100;
-
-            slider.style.transform =
-                `translateX(${translateX}%)`;
+            let autoSlideInterval;
 
 
-            // Update active dot
-            dots.forEach((dot, i) => {
+            // Go to specific slide
+            function goToSlide(index) {
 
-                if (i === index) {
+                currentSlide = index;
 
-                    dot.classList.add(
-                        'bg-black',
-                        'scale-125'
-                    );
+                const translateX = -index * 100;
 
-                } else {
+                slider.style.transform =
+                    `translateX(${translateX}%)`;
 
-                    dot.classList.remove(
-                        'bg-black',
-                        'scale-125'
-                    );
 
-                }
+                // Update active dot
+                dots.forEach((dot, i) => {
+
+                    if (i === index) {
+
+                        dot.classList.add(
+                            'bg-black',
+                            'scale-125'
+                        );
+
+                    } else {
+
+                        dot.classList.remove(
+                            'bg-black',
+                            'scale-125'
+                        );
+
+                    }
+
+                });
+
+            }
+
+
+            // Dot click events
+            dots.forEach((dot, index) => {
+
+                dot.addEventListener('click', () => {
+
+                    goToSlide(index);
+
+                    resetAutoSlide();
+
+                });
 
             });
 
-        }
+
+            // Start automatic slider
+            function startAutoSlide() {
+
+                autoSlideInterval = setInterval(() => {
+
+                    currentSlide =
+                        (currentSlide + 1) % totalSlides;
+
+                    goToSlide(currentSlide);
+
+                }, 3000);
+
+            }
 
 
-        // Dot click events
-        dots.forEach((dot, index) => {
+            // Reset automatic slider
+            function resetAutoSlide() {
 
-            dot.addEventListener('click', () => {
+                clearInterval(autoSlideInterval);
 
-                goToSlide(index);
+                startAutoSlide();
 
-                resetAutoSlide();
-
-            });
-
-        });
+            }
 
 
-        // Start automatic slider
-        function startAutoSlide() {
-
-            autoSlideInterval = setInterval(() => {
-
-                currentSlide =
-                    (currentSlide + 1) % totalSlides;
-
-                goToSlide(currentSlide);
-
-            }, 3000);
-
-        }
+            // Pause slider when mouse enters
+            const sliderContainer =
+                slider.closest('.relative');
 
 
-        // Reset automatic slider
-        function resetAutoSlide() {
+            if (sliderContainer) {
 
-            clearInterval(autoSlideInterval);
+                sliderContainer.addEventListener(
+                    'mouseenter',
+                    () => {
+                        clearInterval(autoSlideInterval);
+                    }
+                );
+
+
+                sliderContainer.addEventListener(
+                    'mouseleave',
+                    () => {
+                        startAutoSlide();
+                    }
+                );
+
+            }
+
+
+            // Initialize slider
+            goToSlide(currentSlide);
 
             startAutoSlide();
 
-        }
-
-
-        // Pause slider when mouse enters
-        const sliderContainer =
-            slider.closest('.relative');
-
-
-        if (sliderContainer) {
-
-            sliderContainer.addEventListener(
-                'mouseenter',
-                () => {
-                    clearInterval(autoSlideInterval);
-                }
-            );
-
-
-            sliderContainer.addEventListener(
-                'mouseleave',
-                () => {
-                    startAutoSlide();
-                }
-            );
-
-        }
-
-
-        // Initialize slider
-        goToSlide(currentSlide);
-
-        startAutoSlide();
-
-    });
-</script>
-
+        });
+    </script>
 @endpush

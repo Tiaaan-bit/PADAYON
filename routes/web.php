@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\AdminAddOnsController;
 use App\Http\Controllers\Admin\AdminAppointmentsController;
+use App\Http\Controllers\Admin\AdminCalendarController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AdminQuickBookController;
 use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminServicesController;
@@ -20,7 +22,9 @@ use App\Http\Controllers\Auth\WalkInRegistrationController;
 use App\Http\Controllers\HomePage\PageController;
 use App\Http\Controllers\Payment\PayMongoWebhookController;
 use App\Http\Controllers\Staff\StaffAppointmentsController;
+use App\Http\Controllers\Staff\StaffCalendarController;
 use App\Http\Controllers\Staff\StaffDashboardController;
+use App\Http\Controllers\Staff\StaffProfileController;
 use App\Http\Controllers\Staff\StaffQuickBookController;
 use App\Http\Controllers\Staff\StaffTherapistController;
 use App\Http\Controllers\Staff\StaffTransactionsController;
@@ -106,6 +110,8 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+        Route::view('/help', 'user.help')->name('help');
     });
 
 
@@ -170,6 +176,17 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/quick-book',[AdminQuickBookController::class, 'index'])->name('quick-book');
         Route::post('/quick-book',[AdminQuickBookController::class, 'store'])->name('quick-book.store');
         Route::get('/quick-book/available-slots',[AdminQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
+
+        Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');
+        Route::get('/calendar/events', [AdminCalendarController::class, 'events'])->name('calendar.events');
+
+        
+        Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
+        Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
+
+        Route::view('/help', 'admin.help')->name('help');
+
         
 
     });
@@ -204,6 +221,16 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
         Route::get('/therapists', [StaffTherapistController::class, 'index'])->name('therapists');
         Route::put('/therapists/{therapist}', [StaffTherapistController::class, 'update'])->name('therapist.update');
+        
+        Route::get('/calendar', [StaffCalendarController::class, 'index'])->name('calendar');
+        Route::get('/calendar/events', [StaffCalendarController::class, 'events'])->name('calendar.events');
+
+
+        Route::get('/profile', [StaffProfileController::class, 'index'])->name('profile');
+        Route::put('/profile', [StaffProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [StaffProfileController::class, 'updatePassword'])->name('profile.password');
+
+        Route::view('/help', 'staff.help')->name('help');
 
     });
 

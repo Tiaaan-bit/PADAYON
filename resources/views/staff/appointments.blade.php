@@ -392,7 +392,7 @@
                                         data-service-description="{{ $appointment->service->description ?? 'N/A' }}"
                                         data-service-duration="{{ $appointment->service->duration_minutes ?? 'N/A' }}"
                                         data-service-price="{{ number_format($appointment->service->price ?? 0, 2) }}"
-                                        data-level="{{ $appointment->level?->value ?? 'N/A' }}"
+                                        data-level="{{ $appointment->level instanceof \BackedEnum ? $appointment->level->value : $appointment->level ?? 'N/A' }}"
                                         data-addon-name="{{ $appointment->addOn->name ?? 'None' }}"
                                         data-addon-duration="{{ $appointment->addOn ? $appointment->addOn->duration_minutes . ' mins' : 'No add-on selected' }}"
                                         data-addon-price="{{ number_format($appointment->addons_price ?? 0, 2) }}"
@@ -437,13 +437,13 @@
                                                         class="font-semibold
                                                         text-gray-800 whitespace-nowrap">
 
-                                                        {{ $appointment->user->name ?? 'N/A' }}
+                                                        {{ $appointment->walkInCustomer?->name ?? ($appointment->user?->name ?? 'N/A') }}
 
                                                     </p>
 
                                                     <p class="text-xs text-gray-400">
 
-                                                        {{ $appointment->user->email ?? '' }}
+                                                        {{ $appointment->user->email ?? 'N/A' }}
 
                                                     </p>
 
@@ -617,15 +617,15 @@
                                             @elseif ($appointment->status === AppointmentStatus::REJECTED)
                                                 <span
                                                     class="inline-flex items-center gap-1.5
-                                                    px-2.5 py-1 bg-red-50
-                                                    border border-red-200
-                                                    text-red-700 text-xs
-                                                    font-semibold rounded-full
-                                                    whitespace-nowrap">
+                                            px-2.5 py-1 bg-gray-100
+                                            border border-gray-200
+                                            text-gray-600 text-xs
+                                            font-semibold rounded-full
+                                            whitespace-nowrap">
 
                                                     <span
                                                         class="w-1.5 h-1.5 rounded-full
-                                                        bg-red-500"></span>
+                                                bg-gray-500"></span>
 
                                                     Rejected
 
@@ -678,6 +678,22 @@
                                                     No Show
 
                                                 </span>
+                                            @elseif ($appointment->status === AppointmentStatus::FAILED)
+                                                <span
+                                                    class="inline-flex items-center gap-1.5
+                                                    px-2.5 py-1 bg-gray-100
+                                                    border border-gray-200
+                                                    text-gray-600 text-xs
+                                                    font-semibold rounded-full
+                                                    whitespace-nowrap">
+
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full
+                                                        bg-gray-500"></span>
+
+                                                    Failed
+
+                                                </span>
                                             @else
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -699,72 +715,83 @@
                                         {{-- ACTION --}}
                                         {{-- ================================================= --}}
 
+
+
+
                                         <td class="px-5 py-4" onclick="event.stopPropagation()">
 
-                                            <form
-                                                action="{{ route('staff.appointments.updateStatus', $appointment->id) }}"
-                                                method="POST" class="flex flex-col gap-2 w-full max-w-35">
+                                            @php
+                                                $canUpdateStatus =
+                                                    $appointment->status === AppointmentStatus::PENDING &&
+                                                    $appointment->payment_method === 'branch';
+                                            @endphp
 
-                                                @csrf
+                                            <div x-data="{ showOptions: false }" class="relative w-full max-w-35">
+                                                @if ($canUpdateStatus)
+                                                    {{-- Update button opens the status options --}}
+                                                    <button type="button" @click="showOptions = !showOptions"
+                                                        class="rounded-lg bg-[#849753] px-4 py-2
+                       text-white hover:bg-[#6F4E37]
+                       text-sm w-full">
+                                                        Update
+                                                        <span x-text="showOptions ? '▲' : '▼'"></span>
+                                                    </button>
 
-                                                @method('PUT')
+                                                    {{-- Status options --}}
+                                                    <div x-cloak x-show="showOptions" @click.outside="showOptions = false"
+                                                        x-transition
+                                                        class="absolute right-0 top-full z-50 mt-2
+                       w-44 rounded-xl border border-gray-200
+                       bg-white p-2 shadow-lg">
+                                                        @foreach ([AppointmentStatus::CONFIRMED, AppointmentStatus::REJECTED, AppointmentStatus::CANCELLED, AppointmentStatus::NO_SHOW] as $statusOption)
+                                                            <form
+                                                                action="{{ route('staff.appointments.updateStatus', $appointment->id) }}"
+                                                                method="POST" class="w-full"
+                                                                onsubmit="return confirm('Change appointment status to {{ $statusOption->value }}?')">
+                                                                @csrf
+                                                                @method('PUT')
 
+                                                                <input type="hidden" name="status"
+                                                                    value="{{ $statusOption->value }}">
 
-                                                <select name="status"
-                                                    class="rounded-lg border-gray-300
-                                                    text-sm focus:border-[#6F4E37]
-                                                    focus:ring-[#6F4E37] w-full"
-                                                    @if ($appointment->status === AppointmentStatus::CANCELLED) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::CONFIRMED) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::NO_SHOW) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::REJECTED) disabled @endif>
-
-                                                    <option value="{{ AppointmentStatus::PENDING->value }}"
-                                                        {{ $appointment->status === AppointmentStatus::PENDING ? 'selected' : '' }}>
-                                                        Pending
-                                                    </option>
-
-                                                    <option value="{{ AppointmentStatus::CONFIRMED->value }}"
-                                                        {{ $appointment->status === AppointmentStatus::CONFIRMED ? 'selected' : '' }}>
-                                                        Confirm
-                                                    </option>
-
-                                                    <option value="{{ AppointmentStatus::REJECTED->value }}"
-                                                        {{ $appointment->status === AppointmentStatus::REJECTED ? 'selected' : '' }}>
-                                                        Rejected
-                                                    </option>
-
-                                                    <option value="{{ AppointmentStatus::CANCELLED->value }}"
-                                                        {{ $appointment->status === AppointmentStatus::CANCELLED ? 'selected' : '' }}>
-                                                        Cancelled
-                                                    </option>
-
-                                                    <option value="{{ AppointmentStatus::NO_SHOW->value }}"
-                                                        {{ $appointment->status === AppointmentStatus::NO_SHOW ? 'selected' : '' }}>
-                                                        No Show
-                                                    </option>
-
-                                                </select>
-
-
-                                                <button type="submit"
-                                                    class="rounded-lg bg-[#849753]
-                                                    px-4 py-2 text-white
-                                                    hover:bg-[#6F4E37]
-                                                    text-sm disabled:opacity-50
-                                                    w-full"
-                                                    @if ($appointment->status === AppointmentStatus::CANCELLED) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::CONFIRMED) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::NO_SHOW) disabled @endif
-                                                    @if ($appointment->status === AppointmentStatus::REJECTED) disabled @endif>
-
-                                                    Update
-
-                                                </button>
-
-                                            </form>
+                                                                <button type="submit"
+                                                                    class="w-full rounded-lg px-3 py-2
+                                   text-left text-sm text-gray-700
+                                   hover:bg-[#F4EDDB]
+                                   hover:text-[#6F4E37]">
+                                                                    {{ match ($statusOption) {
+                                                                        AppointmentStatus::CONFIRMED => 'Confirm',
+                                                                        AppointmentStatus::REJECTED => 'Reject',
+                                                                        AppointmentStatus::CANCELLED => 'Cancel',
+                                                                        AppointmentStatus::NO_SHOW => 'No Show',
+                                                                        default => $statusOption->value,
+                                                                    } }}
+                                                                </button>
+                                                            </form>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    {{-- Show the current status when updates are not allowed --}}
+                                                    <button type="button" disabled
+                                                        class="rounded-lg bg-gray-300 px-4 py-2
+                       text-gray-600 text-sm w-full
+                       cursor-not-allowed">
+                                                        {{ match ($appointment->status) {
+                                                            AppointmentStatus::PENDING => 'Pending',
+                                                            AppointmentStatus::CONFIRMED => 'Confirmed',
+                                                            AppointmentStatus::REJECTED => 'Rejected',
+                                                            AppointmentStatus::CANCELLED => 'Cancelled',
+                                                            AppointmentStatus::NO_SHOW => 'No Show',
+                                                            AppointmentStatus::FAILED => 'Failed',
+                                                        } }}
+                                                    </button>
+                                                @endif
+                                            </div>
 
                                         </td>
+
+
+
 
                                     </tr>
 
@@ -888,13 +915,6 @@
 
                             <div class="flex items-center gap-4">
 
-                                <div id="modalUserInitial"
-                                    class="w-12 h-12 rounded-full
-                                    bg-[#849753] flex items-center
-                                    justify-center text-white
-                                    font-bold text-lg shrink-0">
-                                    N
-                                </div>
 
                                 <div>
 
@@ -935,7 +955,7 @@
                                 <p
                                     class="text-xs text-gray-400
                                     uppercase font-semibold">
-                                    Date
+                                    Appointment Date
                                 </p>
 
                                 <p id="modalDate" class="mt-1 font-semibold text-gray-800">
@@ -952,7 +972,7 @@
                                 <p
                                     class="text-xs text-gray-400
                                     uppercase font-semibold">
-                                    Time
+                                    Appointment Time
                                 </p>
 
                                 <p id="modalTime" class="mt-1 font-semibold text-gray-800">
@@ -986,7 +1006,7 @@
                                 <p
                                     class="text-xs text-gray-400
                                     uppercase font-semibold">
-                                    Status
+                                    Appointment Status
                                 </p>
 
                                 <p id="modalStatus" class="mt-1 font-semibold text-gray-800">
@@ -1573,13 +1593,6 @@
                 userName.charAt(0).toUpperCase() :
                 'N';
 
-
-            document.getElementById(
-                    'modalUserInitial'
-                ).textContent =
-                initial;
-
-
             // ========================================================
             // APPOINTMENT
             // ========================================================
@@ -1622,7 +1635,7 @@
             document.getElementById(
                     'modalServiceDuration'
                 ).textContent =
-                serviceDuration + ' mins';
+                serviceDuration + ' minutes';
 
             document.getElementById(
                     'modalServicePrice'
@@ -1711,18 +1724,9 @@
                 case 'paid':
 
                     paymentStatusHtml = `
-                    <span
-                        class="inline-flex items-center gap-1.5
-                        px-2.5 py-1 bg-green-50
-                        border border-green-200
-                        text-green-700 text-xs
-                        font-semibold rounded-full"
-                    >
+                    <span>
 
-                        <span
-                            class="w-1.5 h-1.5 rounded-full
-                            bg-green-500"
-                        ></span>
+                       
 
                         Paid
 
@@ -1735,18 +1739,9 @@
                 case 'pending':
 
                     paymentStatusHtml = `
-                    <span
-                        class="inline-flex items-center gap-1.5
-                        px-2.5 py-1 bg-yellow-50
-                        border border-yellow-200
-                        text-yellow-700 text-xs
-                        font-semibold rounded-full"
-                    >
+                     <span>
 
-                        <span
-                            class="w-1.5 h-1.5 rounded-full
-                            bg-yellow-400"
-                        ></span>
+                       
 
                         Pending
 
@@ -1759,20 +1754,25 @@
                 case 'failed':
 
                     paymentStatusHtml = `
-                    <span
-                        class="inline-flex items-center gap-1.5
-                        px-2.5 py-1 bg-red-50
-                        border border-red-200
-                        text-red-700 text-xs
-                        font-semibold rounded-full"
-                    >
+                     <span>
 
-                        <span
-                            class="w-1.5 h-1.5 rounded-full
-                            bg-red-500"
-                        ></span>
+                       
 
                         Failed
+
+                    </span>
+                `;
+
+                    break;
+
+                case 'unpaid':
+
+                    paymentStatusHtml = `
+                     <span>
+
+                       
+
+                        Unpaid
 
                     </span>
                 `;
@@ -1783,13 +1783,8 @@
                 default:
 
                     paymentStatusHtml = `
-                    <span
-                        class="inline-flex items-center gap-1.5
-                        px-2.5 py-1 bg-gray-100
-                        border border-gray-200
-                        text-gray-600 text-xs
-                        font-semibold rounded-full"
-                    >
+                    <span>
+                    
 
                         ${paymentStatus || 'Unpaid'}
 

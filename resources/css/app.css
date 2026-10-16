@@ -11,3 +11,14 @@
 }
 
 [x-cloak] { display: none !important; }
+
+
+/* Hide scrollbar while keeping scrolling enabled */
+.sidebar-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+    display: none;
+}

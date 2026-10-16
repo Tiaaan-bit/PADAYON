@@ -15,6 +15,9 @@
                     class="font-semibold text-[#2F2420] text-lg truncate">
                     Padayon Massage Center
                 </h1>
+                <span class="font-bold text-[#2F2420] text-xs">
+                    Blind Massage Specialists | Powered by DiverseCare Wellness Hub
+                </span>
 
             </div>
 

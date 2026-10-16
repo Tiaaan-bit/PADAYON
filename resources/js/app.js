@@ -7,3 +7,4 @@ window.Chart = Chart;
 window.Alpine = Alpine;
 
 Alpine.start();
+

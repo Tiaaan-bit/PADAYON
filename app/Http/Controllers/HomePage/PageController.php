@@ -5,12 +5,18 @@ namespace App\Http\Controllers\HomePage;
 use App\Http\Controllers\Controller;
 use App\Models\AddOns;
 use App\Models\Services;
+use App\Models\Therapists;
 
 class PageController extends Controller
 {
     public function showHomePage()
     {
-        return view('home.home');
+        $therapists = Therapists::query()
+            ->whereIn('status', ['available', 'unavailable'])
+            ->orderBy('name')
+            ->get();
+
+        return view('home.home', compact('therapists'));
     }
 
     public function showAboutPage()

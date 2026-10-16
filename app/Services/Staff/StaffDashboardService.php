@@ -9,86 +9,141 @@ use Illuminate\Support\Collection;
 
 class StaffDashboardService
 {
-    private string $timezone = 'Asia/Manila';
-
     public function __construct(protected StaffDashboardRepositoryInterface $dashboardRepository) {}
 
     public function getDashboardData(): array
     {
-        $today = Carbon::today($this->timezone);
+        $now = Carbon::now('Asia/Manila');
+        
+        $today = $now->copy()->startOfDay();
+
+        $startOfWeek = $now->copy()->startOfWeek();
+        $endOfWeek = $now->copy()->endOfWeek();
+
+        $appointments = $this->dashboardRepository->getTodayAppointments($today);
+
+        $therapists = $this->prepareTherapistStatuses($this->dashboardRepository->getTherapists(), $this->dashboardRepository->getBusyTherapistIds($now));
+
+        $appointmentStatistics = $this->prepareAppointmentStatistics($this->dashboardRepository->getAppointmentStatistics($today));
 
         return [
-            'appointments' => $this->dashboardRepository->getTodayAppointments($today),
+            'now' => $now,
+            
+            'todayAppointments' => $appointments,
 
             'todayAppointmentsCount' => $this->dashboardRepository->getTodayAppointmentsCount($today),
 
-            'confirmedAppointmentsCount' => $this->dashboardRepository->getConfirmedAppointmentsCount($today),
-
             'pendingAppointmentsCount' => $this->dashboardRepository->getPendingAppointmentsCount($today),
 
-            'activeUsersCount' => $this->dashboardRepository->getActiveUsersCount(),
+            'therapists' => $therapists,
 
-            'upcomingAppointments' => $this->dashboardRepository->getUpcomingAppointments($today),
+            'availableTherapistsCount' => $therapists->where('dashboard_status', 'available')->count(),
 
-            'therapists' => $this->dashboardRepository->getAvailableTherapists(),
+            'busyTherapistsCount' => $therapists->where('dashboard_status', 'busy')->count(),
 
-            'calendarEvents' => $this->formatCalendarEvents($this->dashboardRepository->getCalendarEvents()),
+            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'offline')->count(),
 
-            'posts' => $this->dashboardRepository->getPosts(),
+            'needsAttention' => $this->dashboardRepository->getNeedsAttention($today),
 
-            'image_posts' => $this->dashboardRepository->getImagePosts(),
+            'appointmentStatistics' => $appointmentStatistics,
+
+            'popularServices' => $this->dashboardRepository->getPopularServices($today),
+
+            'recentActivity' => $this->dashboardRepository->getRecentActivity(),
         ];
     }
 
-    protected function formatCalendarEvents(Collection $appointments): array
+    /**
+     * Determine whether each therapist is available, busy, or offline.
+     *
+     * The database status is still the source of availability.
+     * "Busy" is calculated from a confirmed appointment in progress.
+     */
+    protected function prepareTherapistStatuses(Collection $therapists, Collection $busyTherapistIds): Collection
     {
-        return $appointments
-            ->map(function ($appointment) {
-                $appointmentDate = Carbon::parse($appointment->appointment_date, $this->timezone)->format('Y-m-d');
+        $busyIds = $busyTherapistIds->map(fn($id) => (int) $id)->all();
 
-                $start = null;
+        return $therapists->map(function ($therapist) use ($busyIds) {
+            if (in_array((int) $therapist->id, $busyIds, true)) {
+                $dashboardStatus = 'busy';
+            } elseif ($therapist->status === 'available') {
+                $dashboardStatus = 'available';
+            } else {
+                $dashboardStatus = 'offline';
+            }
 
-                if ($appointment->appointment_time) {
-                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_time, $this->timezone)->format('H:i:s'), $this->timezone);
-                }
+            $therapist->setAttribute('dashboard_status', $dashboardStatus);
 
-                $end = null;
+            return $therapist;
+        });
+    }
 
-                if ($appointment->appointment_end_time && $start) {
-                    $end = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDate . ' ' . Carbon::parse($appointment->appointment_end_time, $this->timezone)->format('H:i:s'), $this->timezone);
+    /**
+     * Build a complete Monday-to-Sunday series, including days with
+     * zero revenue.
+     */
+    protected function prepareWeeklyRevenue(Collection $revenueRows, Carbon $startOfWeek): Collection
+    {
+        $revenueByDate = $revenueRows->keyBy('revenue_date');
 
-                    if ($end->lessThanOrEqualTo($start)) {
-                        $end->addDay();
-                    }
-                }
+        $days = collect();
 
-                return [
-                    'id' => $appointment->id,
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $dateKey = $date->toDateString();
 
-                    'date' => $start ? $start->format('Y-m-d') : $appointmentDate,
+            $row = $revenueByDate->get($dateKey);
 
-                    'time' => $start ? $start->format('h:i A') : 'N/A',
+            $days->push([
+                'date' => $dateKey,
+                'label' => $date->format('D'),
+                'amount' => (float) ($row->total_revenue ?? 0),
+            ]);
+        }
 
-                    'end_time' => $end ? $end->format('h:i A') : null,
+        return $days;
+    }
 
-                    'title' => $appointment->service?->name ?? 'Service',
+    /**
+     * Present status counts in a consistent order.
+     */
+    protected function prepareAppointmentStatistics(Collection $statistics): Collection
+    {
+        $counts = $statistics->keyBy(function ($row) {
+            return $row->status instanceof AppointmentStatus ? $row->status->value : (string) $row->status;
+        });
 
-                    'user' => $appointment->user?->name ?? 'N/A',
+        return collect([
+            [
+                'status' => AppointmentStatus::PENDING->value,
+                'label' => AppointmentStatus::PENDING->label(),
+            ],
+            [
+                'status' => AppointmentStatus::CONFIRMED->value,
+                'label' => AppointmentStatus::CONFIRMED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::REJECTED->value,
+                'label' => AppointmentStatus::REJECTED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::CANCELLED->value,
+                'label' => AppointmentStatus::CANCELLED->label(),
+            ],
+            [
+                'status' => AppointmentStatus::NO_SHOW->value,
+                'label' => AppointmentStatus::NO_SHOW->label(),
+            ],
+            [
+                'status' => AppointmentStatus::FAILED->value,
+                'label' => AppointmentStatus::FAILED->label(),
+            ],
+        ])->map(function (array $item) use ($counts) {
+            $row = $counts->get($item['status']);
 
-                    'therapist' => $appointment->therapist?->name ?? 'N/A',
+            $item['count'] = (int) ($row->total ?? 0);
 
-                    'status' => match ($appointment->status) {
-                        AppointmentStatus::CONFIRMED => 'Confirmed',
-                        AppointmentStatus::PENDING => 'Pending',
-                        AppointmentStatus::REJECTED => 'Rejected',
-                        AppointmentStatus::CANCELLED => 'Cancelled',
-                        AppointmentStatus::NO_SHOW => 'No Show',
-                        AppointmentStatus::FAILED => 'Failed',
-                        default => 'Unknown',
-                    },
-                ];
-            })
-            ->values()
-            ->all();
+            return $item;
+        });
     }
 }

@@ -49,23 +49,30 @@ class DashboardRepository implements DashboardRepositoryInterface
      * Do not require payment_status = paid because a downpayment
      * can exist while the remaining balance is still outstanding.
      */
+    /**
+     * Revenue associated with appointments scheduled today.
+     */
     public function getTodayRevenue(Carbon $today): float
     {
-        return (float) UsersAppointments::query()->whereNotNull('paid_at')->whereDate('paid_at', $today->toDateString())->where('amount_paid', '>', 0)->sum('amount_paid');
+        return (float) UsersAppointments::query()
+            ->whereDate('appointment_date', $today->toDateString())
+            ->where('amount_paid', '>', 0)
+            ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
+            ->sum('amount_paid');
     }
 
     /**
-     * Revenue grouped by day for the requested date range.
+     * Revenue grouped by scheduled appointment date for the requested week.
      */
     public function getWeeklyRevenue(Carbon $startOfWeek, Carbon $endOfWeek): Collection
     {
         return UsersAppointments::query()
-            ->selectRaw('DATE(paid_at) as revenue_date')
+            ->selectRaw('DATE(appointment_date) as revenue_date')
             ->selectRaw('SUM(amount_paid) as total_revenue')
-            ->whereNotNull('paid_at')
-            ->whereBetween('paid_at', [$startOfWeek->copy()->startOfDay(), $endOfWeek->copy()->endOfDay()])
+            ->whereBetween('appointment_date', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
             ->where('amount_paid', '>', 0)
-            ->groupBy(DB::raw('DATE(paid_at)'))
+            ->whereNotIn('status', [AppointmentStatus::CANCELLED->value, AppointmentStatus::REJECTED->value, AppointmentStatus::FAILED->value, AppointmentStatus::NO_SHOW->value])
+            ->groupBy(DB::raw('DATE(appointment_date)'))
             ->orderBy('revenue_date')
             ->get();
     }

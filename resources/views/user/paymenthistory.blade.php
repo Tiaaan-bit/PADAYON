@@ -536,18 +536,31 @@
                                             {{-- Amount Paid --}}
                                             <div>
 
-
                                                 <p class="font-semibold text-gray-800">
                                                     Paid: ₱{{ number_format($payment->amount_paid ?? 0, 2) }}
                                                 </p>
 
                                             </div>
 
+                                            @php
+                                        $servicePrice = (float) ($payment->service_price ?? 0);
+                                        $addonPrice = (float) ($payment->addons_price ?? 0);
 
+                                        $totalAppointmentAmount = $servicePrice + $addonPrice;
 
+                                        $amountPaid = (float) ($payment->amount_paid ?? 0);
 
+                                        $remainingBalance = max(0, $totalAppointmentAmount - $amountPaid);
 
+                                        $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
+                                    @endphp
 
+                                    @if (!in_array($paymentStatus, ['unpaid', 'failed']) && $remainingBalance > 0)
+                                        <div class="text-xs mt-1 font-semibold text-red-600">
+                                            Remaining:
+                                            ₱{{ number_format($remainingBalance, 2) }}
+                                        </div>
+                                    @endif  
 
                                         </div>
 
