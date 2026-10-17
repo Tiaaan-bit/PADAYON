@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\UpdateWebsiteSettingRequest;
 use App\Models\WebsiteSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class WebsiteSettingController extends Controller
@@ -66,5 +68,29 @@ class WebsiteSettingController extends Controller
         $settings->update($validated);
 
         return redirect()->route('admin.website-settings.edit')->with('success', 'Website settings updated successfully.');
+    }
+
+    public function closeBookingsToday(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'booking_closed_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:' . Carbon::now('Asia/Manila')->toDateString()],
+        ]);
+
+        $settings = WebsiteSetting::query()->findOrFail(1);
+
+        $settings->booking_closed_date = $validated['booking_closed_date'];
+        $settings->save();
+
+        return back()->with('success', 'Bookings have been closed for ' . Carbon::parse($validated['booking_closed_date'], 'Asia/Manila')->format('F d, Y') . '. Other dates remain available.');
+    }
+
+    public function reopenBookingsToday(): RedirectResponse
+    {
+        $settings = WebsiteSetting::query()->findOrFail(1);
+
+        $settings->booking_closed_date = null;
+        $settings->save();
+
+        return back()->with('success', 'The scheduled booking closure has been removed. Bookings are open again.');
     }
 }

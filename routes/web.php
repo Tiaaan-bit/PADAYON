@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 
 
+Schedule::command('appointments:send-reminders')->everyMinute()->timezone('Asia/Manila')->withoutOverlapping();
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
 
 
@@ -196,6 +197,9 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/home-slider', [HomeSliderImageController::class, 'index'])->name('home-slider.index');
         Route::put('/home-slider/{slot}', [HomeSliderImageController::class, 'update'])->whereNumber('slot')->name('home-slider.update');
         Route::delete('/home-slider/{slot}', [HomeSliderImageController::class, 'destroy'])->whereNumber('slot')->name('home-slider.destroy');
+
+        Route::post('/website-settings/close-bookings-today',[WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
+        Route::post('/website-settings/reopen-bookings-today',[WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
 
         
 

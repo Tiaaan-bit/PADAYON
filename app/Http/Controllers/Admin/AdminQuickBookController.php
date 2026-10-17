@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\WebsiteSetting;
 
 class AdminQuickBookController extends Controller
 {
@@ -27,6 +28,27 @@ class AdminQuickBookController extends Controller
     private int $closingHour = 1;
 
     private int $slotInterval = 30;
+
+    /**
+     * Check whether bookings are closed for the selected date.
+     *
+     * Only today's date in Asia/Manila is affected.
+     */
+    private function isBookingClosedForDate(string $date): bool
+    {
+        $closedDate = WebsiteSetting::query()
+            ->whereKey(1)
+            ->value('booking_closed_date');
+    
+        if (empty($closedDate)) {
+            return false;
+        }
+    
+        $timezone = 'Asia/Manila';
+    
+        return Carbon::parse($closedDate, $timezone)->toDateString()
+            === Carbon::parse($date, $timezone)->toDateString();
+    }
 
     /**
      * Display Quick Book page.
@@ -58,6 +80,18 @@ class AdminQuickBookController extends Controller
         ]);
 
         $date = Carbon::createFromFormat('Y-m-d', $validated['appointment_date'], $this->timezone)->startOfDay();
+
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            return response()->json(
+                [
+                    'message' => 'Admin walk-in bookings for today are temporarily closed. Please select a future date.',
+                    'booking_closed' => true,
+                    'date' => $validated['appointment_date'],
+                    'slots' => [],
+                ],
+                422,
+            );
+        }
 
         $service = Services::query()->where('id', $validated['service_id'])->where('status', 'active')->first();
 
@@ -122,97 +156,79 @@ class AdminQuickBookController extends Controller
 
         $now = Carbon::now($this->timezone);
 
-        
-foreach ($windows as $window) {
-    $cursor = $window['start']->copy();
+        foreach ($windows as $window) {
+            $cursor = $window['start']->copy();
 
-    while ($cursor->lt($window['end'])) {
-        $slotStart = $cursor->copy();
+            while ($cursor->lt($window['end'])) {
+                $slotStart = $cursor->copy();
 
-        if ($date->isSameDay($now) && $slotStart->lte($now)) {
-            $cursor->addMinutes($this->slotInterval);
-            continue;
-        }
+                if ($date->isSameDay($now) && $slotStart->lte($now)) {
+                    $cursor->addMinutes($this->slotInterval);
+                    continue;
+                }
 
-        // Find whether this start is already booked and find
-        // the next appointment or closing time.
-        $isBooked = false;
-        $gapEnd = $window['end']->copy();
+                // Find whether this start is already booked and find
+                // the next appointment or closing time.
+                $isBooked = false;
+                $gapEnd = $window['end']->copy();
 
-        foreach ($appointments as $appointment) {
-            [$existingStart, $existingEnd] =
-                $this->getAppointmentRange($appointment);
+                foreach ($appointments as $appointment) {
+                    [$existingStart, $existingEnd] = $this->getAppointmentRange($appointment);
 
-            // Ignore appointments that do not intersect this business window.
-            if ($existingEnd->lte($window['start'])
-                || $existingStart->gte($window['end'])) {
-                continue;
+                    // Ignore appointments that do not intersect this business window.
+                    if ($existingEnd->lte($window['start']) || $existingStart->gte($window['end'])) {
+                        continue;
+                    }
+
+                    // This start time is inside an existing appointment.
+                    if ($slotStart->gte($existingStart) && $slotStart->lt($existingEnd)) {
+                        $isBooked = true;
+                        break;
+                    }
+
+                    // Find the nearest upcoming appointment.
+                    if ($existingStart->gt($slotStart) && $existingStart->lt($gapEnd)) {
+                        $gapEnd = $existingStart->copy();
+                    }
+                }
+
+                if ($isBooked) {
+                    $slots[] = [
+                        'time' => $slotStart->format('H:i'),
+                        'start' => $slotStart->format('Y-m-d H:i:s'),
+                        'end' => $slotStart->copy()->addMinutes($requiredMinutes)->format('Y-m-d H:i:s'),
+                        'label' => $this->formatTimeRange($slotStart, $slotStart->copy()->addMinutes($requiredMinutes)),
+                        'status' => 'booked',
+                    ];
+
+                    $cursor->addMinutes($this->slotInterval);
+                    continue;
+                }
+
+                $availableMinutes = (int) $slotStart->diffInMinutes($gapEnd);
+                $canFitFullDuration = $availableMinutes >= $requiredMinutes;
+
+                // Only offer adjustment when at least one 30-minute interval
+                // is available, but the complete service will not fit.
+                $adjustedMinutes = min($requiredMinutes, intdiv($availableMinutes, $this->slotInterval) * $this->slotInterval);
+
+                if ($adjustedMinutes >= $this->slotInterval) {
+                    $slotEnd = $canFitFullDuration ? $slotStart->copy()->addMinutes($requiredMinutes) : $slotStart->copy()->addMinutes($adjustedMinutes);
+
+                    $slots[] = [
+                        'time' => $slotStart->format('H:i'),
+                        'start' => $slotStart->format('Y-m-d H:i:s'),
+                        'end' => $slotEnd->format('Y-m-d H:i:s'),
+                        'label' => $this->formatTimeRange($slotStart, $slotEnd),
+                        'status' => $canFitFullDuration ? 'available' : 'adjust_duration',
+                        'available_minutes' => $availableMinutes,
+                        'adjusted_minutes' => $adjustedMinutes,
+                    ];
+                }
+
+                $cursor->addMinutes($this->slotInterval);
             }
-
-            // This start time is inside an existing appointment.
-            if ($slotStart->gte($existingStart)
-                && $slotStart->lt($existingEnd)) {
-                $isBooked = true;
-                break;
-            }
-
-            // Find the nearest upcoming appointment.
-            if ($existingStart->gt($slotStart)
-                && $existingStart->lt($gapEnd)) {
-                $gapEnd = $existingStart->copy();
-            }
         }
-
-        if ($isBooked) {
-            $slots[] = [
-                'time' => $slotStart->format('H:i'),
-                'start' => $slotStart->format('Y-m-d H:i:s'),
-                'end' => $slotStart->copy()
-                    ->addMinutes($requiredMinutes)
-                    ->format('Y-m-d H:i:s'),
-                'label' => $this->formatTimeRange(
-                    $slotStart,
-                    $slotStart->copy()->addMinutes($requiredMinutes)
-                ),
-                'status' => 'booked',
-            ];
-
-            $cursor->addMinutes($this->slotInterval);
-            continue;
-        }
-
-        $availableMinutes = (int) $slotStart->diffInMinutes($gapEnd);
-        $canFitFullDuration = $availableMinutes >= $requiredMinutes;
-
-        // Only offer adjustment when at least one 30-minute interval
-        // is available, but the complete service will not fit.
-        $adjustedMinutes = min(
-            $requiredMinutes,
-            intdiv($availableMinutes, $this->slotInterval)
-                * $this->slotInterval
-        );
-
-        if ($adjustedMinutes >= $this->slotInterval) {
-            $slotEnd = $canFitFullDuration
-                ? $slotStart->copy()->addMinutes($requiredMinutes)
-                : $slotStart->copy()->addMinutes($adjustedMinutes);
-
-            $slots[] = [
-                'time' => $slotStart->format('H:i'),
-                'start' => $slotStart->format('Y-m-d H:i:s'),
-                'end' => $slotEnd->format('Y-m-d H:i:s'),
-                'label' => $this->formatTimeRange($slotStart, $slotEnd),
-                'status' => $canFitFullDuration
-                    ? 'available'
-                    : 'adjust_duration',
-                'available_minutes' => $availableMinutes,
-                'adjusted_minutes' => $adjustedMinutes,
-            ];
-        }
-
-        $cursor->addMinutes($this->slotInterval);
-    }
-}
 
         return response()->json([
             'date' => $date->format('Y-m-d'),
@@ -251,6 +267,12 @@ foreach ($windows as $window) {
 
             'appointment_time' => ['required', 'date_format:H:i'],
         ]);
+
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            throw ValidationException::withMessages([
+                'appointment_date' => 'Admin walk-in bookings for today are temporarily closed. Please select a future date.',
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -392,6 +414,18 @@ foreach ($windows as $window) {
         */
 
         $result = DB::transaction(function () use ($validated, $service, $therapist, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $totalDuration, $totalAmount, $appointmentStart, $appointmentEnd) {
+            /*
+|--------------------------------------------------------------------------
+| Recheck Admin Booking Closure
+|--------------------------------------------------------------------------
+*/
+
+            if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+                throw ValidationException::withMessages([
+                    'appointment_date' => 'Admin walk-in bookings for today are temporarily closed. Please select a future date.',
+                ]);
+            }
+
             /*
                 |--------------------------------------------------------------------------
                 | Lock therapist

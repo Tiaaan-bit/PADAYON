@@ -7,8 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\AddOns;
 use App\Models\Services;
 use App\Models\Therapists;
+use App\Models\User;
 use App\Models\UsersAppointments;
+use App\Models\WebsiteSetting;
 use App\Services\PayMongoService;
+use App\Support\BookingRules;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +41,25 @@ class UserAppointmentController extends Controller
     private int $slotInterval = 30;
 
     public function __construct(private PayMongoService $payMongo) {}
+
+    /**
+     * Determine whether bookings are closed for the selected date.
+     *
+     * The admin closure only applies to today's date in Asia/Manila.
+     * Future dates remain bookable.
+     */
+    private function isBookingClosedForDate(string $date): bool
+    {
+        $closedDate = WebsiteSetting::query()->whereKey(1)->value('booking_closed_date');
+
+        if (empty($closedDate)) {
+            return false;
+        }
+
+        $timezone = 'Asia/Manila';
+
+        return Carbon::parse($closedDate, $timezone)->toDateString() === Carbon::parse($date, $timezone)->toDateString();
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -462,6 +484,17 @@ class UserAppointmentController extends Controller
             'date' => ['required', 'date_format:Y-m-d'],
         ]);
 
+        if ($this->isBookingClosedForDate($validated['date'])) {
+            return response()->json(
+                [
+                    'message' => 'Appointment bookings for today are temporarily closed. Please select a future date.',
+                    'booking_closed' => true,
+                    'date' => $validated['date'],
+                ],
+                422,
+            );
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Service
@@ -857,6 +890,12 @@ class UserAppointmentController extends Controller
             'payment_type' => ['nullable', 'required_if:payment_method,gcash', 'in:full,downpayment'],
         ]);
 
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            throw ValidationException::withMessages([
+                'appointment_date' => 'Appointment bookings for today are temporarily closed. Please select a future date.',
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Date
@@ -1026,13 +1065,33 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $appointment = DB::transaction(function () use ($validated, $therapist, $service, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $paymentType, $paymentAmount, $start, $end) {
-            /*
-                |--------------------------------------------------------------------------
-                | Lock Therapist
-                |--------------------------------------------------------------------------
-                */
+        $userId = (int) Auth::id();
 
+        $appointment = DB::transaction(function () use ($validated, $therapist, $service, $addOn, $servicePrice, $addOnPrice, $serviceDuration, $addOnDuration, $paymentType, $paymentAmount, $start, $end, $userId) {
+            // Lock the user row to prevent concurrent bookings exceeding the limit.
+            User::query()->whereKey($userId)->lockForUpdate()->firstOrFail();
+
+            // Count the user's active upcoming appointments.
+            $now = Carbon::now('Asia/Manila');
+
+            $activeUpcomingAppointments = UsersAppointments::query()
+                ->where('user_id', $userId)
+                ->whereIn('status', [AppointmentStatus::PENDING->value, AppointmentStatus::CONFIRMED->value])
+                ->where(function ($query) use ($now) {
+                    $query->whereDate('appointment_date', '>', $now->toDateString())->orWhere(function ($query) use ($now) {
+                        $query->whereDate('appointment_date', $now->toDateString())->where('appointment_time', '>', $now->format('H:i:s'));
+                    });
+                })
+                ->count();
+
+            // Enforce the maximum of three active upcoming appointments.
+            if ($activeUpcomingAppointments >= BookingRules::MAX_ACTIVE_UPCOMING_APPOINTMENTS) {
+                throw ValidationException::withMessages([
+                    'appointment_date' => 'You can have a maximum of 3 active upcoming appointments. ' . 'Please complete or cancel an existing appointment ' . 'before booking another.',
+                ]);
+            }
+
+            // Lock the selected therapist.
             $lockedTherapist = Therapists::query()->where('id', $therapist->id)->where('status', 'available')->lockForUpdate()->first();
 
             if (!$lockedTherapist) {
@@ -1041,77 +1100,30 @@ class UserAppointmentController extends Controller
                 ]);
             }
 
-            /*
-                |--------------------------------------------------------------------------
-                | Final Conflict Check
-                |--------------------------------------------------------------------------
-                */
-
+            // Recheck availability inside the transaction.
             $this->ensureAppointmentAvailable((int) $lockedTherapist->id, $validated['appointment_date'], $start, $end);
 
-            /*
-                |--------------------------------------------------------------------------
-                | Create Appointment
-                |--------------------------------------------------------------------------
-                */
-
+            // Create the appointment inside the same transaction.
             return UsersAppointments::create([
-                'user_id' => Auth::id(),
-
+                'user_id' => $userId,
                 'service_id' => $service->id,
-
                 'therapist_id' => $lockedTherapist->id,
-
                 'service_price' => $servicePrice,
-
                 'service_duration_minutes' => $serviceDuration,
-
                 'level' => $validated['level'],
-
                 'add_on_id' => $addOn?->id,
-
                 'addons_price' => $addOnPrice,
-
                 'addons_duration_minutes' => $addOnDuration,
-
                 'has_previous_operations' => $validated['has_previous_operations'],
-
                 'body_problem' => $validated['body_problem'] ?? null,
-
                 'appointment_date' => $validated['appointment_date'],
-
                 'appointment_time' => $validated['appointment_time'],
-
                 'appointment_end_time' => $end->format('H:i'),
-
                 'payment_method' => $validated['payment_method'],
-
                 'payment_type' => $paymentType,
-
-                /*
-                    |--------------------------------------------------------------------------
-                    | Webhook updates this after successful PayMongo payment
-                    |--------------------------------------------------------------------------
-                    */
-
                 'amount_paid' => 0,
-
                 'payment_amount' => $paymentAmount,
-
                 'payment_status' => 'pending',
-
-                /*
-                    |--------------------------------------------------------------------------
-                    | Appointment remains pending until:
-                    |
-                    | Branch:
-                    | Admin confirms it.
-                    |
-                    | GCash:
-                    | PayMongo webhook confirms payment.
-                    |--------------------------------------------------------------------------
-                    */
-
                 'status' => AppointmentStatus::PENDING,
             ]);
         });

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Models\WebsiteSetting;
 
 class RescheduleAppointment
 {
@@ -56,6 +57,25 @@ class RescheduleAppointment
             throw ValidationException::withMessages([
                 'appointment_date' => 'The new appointment date cannot be in the past.',
             ]);
+        }
+
+        /*
+|--------------------------------------------------------------------------
+| Admin Booking Closure
+|--------------------------------------------------------------------------
+*/
+
+        $todayString = $this->manilaNow()->toDateString();
+
+        // Only today's date is affected by the admin closure.
+        if ($newDate === $todayString) {
+            $closedDate = WebsiteSetting::query()->whereKey(1)->value('booking_closed_date');
+
+            if (!empty($closedDate) && Carbon::parse($closedDate, $this->timezone)->toDateString() === $todayString) {
+                throw ValidationException::withMessages([
+                    'appointment_date' => 'Rescheduling to today is temporarily unavailable because today’s bookings are closed. Please select a future date.',
+                ]);
+            }
         }
 
         /*

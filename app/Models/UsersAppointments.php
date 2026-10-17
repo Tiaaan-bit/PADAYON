@@ -10,10 +10,11 @@ class UsersAppointments extends Model
 {
     protected $table = 'appointments';
 
-    protected $fillable = ['user_id', 'walk_in_customer_id', 'booking_source', 'service_id', 'therapist_id', 'service_price', 'service_duration_minutes', 'level', 'add_on_id', 'addons_price', 'addons_duration_minutes', 'has_previous_operations', 'body_problem', 'appointment_date', 'appointment_time', 'appointment_end_time', 'payment_method', 'payment_type', 'payment_amount', 'amount_paid', 'payment_status', 'paid_at', 'paymongo_checkout_session_id', 'paymongo_payment_id', 'paymongo_reference_number', 'paymongo_checkout_expires_at', 'status'];
+    protected $fillable = ['user_id', 'walk_in_customer_id', 'booking_source', 'service_id', 'therapist_id', 'service_price', 'service_duration_minutes', 'level', 'add_on_id', 'addons_price', 'addons_duration_minutes', 'has_previous_operations', 'body_problem', 'appointment_date', 'appointment_time', 'appointment_end_time', 'payment_method', 'payment_type', 'payment_amount', 'amount_paid', 'payment_status', 'paid_at', 'paymongo_checkout_session_id', 'paymongo_payment_id', 'paymongo_reference_number', 'paymongo_checkout_expires_at', 'status', 'reminder_sent_at'];
 
     protected $casts = [
         'appointment_date' => 'date:Y-m-d',
+        'reminder_sent_at' => 'datetime',
         'service_price' => 'decimal:2',
         'addons_price' => 'decimal:2',
         'service_duration_minutes' => 'integer',

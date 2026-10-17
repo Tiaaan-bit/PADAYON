@@ -12,9 +12,29 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\AppointmentRescheduledNotification;
+use App\Models\WebsiteSetting;
 
 class MyAppointmentController extends Controller
 {
+    /**
+     * Check whether the selected date is closed for appointment bookings.
+     */
+    private function isBookingClosedForDate(string $date): bool
+    {
+        $closedDate = WebsiteSetting::query()
+            ->whereKey(1)
+            ->value('booking_closed_date');
+    
+        if (empty($closedDate)) {
+            return false;
+        }
+    
+        $timezone = 'Asia/Manila';
+    
+        return Carbon::parse($closedDate, $timezone)->toDateString()
+            === Carbon::parse($date, $timezone)->toDateString();
+    }
+
     public function __construct(private RescheduleAppointment $rescheduleAppointment) {}
 
     public function index(Request $request)
@@ -139,6 +159,17 @@ class MyAppointmentController extends Controller
 
         $today = Carbon::now($timezone)->startOfDay();
 
+        if ($this->isBookingClosedForDate($date)) {
+            return response()->json(
+                [
+                    'message' => 'Rescheduling to today is temporarily unavailable because today’s bookings are closed. Please select a future date.',
+                    'booking_closed' => true,
+                    'date' => $date,
+                ],
+                422,
+            );
+        }
+
         if ($selectedDate->lt($today)) {
             return response()->json([]);
         }
@@ -259,6 +290,14 @@ class MyAppointmentController extends Controller
             'appointment_date' => ['required', 'date_format:Y-m-d'],
             'appointment_time' => ['required', 'date_format:H:i'],
         ]);
+
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            return back()
+                ->withErrors([
+                    'appointment_date' => 'Rescheduling to today is temporarily unavailable because today’s bookings are closed. Please select a future date.',
+                ])
+                ->withInput();
+        }
 
         $this->rescheduleAppointment->execute($appointment, $validated['appointment_date'], $validated['appointment_time']);
 

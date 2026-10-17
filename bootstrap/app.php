@@ -12,10 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: ['webhooks/paymongo']);
 
-        // Track online status on every authenticated request.
         $middleware->append(\App\Http\Middleware\TrackOnlineStatus::class);
 
-        // Named middleware aliases.
         $middleware->alias([
             'auth.user' => \App\Http\Middleware\AuthUser::class,
             'auth.admin' => \App\Http\Middleware\AuthAdmin::class,

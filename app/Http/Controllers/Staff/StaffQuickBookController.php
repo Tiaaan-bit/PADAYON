@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\WebsiteSetting;
 
 class StaffQuickBookController extends Controller
 {
@@ -27,6 +28,27 @@ class StaffQuickBookController extends Controller
     private int $closingHour = 1;
 
     private int $slotInterval = 30;
+
+    /**
+     * Check whether appointment bookings are closed for the selected date.
+     *
+     * Only today's date in Asia/Manila is affected.
+     */
+    private function isBookingClosedForDate(string $date): bool
+    {
+        $closedDate = WebsiteSetting::query()
+            ->whereKey(1)
+            ->value('booking_closed_date');
+    
+        if (empty($closedDate)) {
+            return false;
+        }
+    
+        $timezone = 'Asia/Manila';
+    
+        return Carbon::parse($closedDate, $timezone)->toDateString()
+            === Carbon::parse($date, $timezone)->toDateString();
+    }
 
     /**
      * Display Quick Book page.
@@ -58,6 +80,18 @@ class StaffQuickBookController extends Controller
         ]);
 
         $date = Carbon::createFromFormat('Y-m-d', $validated['appointment_date'], $this->timezone)->startOfDay();
+
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            return response()->json(
+                [
+                    'message' => 'Walk-in bookings for today are temporarily closed. Please select a future date.',
+                    'booking_closed' => true,
+                    'date' => $validated['appointment_date'],
+                    'slots' => [],
+                ],
+                422,
+            );
+        }
 
         $service = Services::query()->where('id', $validated['service_id'])->where('status', 'active')->first();
 
@@ -234,6 +268,12 @@ class StaffQuickBookController extends Controller
             'appointment_time' => ['required', 'date_format:H:i'],
         ]);
 
+        if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+            throw ValidationException::withMessages([
+                'appointment_date' => 'Walk-in bookings for today are temporarily closed. Please select a future date.',
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Service
@@ -378,7 +418,11 @@ class StaffQuickBookController extends Controller
                 |--------------------------------------------------------------------------
                 | Lock therapist
                 |--------------------------------------------------------------------------
-                */
+                */ if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+                throw ValidationException::withMessages([
+                    'appointment_date' => 'Walk-in bookings for today are temporarily closed. Please select a future date.',
+                ]);
+            }
 
             $lockedTherapist = Therapists::query()->where('id', $therapist->id)->where('status', 'available')->lockForUpdate()->first();
 

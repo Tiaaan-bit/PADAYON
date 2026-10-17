@@ -39,4 +39,11 @@ return [
         'secret_key' => env('PAYMONGO_SECRET_KEY'),
         'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET'),
     ],
+
+    'sms' => [
+    'enabled' => env('SMS_ENABLED', false),
+    'provider' => env('SMS_PROVIDER'),
+    'api_key' => env('SMS_API_KEY'),
+    'sender_name' => env('SMS_SENDER_NAME', 'Unisoft'),
+],
 ];
