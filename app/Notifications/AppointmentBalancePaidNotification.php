@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\UsersAppointments;
+use App\Models\WebsiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -27,6 +28,9 @@ class AppointmentBalancePaidNotification extends Notification
         STR_PAD_LEFT
     );
 
+    $websiteSettings = WebsiteSetting::query()->first();
+
+
     $servicePrice = (float) ($this->appointment->service_price ?? 0);
     $addonPrice = (float) ($this->appointment->addons_price ?? 0);
 
@@ -50,6 +54,8 @@ class AppointmentBalancePaidNotification extends Notification
             'totalAmount' => $totalAmount,
             'totalPaid' => $totalPaid,
             'remainingBalance' => $remainingBalance,
+            'websiteSettings' => $websiteSettings,
+
         ]);
 }
 

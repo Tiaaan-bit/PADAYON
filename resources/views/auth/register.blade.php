@@ -40,8 +40,10 @@
         {{-- Logo --}}
         <div class="text-center mb-8">
 
-            <img src="{{ asset('build/assets/images/logo.png') }}"
-                alt="Padayon Massage Center - Blind Massage Specialists"
+            <img src="{{ !empty($websiteSettings?->logo_path)
+                ? asset('storage/' . $websiteSettings->logo_path)
+                : asset('build/assets/images/logo.png') }}"
+                alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
                 class="h-40 w-auto mx-auto object-contain mb-4">
 
             <h1 class="text-lg font-bold text-gray-800">

@@ -13,8 +13,10 @@
         {{-- ================================================= --}}
         <a href="{{ route('user.dashboard') }}" wire:navigate class="flex items-center gap-3 min-w-0">
 
-            <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
-            class="h-12 w-12 object-contain shrink-0">
+            <img src="{{ !empty($websiteSettings?->logo_path)
+                ? asset('storage/' . $websiteSettings->logo_path)
+                : asset('build/assets/images/logo.png') }}"
+                alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"class="h-12 w-12 object-contain shrink-0">
 
             {{-- Brand Text --}}
             <div class="leading-tight min-w-0">
@@ -24,10 +26,10 @@
                                    text-[#2F2420]
                                    text-lg
                                    truncate">
-                    Padayon Massage Center
+                    {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
                 </h1>
                 <span class="font-bold text-[#2F2420] text-xs">
-                    Blind Massage Specialists | Powered by DiverseCare Wellness Hub
+                    {{ $websiteSettings?->website_subname ?? 'SubName' }}
                 </span>
             </div>
 

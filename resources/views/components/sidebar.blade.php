@@ -354,59 +354,115 @@
 
         </a>
 
-        <a href="{{ route('admin.profile') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.profile*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+
+        {{-- ===================================================== --}}
+        {{-- SETTINGS WITH SUBMENU --}}
+        {{-- ===================================================== --}}
+
+        <div x-data="{
+            settingsOpen: {{ request()->routeIs('admin.profile*', 'admin.website-settings.*', 'admin.home-slider.*') ? 'true' : 'false' }}
+        }" class="space-y-1">
+            {{-- SETTINGS BUTTON --}}
+            <button type="button"
+                @click="
+    if (!sidebarOpen) {
+        sidebarOpen = true;
+        settingsOpen = true;
+    } else {
+        settingsOpen = !settingsOpen;
+    }
+"
+                :aria-expanded="settingsOpen.toString()"
+                class="w-full flex items-center rounded-xl text-sm font-medium transition-all
+    {{ request()->routeIs('admin.profile*', 'admin.website-settings.*', 'admin.home-slider.*')
+        ? 'bg-[#6F4E37] text-white'
+        : 'text-white hover:bg-white/10' }}"
+                :class="sidebarOpen
+                    ?
+                    'gap-3 px-3 py-2.5' :
+                    'justify-center px-2 py-3'"
+                title="Settings">
+                {{-- SETTINGS ICON --}}
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+
+                <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">
+                    Settings
+                </span>
+
+                {{-- ARROW --}}
+                <svg x-show="sidebarOpen" x-cloak class="w-4 h-4 shrink-0 transition-transform duration-200"
+                    :class="settingsOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                </svg>
+            </button>
+
+            {{-- SUBMENU --}}
+            <div x-cloak x-show="settingsOpen && sidebarOpen" x-transition
+                class="ml-5 space-y-1 border-l border-white/30 pl-3">
+                {{-- PROFILE SETTINGS --}}
+                <a href="{{ route('admin.profile') }}" wire:navigate
+                    class="block rounded-lg px-3 py-2.5 text-sm transition
+        {{ request()->routeIs('admin.profile*')
+            ? 'bg-[#6F4E37] text-white'
+            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                    Profile Settings
+                </a>
+
+                {{-- WEBSITE SETTINGS --}}
+                <a href="{{ route('admin.website-settings.edit') }}" wire:navigate
+                    class="block rounded-lg px-3 py-2.5 text-sm transition
+        {{ request()->routeIs('admin.website-settings.*')
+            ? 'bg-[#6F4E37] text-white'
+            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                    Website Settings
+                </a>
+
+                {{-- HOME PAGE SLIDER --}}
+                <a href="{{ route('admin.home-slider.index') }}" wire:navigate
+                    class="block rounded-lg px-3 py-2.5 text-sm transition
+        {{ request()->routeIs('admin.home-slider.*')
+            ? 'bg-[#6F4E37] text-white'
+            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                    Home Page Slider Images
+                </a>
+            </div>
+        </div>
+
+
+        <a href="{{ route('admin.help') }}" wire:navigate title="{{ !($sidebarOpen ?? true) ? 'Help Center' : '' }}"
+            class="flex items-center rounded-xl text-sm font-medium transition-all
+    {{ request()->routeIs('admin.help*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
                 'justify-center px-2 py-3'">
 
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3" />
-                <path
-                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
+                <path stroke-linecap="round" d="M12 17h.01" />
             </svg>
 
-
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                Settings
+                Help Center
             </span>
 
         </a>
 
-        <a href="{{ route('admin.help') }}" wire:navigate title="{{ !($sidebarOpen ?? true) ? 'Help Center' : '' }}"
-        class="flex items-center rounded-xl text-sm font-medium transition-all
-    {{ request()->routeIs('admin.help*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-        :class="sidebarOpen
-            ?
-            'gap-3 px-3 py-2.5' :
-            'justify-center px-2 py-3'">
-
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-            viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" />
-            <path stroke-linecap="round" stroke-linejoin="round"
-                d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
-            <path stroke-linecap="round" d="M12 17h.01" />
-        </svg>
-
-        <span x-show="sidebarOpen" x-cloak class="truncate">
-            Help Center
-        </span>
-
-    </a>
-
         <div>
 
             <form method="POST" action="{{ route('logout') }}">
-    
+
                 @csrf
-    
+
                 <button type="submit"
                     class="w-full
                            flex items-center
@@ -420,30 +476,30 @@
                         ?
                         'gap-3 px-3 py-2.5' :
                         'justify-center px-2 py-3'">
-    
+
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                         viewBox="0 0 24 24">
                         <path d="M10 17l5-5-5-5" />
                         <path d="M15 12H3" />
                         <path d="M21 19V5a2 2 0 00-2-2h-6" />
                     </svg>
-    
+
                     <span x-show="sidebarOpen" x-cloak>
                         Logout
                     </span>
-    
+
                 </button>
-    
+
             </form>
-    
+
         </div>
 
     </nav>
 
 
-   
 
-   
+
+
 
 </aside>
 
@@ -480,11 +536,12 @@
                        min-w-0
                        text-white">
 
-                       <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M3 10.5L12 3l9 7.5" />
-                        <path d="M5 9.5V21h14V9.5" />
-                        <path d="M9 21v-6h6v6" />
-                    </svg>
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <path d="M3 10.5L12 3l9 7.5" />
+                    <path d="M5 9.5V21h14V9.5" />
+                    <path d="M9 21v-6h6v6" />
+                </svg>
 
                 <span class="text-[10px] font-medium leading-tight">
                     Dashboard
@@ -514,13 +571,14 @@
                        min-w-0
                        text-white">
 
-                       <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <rect x="3" y="4" width="18" height="17" rx="2" />
-        
-                        <path d="M16 2v4M8 2v4M3 10h18" />
-        
-                        <path d="M12 13v4M10 15h4" />
-                    </svg>
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="17" rx="2" />
+
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+
+                    <path d="M12 13v4M10 15h4" />
+                </svg>
 
                 <span class="text-[10px] font-medium leading-tight">
                     Appointments
@@ -539,106 +597,108 @@
 
 
             <a href="{{ route('admin.transactions') }}"
-            class="flex flex-col items-center gap-0.5
+                class="flex flex-col items-center gap-0.5
                    px-3 py-1.5
                    rounded-xl
                    transition-all
                    min-w-0
                    text-white">
 
-                   <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
-    
+
                     <path d="M3 10h18" />
                     <path d="M7 15h4" />
                 </svg>
 
-            <span class="text-[10px] font-medium leading-tight">
-                Transactions
-            </span>
+                <span class="text-[10px] font-medium leading-tight">
+                    Transactions
+                </span>
 
-            @if (request()->routeIs('admin.transactions*'))
-                <span
-                    class="w-1 h-1
+                @if (request()->routeIs('admin.transactions*'))
+                    <span
+                        class="w-1 h-1
                            rounded-full
                            bg-[#6F4E37]
                            mt-0.5">
+                    </span>
+                @endif
+
+            </a>
+
+            <a href="{{ route('admin.calendar') }}"
+                class="flex flex-col items-center gap-0.5
+               px-3 py-1.5
+               rounded-xl
+               transition-all
+               min-w-0
+               text-white">
+
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path stroke-linecap="round" d="M16 3v4M8 3v4M3 11h18" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01" />
+                </svg>
+
+                <span class="text-[10px] font-medium leading-tight">
+                    Calendar
                 </span>
-            @endif
 
-        </a>
+                @if (request()->routeIs('admin.calendar*'))
+                    <span
+                        class="w-1 h-1
+                       rounded-full
+                       bg-[#6F4E37]
+                       mt-0.5">
+                    </span>
+                @endif
 
-        <a href="{{ route('admin.calendar') }}"
-        class="flex flex-col items-center gap-0.5
+            </a>
+
+            <a href="{{ route('admin.reports') }}"
+                class="flex flex-col items-center gap-0.5
                px-3 py-1.5
                rounded-xl
                transition-all
                min-w-0
                text-white">
 
-               <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <path d="M4 19V5" />
+                    <path d="M4 19h16" />
 
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path stroke-linecap="round" d="M16 3v4M8 3v4M3 11h18" />
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01" />
-            </svg>
+                    <path d="M7 16v-4" />
+                    <path d="M11 16V8" />
+                    <path d="M15 16v-6" />
+                    <path d="M19 16V5" />
+                </svg>
+                <span class="text-[10px] font-medium leading-tight">
+                    Reports
+                </span>
 
-        <span class="text-[10px] font-medium leading-tight">
-            Calendar
-        </span>
-
-        @if (request()->routeIs('admin.calendar*'))
-            <span
-                class="w-1 h-1
+                @if (request()->routeIs('admin.reports*'))
+                    <span
+                        class="w-1 h-1
                        rounded-full
                        bg-[#6F4E37]
                        mt-0.5">
-            </span>
-        @endif
+                    </span>
+                @endif
 
-    </a>
-
-    <a href="{{ route('admin.reports') }}"
-        class="flex flex-col items-center gap-0.5
-               px-3 py-1.5
-               rounded-xl
-               transition-all
-               min-w-0
-               text-white">
-
-               <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-               viewBox="0 0 24 24">
-               <path d="M4 19V5" />
-               <path d="M4 19h16" />
-
-               <path d="M7 16v-4" />
-               <path d="M11 16V8" />
-               <path d="M15 16v-6" />
-               <path d="M19 16V5" />
-           </svg>
-        <span class="text-[10px] font-medium leading-tight">
-            Reports
-        </span>
-
-        @if (request()->routeIs('admin.reports*'))
-            <span
-                class="w-1 h-1
-                       rounded-full
-                       bg-[#6F4E37]
-                       mt-0.5">
-            </span>
-        @endif
-
-    </a>
+            </a>
 
 
 
 
-          
 
 
-            
+
+
 
 
             {{-- ================================================= --}}
@@ -748,9 +808,9 @@
             </div>
 
 
-               {{-- Announcements --}}
-               <a href="{{ route('admin.posts') }}" onclick="toggleAdminMoreDrawer()"
-               class="inline-flex items-center gap-3
+            {{-- Announcements --}}
+            <a href="{{ route('admin.posts') }}" onclick="toggleAdminMoreDrawer()"
+                class="inline-flex items-center gap-3
                       px-4 py-3
                       rounded-xl
                       text-sm
@@ -760,18 +820,18 @@
                       transition-all
                       w-full">
 
-               <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                   viewBox="0 0 24 24">
-                   <path d="M4 5h16v14H4z" />
-                   <path d="M7 9h10M7 13h7" />
-               </svg>
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <path d="M4 5h16v14H4z" />
+                    <path d="M7 9h10M7 13h7" />
+                </svg>
 
-               Announcements
+                Announcements
 
-           </a>
+            </a>
 
             <a href="{{ route('admin.users') }}" onclick="toggleAdminMoreDrawer()"
-            class="inline-flex items-center gap-3
+                class="inline-flex items-center gap-3
                    px-4 py-3
                    rounded-xl
                    text-sm
@@ -781,15 +841,15 @@
                    transition-all
                    w-full">
 
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                viewBox="0 0 24 24">
-                <path d="M4 5h16v14H4z" />
-                <path d="M7 9h10M7 13h7" />
-            </svg>
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <path d="M4 5h16v14H4z" />
+                    <path d="M7 9h10M7 13h7" />
+                </svg>
 
-            Customers
+                Customers
 
-        </a>
+            </a>
 
 
             {{-- Services --}}
@@ -860,8 +920,8 @@
 
             </a>
 
-             <a href="{{ route('admin.profile') }}" onclick="toggleAdminMoreDrawer()"
-             class="inline-flex items-center gap-3
+            <a href="{{ route('admin.profile') }}" onclick="toggleAdminMoreDrawer()"
+                class="inline-flex items-center gap-3
                     px-4 py-3
                     rounded-xl
                     text-sm
@@ -871,18 +931,19 @@
                     transition-all
                     w-full">
 
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="3" />
-                        <path
-                            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-                    </svg>
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
 
-             Settings
+                Settings
 
-         </a>
+            </a>
 
-          <a href="{{ route('admin.help') }}" onclick="toggleAdminMoreDrawer()"
-          class="inline-flex items-center gap-3
+            <a href="{{ route('admin.help') }}" onclick="toggleAdminMoreDrawer()"
+                class="inline-flex items-center gap-3
                  px-4 py-3
                  rounded-xl
                  text-sm
@@ -891,24 +952,24 @@
                  hover:bg-white/10
                  transition-all
                  w-full">
-                 
-                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                 viewBox="0 0 24 24">
-                 <circle cx="12" cy="12" r="9" />
-                 <path stroke-linecap="round" stroke-linejoin="round"
-                     d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
-                 <path stroke-linecap="round" d="M12 17h.01" />
-             </svg>
 
-          Help Center
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
+                    <path stroke-linecap="round" d="M12 17h.01" />
+                </svg>
 
-      </a>
+                Help Center
 
-
-           
+            </a>
 
 
-          
+
+
+
+
 
             {{-- Divider --}}
             <div class="border-t border-white/10 my-2"></div>

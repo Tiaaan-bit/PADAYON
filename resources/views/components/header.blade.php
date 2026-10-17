@@ -3,17 +3,21 @@
 
     {{-- LOGO + BRAND --}}
     <a href="{{ route('home.showHomePage') }}" class="flex items-center gap-3">
+        <img src="{{ !empty($websiteSettings?->logo_path)
+            ? asset('storage/' . $websiteSettings->logo_path)
+            : asset('build/assets/images/logo.png') }}"
+            alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}" class="h-16 w-16 object-contain">
 
-        <img src="{{ asset('images/logo.webp') }}" alt="Padayon Massage Center Logo"
-            class="h-16 w-16 object-contain">
+
 
         <div class="leading-tight">
             <h1 class="text-white font-semibold text-lg">
-                Padayon Massage Center
+                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
+
             </h1>
 
             <span class="font-bold text-white text-xs">
-                Blind Massage Specialists | Powered by DiverseCare Wellness Hub
+                {{ $websiteSettings?->website_subname ?? 'SubName' }}
             </span>
         </div>
 

@@ -51,12 +51,13 @@
                     Our team can respond in real time.
                 </p>
 
-                <a href="https://www.facebook.com/people/Padayon-Massage-Center/61583836714033/" target="_blank"
-                    rel="noopener noreferrer" class="text-[#849753] font-semibold">
-
-                    Padayon Massage Center
-
-                </a>
+                <a
+                href="{{ $settings->facebook_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {{ $settings->facebook_name }}
+            </a>
 
             </div>
 
@@ -80,12 +81,17 @@
                     Visit our location in real life.
                 </p>
 
-                <span class="text-[#849753] font-semibold">
-
-                    RCPJC Building Unit 1 Brgy. Salcedo 2,
-                    Noveleta, Philippines, 4105
-
-                </span>
+                @if ($settings->location_url)
+    <a
+        href="{{ $settings->location_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        {{ $settings->business_address }}
+    </a>
+@else
+    <span>{{ $settings->business_address }}</span>
+@endif
 
             </div>
 
@@ -109,11 +115,9 @@
                     Available during working hours.
                 </p>
 
-                <span class="text-[#849753] font-semibold">
-
-                    0976 007 7035
-
-                </span>
+                <a href="tel:{{ preg_replace('/[^\d+]/', '', $settings->phone_number) }}">
+                    {{ $settings->phone_number }}
+                </a>
 
             </div>
 
@@ -137,11 +141,12 @@
                     We’re here for you every day of the week!
                 </p>
 
-                <span class="text-[#849753] font-semibold">
-
-                    Open Daily: 1:00 PM – 1:00 AM
-
-                </span>
+                <p>
+                    Open Daily:
+                    {{ \Carbon\Carbon::parse($settings->opening_time)->format('g:i A') }}
+                    –
+                    {{ \Carbon\Carbon::parse($settings->closing_time)->format('g:i A') }}
+                </p>
 
             </div>
 

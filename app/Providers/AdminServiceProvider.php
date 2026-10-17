@@ -46,6 +46,9 @@ use App\Repositories\Admin\Report\ReportRepositoryInterface;
 use App\Models\ImagePost;
 use App\Policies\Admin\ImagePostPolicy;
 
+use App\Models\WebsiteSetting;
+use Illuminate\Support\Facades\View;
+
 class AdminServiceProvider extends ServiceProvider
 {
     /**
@@ -89,5 +92,8 @@ class AdminServiceProvider extends ServiceProvider
 
         Gate::policy(ImagePost::class, ImagePostPolicy::class);
 
+        View::composer('*', function ($view) {
+            $view->with('websiteSettings', WebsiteSetting::find(1));
+        });
     }
 }

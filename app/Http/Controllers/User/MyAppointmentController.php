@@ -11,6 +11,7 @@ use App\Notifications\AppointmentCancelledNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\AppointmentRescheduledNotification;
 
 class MyAppointmentController extends Controller
 {
@@ -243,6 +244,7 @@ class MyAppointmentController extends Controller
             'end' => $end,
         ];
     }
+
     public function reschedule(Request $request, UsersAppointments $appointment)
     {
         abort_unless($appointment->user_id === Auth::id(), 403);
@@ -259,6 +261,11 @@ class MyAppointmentController extends Controller
         ]);
 
         $this->rescheduleAppointment->execute($appointment, $validated['appointment_date'], $validated['appointment_time']);
+
+        // Refresh the appointment so the email contains the new schedule.
+        $appointment->refresh();
+
+        $appointment->user?->notify(new AppointmentRescheduledNotification($appointment));
 
         return redirect()->route('user.my-appointments')->with('success', 'Appointment rescheduled successfully.');
     }

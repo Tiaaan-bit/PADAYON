@@ -15,9 +15,7 @@ class NgrokUrl
         $forwardedProto = $request->header('x-forwarded-proto');
 
         if ($forwardedHost && $forwardedProto) {
-            URL::forceRootUrl(
-                $forwardedProto . '://' . $forwardedHost
-            );
+            URL::forceRootUrl($forwardedProto . '://' . $forwardedHost);
 
             URL::forceScheme($forwardedProto);
         }

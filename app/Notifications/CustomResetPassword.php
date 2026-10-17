@@ -1,8 +1,8 @@
 <?php
-// app/Notifications/CustomResetPassword.php
 
 namespace App\Notifications;
 
+use App\Models\WebsiteSetting;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 
@@ -12,10 +12,10 @@ class CustomResetPassword extends ResetPassword
     {
         return (new MailMessage)
             ->subject('Reset Your Password')
-            ->greeting('Hello!')
-            ->line('You are receiving this email because a password reset request was made for your account.')
-            ->action('Reset Password', $url)
-            ->line('This link will expire in 60 minutes.')
-            ->line('If you did not request a password reset, no further action is required.');
+            ->view('emails.auth.reset-password', [
+                'url' => $url,
+                'websiteSettings' => WebsiteSetting::first(),
+                'expireMinutes' => config('auth.passwords.users.expire', 60),
+            ]);
     }
 }

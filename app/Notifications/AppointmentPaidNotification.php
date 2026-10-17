@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\UsersAppointments;
+use App\Models\WebsiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -25,13 +26,16 @@ class AppointmentPaidNotification extends Notification
             6,
             '0',
             STR_PAD_LEFT
-        );  
+        );
+    
+        $websiteSettings = WebsiteSetting::query()->first();
     
         return (new MailMessage)
             ->subject('Payment Received - E-Receipt #' . $reference)
             ->view('emails.appointment.paid', [
                 'appointment' => $this->appointment,
                 'notifiable' => $notifiable,
+                'websiteSettings' => $websiteSettings,
             ]);
     }
 

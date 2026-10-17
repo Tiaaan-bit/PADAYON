@@ -1,8 +1,9 @@
-<?php
+<?php 
 
 namespace App\Mail;
 
 use App\Models\WalkInCustomer;
+use App\Models\WebsiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -15,6 +16,10 @@ class WalkInRegistrationInvitation extends Mailable
 
     public function build()
     {
-        return $this->subject('Create Your Padayon Massage Center Account')->view('emails.walk-in-registration-invitation');
+        return $this->subject('Create Your Padayon Massage Center Account')
+            ->view('emails.walk-in-registration-invitation')
+            ->with([
+                'websiteSettings' => WebsiteSetting::first(),
+            ]);
     }
 }

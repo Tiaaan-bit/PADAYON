@@ -135,7 +135,7 @@
                             font-size: 28px;
                             font-weight: bold;
                         ">
-                                Padayon Massage Center
+                                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
                             </h1>
 
                             <p
@@ -144,18 +144,10 @@
                             color: #ffffff;
                             font-size: 14px;
                         ">
-                                Blind Massage Specialists
+                                {{ $websiteSettings?->website_subname ?? 'SubName' }}
                             </p>
 
-                            <p
-                                style="
-                            margin: 4px 0 0;
-                            color: #ffffff;
-                            font-size: 12px;
-                            opacity: 0.9;
-                        ">
-                                Powered by DiverseCare Wellness Hub
-                            </p>
+
 
                         </td>
                     </tr>
@@ -768,7 +760,7 @@
                             font-size: 13px;
                             font-weight: bold;
                         ">
-                                Padayon Massage Center
+                                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
                             </p>
 
                             <p
@@ -778,7 +770,9 @@
                             font-size: 11px;
                             line-height: 1.6;
                         ">
-                                Thank you for choosing Padayon Massage Center.
+                                Thank you for choosing
+                                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
+                                .
                                 <br>
                                 We look forward to serving you.
                             </p>

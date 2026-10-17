@@ -78,7 +78,7 @@
                                 font-weight: bold;
                                 color: #ffffff;
                             ">
-                                Padayon Massage Center
+                                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
                             </div>
 
                             <div
@@ -87,17 +87,9 @@
                                 font-size: 14px;
                                 color: #F4EDDB;
                             ">
-                                Blind Massage Specialists
+                                {{ $websiteSettings?->website_subname ?? 'SubName' }}
                             </div>
 
-                            <div
-                                style="
-                                margin-top: 3px;
-                                font-size: 12px;
-                                color: #F4EDDB;
-                            ">
-                                Powered by DiverseCare Wellness Hub
-                            </div>
 
                         </td>
                     </tr>
@@ -638,7 +630,8 @@
                                             color: #6F4E37;
                                         ">
                                             Thank you for completing your payment
-                                            with Padayon Massage Center.
+                                            with {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
+                                            .
                                         </div>
 
                                     </td>
@@ -663,7 +656,7 @@
                                 color: #F4EDDB;
                                 line-height: 1.6;
                             ">
-                                Padayon Massage Center
+                                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
                             </div>
 
                             <div
@@ -673,9 +666,8 @@
                                 color: #cfc6b8;
                                 line-height: 1.6;
                             ">
-                                Blind Massage Specialists
-                                <br>
-                                Powered by DiverseCare Wellness Hub
+                                {{ $websiteSettings?->website_subname ?? 'SubName' }}
+
                             </div>
 
                             <div

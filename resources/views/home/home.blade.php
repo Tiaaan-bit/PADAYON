@@ -50,31 +50,35 @@
             </div>
 
 
-            {{-- IMAGE SLIDER --}}
             <div class="flex-1 lg:max-w-2xl order-2 lg:order-1 w-full pt-20">
 
-                <div class="w-full max-w-3xl mx-auto lg:mx-0 overflow-hidden relative">
+                <div style="position: relative; top: -20px;"
+                    class="w-full max-w-5xl mx-auto lg:mx-0 overflow-hidden rounded-2xl">
 
-                    <div class="flex transition-transform duration-500 ease-in-out" id="slider">
+                    <div class="flex w-full transition-transform duration-500 ease-in-out" id="slider">
 
-                        <img src="{{ asset('build/assets/images/image-1.webp') }}" class="w-full shrink-0 rounded-lg"
-                            alt="Padayon Massage Center">
+                        @for ($slot = 1; $slot <= 5; $slot++)
+                            @php
+                                $image = $homeSliderImages->get($slot);
 
-                        <img src="{{ asset('build/assets/images/image-2.webp') }}" class="w-full shrink-0 rounded-lg"
-                            alt="Padayon Massage Center">
+                                $imageUrl = $image
+                                    ? asset('storage/' . $image->image_path)
+                                    : asset("build/assets/images/image-{$slot}.webp");
+                            @endphp
 
-                        <img src="{{ asset('build/assets/images/image-3.webp') }}" class="w-full shrink-0 rounded-lg"
-                            alt="Padayon Massage Center">
-
-                        <img src="{{ asset('build/assets/images/image-4.webp') }}" class="w-full shrink-0 rounded-lg"
-                            alt="Padayon Massage Center">
-
-                        <img src="{{ asset('build/assets/images/image-5.webp') }}" class="w-full shrink-0 rounded-lg"
-                            alt="Padayon Massage Center">
+                            <div class="w-full shrink-0 aspect-video overflow-hidden">
+                                <img src="{{ $imageUrl }}" class="w-full h-full object-cover object-center rounded-2xl"
+                                    alt="Padayon Massage Center"
+                                    @if ($slot === 1) fetchpriority="high"
+                                    @else
+                                        loading="lazy" @endif>
+                            </div>
+                        @endfor
 
                     </div>
 
                 </div>
+
 
 
                 {{-- SLIDER DOTS --}}
@@ -152,9 +156,8 @@
 
 
             {{-- RIGHT IMAGE GALLERY --}}
-            <div x-data="{images: @js($therapists->filter(fn($therapist) => $therapist->image)->map(fn($therapist) => 
-            ['url' => asset('storage/' . $therapist->image),'alt' => 'Massage Therapist',],)->values(),),}">
-                
+            <div x-data="{ images: @js($therapists->filter(fn($therapist) => $therapist->image)->map(fn($therapist) => ['url' => asset('storage/' . $therapist->image), 'alt' => 'Massage Therapist'])->values()), }">
+
                 <div class="grid max-w-md grid-cols-3 gap-4 mx-auto lg:mx-0">
                     <template x-for="(image, index) in images" :key="image.url">
                         <img :src="image.url" :alt="image.alt"

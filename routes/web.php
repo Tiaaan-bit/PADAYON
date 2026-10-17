@@ -11,8 +11,10 @@ use App\Http\Controllers\Admin\AdminServicesController;
 use App\Http\Controllers\Admin\AdminTherapistController;
 use App\Http\Controllers\Admin\AdminTransactionsController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Admin\HomeSliderImageController;
 use App\Http\Controllers\Admin\ImagePostController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -38,6 +40,7 @@ use App\Http\Controllers\User\UserAppointmentController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
+
 
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
 
@@ -186,6 +189,13 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
 
         Route::view('/help', 'admin.help')->name('help');
+        
+        Route::get('/website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
+        Route::put('/website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
+
+        Route::get('/home-slider', [HomeSliderImageController::class, 'index'])->name('home-slider.index');
+        Route::put('/home-slider/{slot}', [HomeSliderImageController::class, 'update'])->whereNumber('slot')->name('home-slider.update');
+        Route::delete('/home-slider/{slot}', [HomeSliderImageController::class, 'destroy'])->whereNumber('slot')->name('home-slider.destroy');
 
         
 

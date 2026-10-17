@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\WebsiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -10,9 +11,7 @@ class CustomVerifyEmail extends Notification
 {
     use Queueable;
 
-    public function __construct(public string $code)
-    {
-    }
+    public function __construct(public string $code) {}
 
     public function via($notifiable): array
     {
@@ -21,12 +20,14 @@ class CustomVerifyEmail extends Notification
 
     public function toMail($notifiable): MailMessage
     {
+        $websiteSettings = WebsiteSetting::first();
+
         return (new MailMessage)
-            ->subject('Your Verification Code')
-            ->greeting('Hello!')
-            ->line('Your email verification code is:')
-            ->line($this->code)
-            ->line('This code will expire in 5 minutes.')
-            ->line('If you did not request this, please ignore this email.');
+            ->subject('Your Email Verification Code')
+            ->view('emails.auth.verify-code', [
+                'code' => $this->code,
+                'notifiable' => $notifiable,
+                'websiteSettings' => $websiteSettings,
+            ]);
     }
 }
