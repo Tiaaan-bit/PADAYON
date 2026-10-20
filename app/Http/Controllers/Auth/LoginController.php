@@ -51,11 +51,15 @@ class LoginController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (Auth::guard('web')->attempt([
-            'email' => $email,
-            'password' => $password,
-        ], $remember)) {
-
+        if (
+            Auth::guard('web')->attempt(
+                [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+                $remember,
+            )
+        ) {
             $request->session()->regenerate();
 
             $user = Auth::guard('web')->user();
@@ -67,7 +71,6 @@ class LoginController extends Controller
             */
 
             if ($user->isAdmin()) {
-
                 if (method_exists($user, 'markOnline')) {
                     $user->markOnline();
                 }
@@ -82,15 +85,12 @@ class LoginController extends Controller
             */
 
             if ($user->isStaff()) {
-
                 if (method_exists($user, 'markOnline')) {
                     $user->markOnline();
                 }
 
                 return redirect()->route('staff.dashboard');
             }
-
-            
 
             /*
             |--------------------------------------------------------------------------
@@ -99,15 +99,7 @@ class LoginController extends Controller
             */
 
             if (!$user->hasVerifiedEmail()) {
-
-                Auth::guard('web')->logout();
-
-                return redirect()
-                    ->route('verification.notice')
-                    ->with(
-                        'info',
-                        'Please verify your email before logging in.'
-                    );
+                return redirect()->route('verification.notice')->with('info', 'Please verify your email before accessing your account.');
             }
 
             if (method_exists($user, 'markOnline')) {
@@ -123,11 +115,15 @@ class LoginController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (Auth::guard('therapist')->attempt([
-            'email' => $email,
-            'password' => $password,
-        ], $remember)) {
-
+        if (
+            Auth::guard('therapist')->attempt(
+                [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+                $remember,
+            )
+        ) {
             $request->session()->regenerate();
 
             $therapist = Auth::guard('therapist')->user();
@@ -138,11 +134,7 @@ class LoginController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if (
-                isset($therapist->status) &&
-                $therapist->status !== 'available'
-            ) {
-
+            if (isset($therapist->status) && $therapist->status !== 'available') {
                 Auth::guard('therapist')->logout();
 
                 return back()
@@ -156,7 +148,9 @@ class LoginController extends Controller
                 $therapist->markOnline();
             }
 
-            return redirect()->route('therapist.dashboard');
+            return redirect()->intended(
+        route('therapist.ai.index')
+    );
         }
 
         /*
@@ -184,7 +178,6 @@ class LoginController extends Controller
         */
 
         if (Auth::guard('web')->check()) {
-
             $user = Auth::guard('web')->user();
 
             if ($user && method_exists($user, 'markOffline')) {
@@ -201,7 +194,6 @@ class LoginController extends Controller
         */
 
         if (Auth::guard('therapist')->check()) {
-
             $therapist = Auth::guard('therapist')->user();
 
             if ($therapist && method_exists($therapist, 'markOffline')) {
@@ -220,8 +212,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()
-            ->route('login')
-            ->with('success', 'You have been logged out.');
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

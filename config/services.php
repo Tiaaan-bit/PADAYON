@@ -46,4 +46,10 @@ return [
     'textbee_api_key' => env('TEXTBEE_API_KEY'),
     'textbee_device_id' => env('TEXTBEE_DEVICE_ID'),
 ],
+
+'groq' => [
+    'key' => env('GROQ_API_KEY'),
+    'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+    'url' => 'https://api.groq.com/openai/v1/chat/completions',
+],
 ];

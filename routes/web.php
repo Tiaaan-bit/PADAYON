@@ -31,7 +31,7 @@ use App\Http\Controllers\Staff\StaffProfileController;
 use App\Http\Controllers\Staff\StaffQuickBookController;
 use App\Http\Controllers\Staff\StaffTherapistController;
 use App\Http\Controllers\Staff\StaffTransactionsController;
-use App\Http\Controllers\Therapist\TherapistDashboardController;
+use App\Http\Controllers\Therapist\TherapistAiController;
 use App\Http\Controllers\User\MyAppointmentController;
 use App\Http\Controllers\User\NotificationController;
 use App\Http\Controllers\User\PaymentHistoryController;
@@ -217,7 +217,11 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
     Route::middleware('auth.therapist')->prefix('therapist')->name('therapist.')->group(function () {
 
-        Route::get('/dashboard', [TherapistDashboardController::class, 'dashboard'])->name('dashboard');
+
+        Route::get('/ai-assistant', [TherapistAiController::class,'index',])->name('ai.index');
+        Route::post('/ai-assistant/chat', [TherapistAiController::class,'chat',])->middleware('throttle:20,1')->name('ai.chat');
+
+
     });
 
 
