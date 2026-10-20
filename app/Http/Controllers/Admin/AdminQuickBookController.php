@@ -247,9 +247,9 @@ class AdminQuickBookController extends Controller
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
 
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:11', 'unique:users','min:10'],
 
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users'],
 
             'service_id' => ['required', 'integer', 'exists:services,id'],
 

@@ -8,77 +8,72 @@ use Throwable;
 
 class SmsService
 {
-    private const API_URL = 'https://unismsapi.com/api/sms';
-    
+    private const TEXTBEE_API_URL = 'https://api.textbee.dev/api/v1/gateway/send-sms';
+
     public function send(string $phone, string $message): bool
     {
-        if (! config('services.sms.enabled')) {
+        if (!config('services.sms.enabled')) {
+            Log::info('SMS sending is disabled.');
             return false;
         }
 
-        if (config('services.sms.provider') !== 'unisms') {
-            Log::warning('SMS provider is not configured as UniSMS.');
-
+        if (config('services.sms.provider') !== 'textbee') {
+            Log::warning('SMS provider is not configured as TextBee.');
             return false;
         }
 
-        $secretKey = config('services.sms.api_key');
+        $apiKey = config('services.sms.textbee_api_key');
+        $deviceId = config('services.sms.textbee_device_id');
 
-        if (blank($secretKey)) {
-            Log::warning('UniSMS secret key is missing.');
-
+        if (blank($apiKey) || blank($deviceId)) {
+            Log::warning('TextBee API key or device ID is missing.');
             return false;
         }
 
         $recipient = $this->formatPhilippineNumber($phone);
 
         if ($recipient === null) {
-            Log::warning('UniSMS: invalid Philippine mobile number.');
-
+            Log::warning('TextBee: invalid Philippine mobile number.');
             return false;
         }
 
         if (blank(trim($message))) {
-            Log::warning('UniSMS: SMS message cannot be empty.');
-
+            Log::warning('TextBee: SMS message cannot be empty.');
             return false;
         }
 
         try {
-            $response = Http::withBasicAuth($secretKey, '')
+            $response = Http::withHeaders([
+                'x-api-key' => $apiKey,
+            ])
                 ->acceptJson()
                 ->asJson()
                 ->timeout(30)
-                ->post(self::API_URL, [
-                    'recipient' => $recipient,
-                    'content' => $message,
-                    'sender_id' => config(
-                        'services.sms.sender_name',
-                        'UniSMS'
-                    ),
+                ->post(self::TEXTBEE_API_URL, [
+                    'deviceId' => $deviceId,
+                    'recipients' => [$recipient],
+                    'message' => $message,
                 ]);
 
-            $body = $response->json();
-
-            if (! $response->successful()) {
-                Log::warning('UniSMS API request failed.', [
+            if (!$response->successful()) {
+                Log::warning('TextBee API request failed.', [
                     'http_status' => $response->status(),
-                    'response' => $body ?? $response->body(),
+                    'response' => $response->json() ?? $response->body(),
                 ]);
-            
+
                 return false;
             }
 
-            Log::info('UniSMS API response received.', [
+            Log::info('TextBee accepted SMS request.', [
                 'http_status' => $response->status(),
-                'response' => $body ?? $response->body(),
+                'response' => $response->json(),
             ]);
 
-            // HTTP success means the API responded successfully.
-            // Actual delivery must be verified using UniSMS status/report.
+            // A successful HTTP response does not guarantee
+            // that the SMS was delivered to the recipient.
             return true;
         } catch (Throwable $e) {
-            Log::error('UniSMS request exception.', [
+            Log::error('TextBee SMS request exception.', [
                 'error' => $e->getMessage(),
             ]);
 
@@ -102,8 +97,6 @@ class SmsService
             return null;
         }
 
-        return preg_match('/^\+639\d{9}$/', $phone)
-            ? $phone
-            : null;
+        return preg_match('/^\+639\d{9}$/', $phone) ? $phone : null;
     }
 }

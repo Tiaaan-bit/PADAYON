@@ -11,7 +11,10 @@
         @yield('title', 'Padayon Massage Center - Dashboard')
     </title>
 
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.webp') }}">
+    <link rel="icon" type="image/png"
+        href="{{ !empty($websiteSettings?->logo_path)
+            ? asset('storage/' . $websiteSettings->logo_path)
+            : asset('build/assets/images/logo.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -19,13 +22,14 @@
 </head>
 
 
-<body class="bg-[#D6BB9E] font-sans overflow-x-hidden" x-data="{ sidebarOpen: false }"@close-sidebar.window="sidebarOpen = false">
+<body class="bg-[#D6BB9E] font-sans overflow-x-hidden"
+    x-data="{ sidebarOpen: false }"@close-sidebar.window="sidebarOpen = false">
 
 
     @include('components.PageLoading')
 
     @include('components.staffSidebar')
-    
+
     @include('components.toast-notification')
 
 

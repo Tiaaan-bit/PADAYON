@@ -134,7 +134,7 @@
                     <select name="status"
                         class="w-full rounded-xl border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
                         <option value="">
-                            All Status
+                            All Appointment Status
                         </option>
 
                         <option value="{{ AppointmentStatus::PENDING->value }}" @selected(request('status') === AppointmentStatus::PENDING->value)>

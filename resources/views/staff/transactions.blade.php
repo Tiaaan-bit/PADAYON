@@ -306,7 +306,13 @@
                                         <p class="text-xs text-gray-500">
 
                                             {{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
+                                            
+                                        </p>
 
+                                        <p class="text-xs text-gray-500">
+
+                                            ₱{{ $transaction->addOn ? $transaction->addOn->price  : '0.00' }}
+                                            
                                         </p>
 
 

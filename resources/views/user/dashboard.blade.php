@@ -546,7 +546,7 @@
                                             <p
                                                 class="text-xs font-semibold
                                        text-gray-900 truncate">
-                                                {{ $appointment->service->name ?? 'Service' }}
+                                                {{ $appointment->service->name ?? 'Service' }} - {{ $appointment->service->description ?? 'Description' }} 
                                             </p>
 
                                             {{-- Therapist --}}
@@ -676,7 +676,7 @@
 
                                             {{-- Service Name --}}
                                             <p class="text-xs font-semibold text-gray-900 truncate">
-                                                {{ $appointment->service->name ?? 'Service' }}
+                                                {{ $appointment->service->name ?? 'Service' }} - {{ $appointment->service->description ?? 'Description' }} 
                                             </p>
 
                                             {{-- Therapist --}}

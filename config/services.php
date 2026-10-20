@@ -42,8 +42,8 @@ return [
 
     'sms' => [
     'enabled' => env('SMS_ENABLED', false),
-    'provider' => env('SMS_PROVIDER'),
-    'api_key' => env('SMS_API_KEY'),
-    'sender_name' => env('SMS_SENDER_NAME', 'Unisoft'),
+    'provider' => env('SMS_PROVIDER', 'textbee'),
+    'textbee_api_key' => env('TEXTBEE_API_KEY'),
+    'textbee_device_id' => env('TEXTBEE_DEVICE_ID'),
 ],
 ];

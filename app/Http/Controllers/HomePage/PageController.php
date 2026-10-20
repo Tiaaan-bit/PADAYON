@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\HomePage;
 
 use App\Http\Controllers\Controller;
+use App\Models\AboutPageSetting;
 use App\Models\AddOns;
+use App\Models\HomepageSection;
+use App\Models\HomeSliderImage;
 use App\Models\Services;
 use App\Models\Therapists;
 use App\Models\WebsiteSetting;
-use App\Models\HomeSliderImage;
-
 
 class PageController extends Controller
 {
@@ -21,12 +22,30 @@ class PageController extends Controller
 
         $homeSliderImages = HomeSliderImage::all()->keyBy('slot');
 
-        return view('home.home', compact('therapists','homeSliderImages'));
+        $heroSection = HomepageSection::where('section_key', 'hero')->first();
+
+        $introSection = HomepageSection::where('section_key', 'introduction')->first();
+
+        $whyChooseSection = HomepageSection::where('section_key', 'why_choose')->first();
+
+        $whyChooseBoxes = HomepageSection::where('section_key', 'like', 'why_choose_box_%')->get()->keyBy('section_key');
+
+        return view('home.home', compact('therapists', 'homeSliderImages', 'heroSection', 'introSection','whyChooseSection','whyChooseBoxes'));
     }
 
     public function showAboutPage()
     {
-        return view('home.about');
+        $aboutPageSetting = AboutPageSetting::firstOrCreate(
+            ['id' => 1],
+            [
+                'heading' => 'What we do?',
+                'description' => 'Our web-based Blind Therapist Massage Appointment System is designed to connect clients with professional blind massage therapists through a simple, accessible, and convenient online platform.
+    
+    We aim to provide quality wellness services while creating employment opportunities and promoting the skills of visually impaired massage therapists.',
+            ],
+        );
+
+        return view('home.about', compact('aboutPageSetting'));
     }
 
     public function showContactPage()

@@ -429,7 +429,16 @@
         {{ request()->routeIs('admin.home-slider.*')
             ? 'bg-[#6F4E37] text-white'
             : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                    Home Page Slider Images
+                    Home Page Settings
+                </a>
+
+                {{-- About Page--}}
+                <a href="{{ route('admin.about-settings.edit') }}" wire:navigate
+                    class="block rounded-lg px-3 py-2.5 text-sm transition
+        {{ request()->routeIs('admin.about-settings.*')
+            ? 'bg-[#6F4E37] text-white'
+            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                    About Page Settings
                 </a>
             </div>
         </div>

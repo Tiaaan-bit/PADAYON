@@ -90,7 +90,7 @@
                     </h1>
 
                     <p class="mt-1 text-sm text-gray-600">
-                        Here's what's happening today at Padayon Massage Center.
+                        Here's what's happening today at {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}.
                     </p>
                 </div>
 

@@ -80,9 +80,9 @@
 
                     {{-- HEADER --}}
 
-                    <div class="p-6 border-b border-gray-100">
+                    <div class="p-6 border-b bg-[#849753] border-gray-100">
 
-                        <h1 class="text-2xl font-bold text-gray-800">
+                        <h1 class="text-2xl font-bold text-white">
                             Book an Appointment
                         </h1>
 
@@ -1223,11 +1223,11 @@
 
 
                                 <div>
-                                    <p class="font-semibold text-gray-800"
-                                        x-text="selectedService?.name || 'Not selected'"></p>
-
-                                    <p class="text-sm text-gray-600 mt-1"
-                                        x-text="selectedService?.description || 'No description available'"></p>
+                                    <p class="text-sm text-gray-600">
+                                        <span class="font-semibold text-gray-800" x-text="selectedService?.name || 'Not selected'"></span>/ 
+                                        <span x-text="selectedService?.description || 'No description available'"></span>
+                                    </p>
+                                    
 
                                     <p x-show="selectedService" class="text-xs text-gray-500 mt-1">
                                         <span x-text="selectedService?.duration_minutes || 0"></span>

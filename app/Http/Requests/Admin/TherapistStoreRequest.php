@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TherapistStoreRequest extends FormRequest
 {
@@ -13,10 +14,12 @@ class TherapistStoreRequest extends FormRequest
 
     public function rules(): array
     {
+        $therapist = $this->route('therapist');
+
         return [
             'name' => ['required', 'string', 'max:255'],
 
-            'email' => ['required', 'email', 'max:255', 'unique:therapists,email'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('therapists', 'email')->ignore($therapist->id)],
 
             'password' => ['required', 'string', 'min:8', 'confirmed'],
 

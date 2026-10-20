@@ -20,8 +20,7 @@
                 <h2
                     class="text-4xl sm:text-5xl lg:text-[48px] xl:text-[56px] font-bold bg-[#849753] bg-clip-text text-transparent mt-6 leading-tight">
 
-                    Looking for a place to relax, recharge,
-                    and restore your energy?
+                    {{ $introSection?->heading }}
 
                 </h2>
 
@@ -29,12 +28,7 @@
                 <p
                     class="font-bold max-w-xl mx-auto lg:mx-0 mt-5 text-lg lg:text-xl text-black/70 leading-relaxed px-4 lg:px-0">
 
-                    Dito sa Padayon Massage Center, bawat haplos ay
-                    may malasakit, bawat therapy ay may puso.
-
-                    Our visually impaired therapists are highly
-                    skilled—gifted with heightened touch and genuine
-                    compassion.
+                    {{ $introSection?->description}}
 
                 </p>
 
@@ -43,7 +37,7 @@
                 <a href="{{ route('login') }}"
                     class="inline-block px-8 py-4 mt-5 text-base lg:text-lg bg-[#849753] rounded-full text-slate-50 hover:bg-[#2F2420] font-medium shadow-lg hover:shadow-xl transition-all duration-300">
 
-                    Get Started
+                    {{ $introSection?->button_text }}
 
                 </a>
 
@@ -133,22 +127,14 @@
                 <h2
                     class="max-w-lg text-4xl md:text-5xl leading-tight text-center lg:text-left font-bold bg-[#849753] bg-clip-text text-transparent">
 
-                    Meet the hands that heal and restore
-                    your body and mind.
+                    {{ $heroSection?->heading}}
 
                 </h2>
 
 
                 <p class="font-bold max-w-md text-xl text-center text-black lg:text-left">
 
-                    Ang pahinga mo, ang aming misyon.
-                    Serbisyong may puso, dignidad, at malasakit
-                    hatid ng aming mahuhusay na blind massage
-                    therapists.
-
-                    Sa bawat pahinga mo, nakakatulong ka rin sa
-                    aming mga blind massage therapists na magkaroon
-                    ng dignified livelihood.
+                    {{ $heroSection?->description}}
 
                 </p>
 
@@ -187,14 +173,8 @@
             {{-- HEADER --}}
             <div class="text-center mb-20 lg:mb-24">
 
-                <h1
-                    class="text-4xl md:text-5xl lg:text-6xl font-bold bg-[#849753] bg-clip-text text-transparent mb-8 leading-tight">
-
-                    Why Choose
-                    <span class="text-[#849753]">
-                        Padayon
-                    </span>?
-
+                <h1 class="mb-8 text-4xl font-bold leading-tight text-[#849753] md:text-5xl lg:text-6xl">
+                    {{ $whyChooseSection?->heading ?? 'Why Choose Padayon?' }}
                 </h1>
 
             </div>
@@ -208,10 +188,9 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
-
-                        Authentic Filipino healing touch
-
+                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                        {{ $whyChooseBoxes['why_choose_box_1']?->heading
+                            ?? 'Authentic Filipino healing touch' }}
                     </h3>
 
                 </div>
@@ -221,10 +200,9 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
-
-                        Skilled Blind Massage Specialists
-
+                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                        {{ $whyChooseBoxes['why_choose_box_2']?->heading
+                            ?? 'Authentic Filipino healing touch' }}
                     </h3>
 
                 </div>
@@ -234,10 +212,9 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
-
-                        Stress & anxiety relief
-
+                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                        {{ $whyChooseBoxes['why_choose_box_3']?->heading
+                            ?? 'Authentic Filipino healing touch' }}
                     </h3>
 
                 </div>
@@ -253,10 +230,9 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
-
-                        Comforting and quiet space
-
+                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                        {{ $whyChooseBoxes['why_choose_box_4']?->heading
+                            ?? 'Authentic Filipino healing touch' }}
                     </h3>
 
                 </div>
@@ -266,11 +242,9 @@
                 <div
                     class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
-
-                        Helps support sustainable livelihood
-                        for the visually impaired
-
+                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                        {{ $whyChooseBoxes['why_choose_box_5']?->heading
+                            ?? 'Authentic Filipino healing touch' }}
                     </h3>
 
                 </div>

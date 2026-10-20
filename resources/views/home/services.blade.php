@@ -22,11 +22,6 @@
 
                 </h1>
 
-                <p class="mt-5 text-black text-lg md:text-xl">
-
-                    Magpahinga • Magpagaling • Magpadayon
-
-                </p>
 
             </div>
 

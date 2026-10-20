@@ -507,9 +507,16 @@
                             </div>
 
 
-                            {{-- ================================================= --}}
-                            {{-- STATUS --}}
-                            {{-- ================================================= --}}
+                            <div>
+
+                                <label class="mb-2 block text-sm font-medium text-gray-700">
+                                    Description
+                                </label>
+
+                                <p class="text-sm text-gray-600" x-text="description || 'No description available.'">
+                                </p>
+
+                            </div>
 
                             <div>
 
@@ -529,22 +536,6 @@
                                     </option>
 
                                 </select>
-
-                            </div>
-
-
-                            {{-- ================================================= --}}
-                            {{-- DESCRIPTION --}}
-                            {{-- ================================================= --}}
-
-                            <div>
-
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-
-                                <p class="text-sm text-gray-600" x-text="description || 'No description available.'">
-                                </p>
 
                             </div>
 

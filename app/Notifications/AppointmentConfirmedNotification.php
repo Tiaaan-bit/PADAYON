@@ -97,16 +97,24 @@ public function sendConfirmationSms(object $notifiable): void
             ->format('h:i A')
         : 'N/A';
 
+    $endtime = $appointment->appointment_end_time
+        ? Carbon::parse($appointment->appointment_end_time)
+            ->format('h:i A')
+        : 'N/A';
+
     $service = $appointment->service?->name
         ?? 'Massage service';
+
+    $description = $appointment->service?->description
+        ?? '';
 
     $therapist = $appointment->therapist?->name
         ?? 'To be assigned';
 
     $message = "Padayon Massage Center: Your appointment is confirmed. "
-        . "Service: {$service}. "
+        . "Service: {$service}-{$description} "
         . "Therapist: {$therapist}. "
-        . "Date: {$date}. Time: {$time}. "
+        . "Date: {$date}. Time: {$time}-{$endtime} "
         . "Thank you for choosing Padayon!";
 
     $sent = app(SmsService::class)->send($phone, $message);

@@ -102,8 +102,7 @@
                             data.therapist?.name ?? therapistName;
             
                         this.feedbackList = Array.isArray(data.feedback) ?
-                            data.feedback :
-                            [];
+                            data.feedback : [];
             
                     } catch (error) {
                         console.error('Feedback error:', error);
@@ -637,38 +636,79 @@
 
                             {{-- Password --}}
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ showPassword: false, showConfirmPassword: false }">
 
+                                {{-- Password --}}
                                 <div>
-
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-
                                         Password
-
                                     </label>
 
-                                    <input type="password" name="password" placeholder="Min 8 characters" required
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
+                                    <div class="relative">
+                                        <input :type="showPassword ? 'text' : 'password'" name="password"
+                                            placeholder="Min 8 characters" required
+                                            class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 pr-12 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
 
+                                        <button type="button" @click="showPassword = !showPassword"
+                                            class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-[#6F4E37]"
+                                            :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                                            {{-- Eye icon --}}
+                                            <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"
+                                                class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 12s3.5-7 9.75-7 9.75 7 9.75 7-3.5 7-9.75 7-9.75-7-9.75-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+
+                                            {{-- Eye-off icon --}}
+                                            <svg x-show="showPassword" x-cloak xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M3 3l18 18M10.58 10.59a2 2 0 0 0 2.83 2.83M9.88 5.09A10.7 10.7 0 0 1 12 4.88c6.25 0 9.75 7.12 9.75 7.12a15.8 15.8 0 0 1-3.14 3.98M6.61 6.61C3.8 8.37 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.2 0 2.3-.22 3.3-.6" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
-
+                                {{-- Confirm Password --}}
                                 <div>
-
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-
                                         Confirm Password
-
                                     </label>
 
-                                    <input type="password" name="password_confirmation" placeholder="Re-enter password"
-                                        required
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
+                                    <div class="relative">
+                                        <input :type="showConfirmPassword ? 'text' : 'password'"
+                                            name="password_confirmation" placeholder="Re-enter password" required
+                                            class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 pr-12 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
 
+                                        <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+                                            class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-[#6F4E37]"
+                                            :aria-label="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'">
+                                            {{-- Eye icon --}}
+                                            <svg x-show="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 12s3.5-7 9.75-7 9.75 7 9.75 7-3.5 7-9.75 7-9.75-7-9.75-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+
+                                            {{-- Eye-off icon --}}
+                                            <svg x-show="showConfirmPassword" x-cloak xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M3 3l18 18M10.58 10.59a2 2 0 0 0 2.83 2.83M9.88 5.09A10.7 10.7 0 0 1 12 4.88c6.25 0 9.75 7.12 9.75 7.12a15.8 15.8 0 0 1-3.14 3.98M6.61 6.61C3.8 8.37 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.2 0 2.3-.22 3.3-.6" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
+
 
 
                             {{-- Specialty + Status --}}
@@ -923,38 +963,76 @@
 
                             {{-- Password --}}
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ showNewPassword: false, showConfirmPassword: false }">
 
+                                {{-- New Password --}}
                                 <div>
-
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-
                                         New Password (optional)
-
                                     </label>
 
-                                    <input type="password" name="password" placeholder="Leave empty to keep current"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
+                                    <div class="relative">
+                                        <input :type="showNewPassword ? 'text' : 'password'" name="password"
+                                            placeholder="Leave empty to keep current" autocomplete="new-password"
+                                            class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 pr-12 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
 
+                                        <button type="button" @click="showNewPassword = !showNewPassword"
+                                            :aria-label="showNewPassword ? 'Hide password' : 'Show password'"
+                                            class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-[#6F4E37]">
+                                            <svg x-show="!showNewPassword" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 12s3.5-7 9.75-7 9.75 7 9.75 7-3.5 7-9.75 7-9.75-7-9.75-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+
+                                            <svg x-show="showNewPassword" x-cloak xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M3 3l18 18M10.58 10.59a2 2 0 0 0 2.83 2.83M9.88 5.09A10.7 10.7 0 0 1 12 4.88c6.25 0 9.75 7.12 9.75 7.12a15.8 15.8 0 0 1-3.14 3.98M6.61 6.61C3.8 8.37 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.2 0 2.3-.22 3.3-.6" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
-
+                                {{-- Confirm New Password --}}
                                 <div>
-
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-
                                         Confirm New Password
-
                                     </label>
 
-                                    <input type="password" name="password_confirmation"
-                                        placeholder="Re-enter new password"
-                                        class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
+                                    <div class="relative">
+                                        <input :type="showConfirmPassword ? 'text' : 'password'"
+                                            name="password_confirmation" placeholder="Leave empty to keep current"
+                                            autocomplete="new-password"
+                                            class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 pr-12 text-sm outline-none focus:ring-4 focus:ring-[#849753]/20">
 
+                                        <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+                                            :aria-label="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
+                                            class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-[#6F4E37]">
+                                            <svg x-show="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 12s3.5-7 9.75-7 9.75 7 9.75 7-3.5 7-9.75 7-9.75-7-9.75-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+
+                                            <svg x-show="showConfirmPassword" x-cloak xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                                                stroke="currentColor" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M3 3l18 18M10.58 10.59a2 2 0 0 0 2.83 2.83M9.88 5.09A10.7 10.7 0 0 1 12 4.88c6.25 0 9.75 7.12 9.75 7.12a15.8 15.8 0 0 1-3.14 3.98M6.61 6.61C3.8 8.37 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.2 0 2.3-.22 3.3-.6" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
+
 
 
                             {{-- Specialty + Status --}}
@@ -1214,20 +1292,20 @@
                                                         fill="currentColor" viewBox="0 0 20 20">
 
                                                         <path d="M9.049 2.927c.3-.921
-                                                            1.603-.921 1.902 0l1.07
-                                                            3.292a1 1 0 00.95.69h3.462
-                                                            c.969 0 1.371 1.24.588
-                                                            1.81l-2.8 2.034a1 1 0
-                                                            00-.364 1.118l1.07 3.292
-                                                            c.3.921-.755 1.688-1.538
-                                                            1.118l-2.8-2.034a1 1
-                                                            0 00-1.176 0l-2.8 2.034
-                                                            c-.783.57-1.838-.197-1.538
-                                                            -1.118l1.07-3.292a1 1
-                                                            0 00-.364-1.118L2.98
-                                                            8.72c-.783-.57-.38-1.81.588
-                                                            -1.81H7.03a1 1 0 00.95-.69
-                                                            l1.07-3.292z" />
+                                                                1.603-.921 1.902 0l1.07
+                                                                3.292a1 1 0 00.95.69h3.462
+                                                                c.969 0 1.371 1.24.588
+                                                                1.81l-2.8 2.034a1 1 0
+                                                                00-.364 1.118l1.07 3.292
+                                                                c.3.921-.755 1.688-1.538
+                                                                1.118l-2.8-2.034a1 1
+                                                                0 00-1.176 0l-2.8 2.034
+                                                                c-.783.57-1.838-.197-1.538
+                                                                -1.118l1.07-3.292a1 1
+                                                                0 00-.364-1.118L2.98
+                                                                8.72c-.783-.57-.38-1.81.588
+                                                                -1.81H7.03a1 1 0 00.95-.69
+                                                                l1.07-3.292z" />
 
                                                     </svg>
 

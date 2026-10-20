@@ -164,7 +164,7 @@
 
                     <select name="payment_status"
                         class="w-full rounded-lg border-gray-300 focus:border-[#849753] focus:ring-[#849753]">
-                        <option value="">All Payment Statuses</option>
+                        <option value="">All Payment Status</option>
 
                         <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>
                             Paid

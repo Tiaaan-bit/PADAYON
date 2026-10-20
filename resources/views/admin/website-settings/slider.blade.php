@@ -23,7 +23,7 @@
                         : asset("build/assets/images/image-{$slot}.webp");
                 @endphp
 
-                <section class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <section class="rounded-2xl border border-gray-200 bg-white shadow-sm">
 
                     <div class="border-b border-gray-100 p-4">
                         <h2 class="font-semibold text-gray-800">
@@ -79,4 +79,208 @@
             @endfor
         </div>
     </div>
+
+    {{-- HOMEPAGE TEXT SECTIONS --}}
+    <div class="min-h-screen space-y-6 p-4 sm:p-6">
+
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">
+                Home Page Content
+            </h2>
+        </div>
+        <div class="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
+            {{-- INTRODUCTION SECTION --}}
+            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div class="border-b border-gray-100 p-5">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        Introduction Section
+                    </h3>
+                </div>
+
+                <form action="{{ route('admin.home-slider.section.update', 'introduction') }}" method="POST"
+                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    @method('PUT')
+
+                    <input type="hidden" name="section_key" value="introduction">
+
+                    <div>
+                        <label for="intro_heading" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Heading
+                        </label>
+
+                        <textarea id="intro_heading" name="heading" rows="3" required maxlength="1000"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">{{ old('section_key') === 'introduction' ? old('heading') : $introSection->heading }}</textarea>
+
+                        @if (old('section_key') === 'introduction')
+                            @error('heading')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="intro_description" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Description
+                        </label>
+
+                        <textarea id="intro_description" name="description" rows="7" required maxlength="10000"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">{{ old('section_key') === 'introduction' ? old('description') : $introSection->description }}</textarea>
+
+                        @if (old('section_key') === 'introduction')
+                            @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="intro_button_text" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Button Text
+                        </label>
+
+                        <input id="intro_button_text" type="text" name="button_text"
+                            value="{{ old('section_key') === 'introduction' ? old('button_text') : $introSection->button_text }}"
+                            required maxlength="100"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">
+
+                        @if (old('section_key') === 'introduction')
+                            @error('button_text')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                            class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            {{-- HERO SECTION --}}
+            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div class="border-b border-gray-100 p-5">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        Hero Section
+                    </h3>
+                </div>
+
+                <form action="{{ route('admin.home-slider.section.update', 'hero') }}" method="POST"
+                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    @method('PUT')
+
+                    <input type="hidden" name="section_key" value="hero">
+
+                    <div>
+                        <label for="hero_heading" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Heading
+                        </label>
+
+                        <textarea id="hero_heading" name="heading" rows="3" required maxlength="1000"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">{{ old('section_key') === 'hero' ? old('heading') : $heroSection->heading }}</textarea>
+
+                        @if (old('section_key') === 'hero')
+                            @error('heading')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="hero_description" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Description
+                        </label>
+
+                        <textarea id="hero_description" name="description" rows="8" required maxlength="10000"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">{{ old('section_key') === 'hero' ? old('description') : $heroSection->description }}</textarea>
+
+                        @if (old('section_key') === 'hero')
+                            @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                            class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+
+            {{-- WHY CHOOSE PADAYON SECTION --}}
+            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div class="border-b border-gray-100 p-5">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        Why Choose Padayon Section
+                    </h3>
+                </div>
+
+                <form action="{{ route('admin.home-slider.section.update', 'why_choose') }}" method="POST"
+                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    @method('PUT')
+
+                    <input type="hidden" name="section_key" value="why_choose">
+
+                    {{-- MAIN SECTION HEADING --}}
+                    <div>
+                        <label for="why_choose_heading" class="mb-2 block text-sm font-semibold text-gray-700">
+                            Section Heading
+                        </label>
+
+                        <input id="why_choose_heading" type="text" name="heading"
+                            value="{{ old('section_key') === 'why_choose' ? old('heading') : $whyChooseSection->heading }}"
+                            required maxlength="1000"
+                            class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">
+
+                        @if (old('section_key') === 'why_choose')
+                            @error('heading')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        @endif
+                    </div>
+
+                    {{-- FIVE BENEFIT BOX HEADINGS --}}
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                        @foreach ($whyChooseBoxes as $number => $box)
+                            <div>
+                                <label for="benefit_heading_{{ $number }}"
+                                    class="mb-2 block text-sm font-semibold text-gray-700">
+                                    Benefit Box {{ $number }}
+                                </label>
+
+                                <textarea id="benefit_heading_{{ $number }}" name="benefit_headings[{{ $number }}]" rows="3"
+                                    required maxlength="1000"
+                                    class="w-full rounded-xl border border-gray-300 p-3 focus:border-[#849753] focus:ring-[#849753]">{{ old('section_key') === 'why_choose' ? old('benefit_headings.' . $number, $box->heading) : $box->heading }}</textarea>
+
+                                @if (old('section_key') === 'why_choose')
+                                    @error("benefit_headings.{$number}")
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                @endif
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                    {{-- SAVE ALL --}}
+                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                            class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
+                            Save
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+
+
+        </div>
+
+    </div>
+
 @endsection

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutPageSettingController;
 use App\Http\Controllers\Admin\AdminAddOnsController;
 use App\Http\Controllers\Admin\AdminAppointmentsController;
 use App\Http\Controllers\Admin\AdminCalendarController;
@@ -38,8 +39,10 @@ use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\TherapistsController;
 use App\Http\Controllers\User\UserAppointmentController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\UserSearchController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
+
 
 
 Schedule::command('appointments:send-reminders')->everyMinute()->timezone('Asia/Manila')->withoutOverlapping();
@@ -116,6 +119,8 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
         Route::view('/help', 'user.help')->name('help');
+
+        Route::get('/search', [UserSearchController::class, 'index'])->name('search');
     });
 
 
@@ -197,6 +202,10 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/home-slider', [HomeSliderImageController::class, 'index'])->name('home-slider.index');
         Route::put('/home-slider/{slot}', [HomeSliderImageController::class, 'update'])->whereNumber('slot')->name('home-slider.update');
         Route::delete('/home-slider/{slot}', [HomeSliderImageController::class, 'destroy'])->whereNumber('slot')->name('home-slider.destroy');
+        Route::put('/home-slider/section/{sectionKey}', [HomeSliderImageController::class,'updateSection',])->name('home-slider.section.update');
+        
+        Route::get('/admin/about-settings',[AboutPageSettingController::class, 'edit'])->name('about-settings.edit');
+        Route::put('/admin/about-settings',[AboutPageSettingController::class, 'update'])->name('about-settings.update');
 
         Route::post('/website-settings/close-bookings-today',[WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
         Route::post('/website-settings/reopen-bookings-today',[WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
