@@ -150,6 +150,11 @@
                                             <option value="{{ $service->id }}" data-price="{{ $service->price }}"
                                                 data-duration="{{ $service->duration_minutes }}">
                                                 {{ $service->name }}
+                                                {{ $service->name }}
+                                                {{ $service->description }}
+
+
+                                                
 
                                                 @if (!empty($service->type))
                                                     — {{ $service->type }}

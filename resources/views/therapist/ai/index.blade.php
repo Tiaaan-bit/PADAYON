@@ -15,355 +15,607 @@
 
         body {
             margin: 0;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
             background: #F8F6F2;
             color: #2F2420;
         }
 
-        header {
-            background: #849753;
-            color: white;
-            padding: 20px;
-        }
-
         main {
-            max-width: 720px;
-            margin: auto;
-            padding: 24px 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
         }
 
         .panel {
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
             background: white;
-            padding: 24px;
-            border-radius: 18px;
+            padding: 32px 24px;
+            border-radius: 24px;
             box-shadow: 0 4px 18px #00000010;
         }
 
+        h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
         .mic {
-            display: block;
-            width: 140px;
-            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            width: min(76vw, 300px);
+            height: min(76vw, 300px);
+            min-width: 220px;
+            min-height: 220px;
             border: 0;
             border-radius: 50%;
             margin: 24px auto;
             background: #849753;
             color: white;
-            font-size: 48px;
+            font-size: 26px;
+            font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 8px 0 #61713A;
+            transition: transform .15s, background .15s;
+            touch-action: manipulation;
         }
 
-        button:focus-visible,
-        input:focus-visible {
-            outline: 4px solid #6F4E37;
-            outline-offset: 4px;
+        .mic:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #61713A;
         }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .mic:focus-visible,
+        .logout-button:focus-visible {
+            outline: 5px solid #6F4E37;
+            outline-offset: 6px;
         }
 
-        input {
-            flex: 1;
-            min-width: 180px;
-            padding: 14px;
-            border: 2px solid #849753;
-            border-radius: 10px;
-            font-size: 16px;
+        .mic:disabled {
+            opacity: .8;
+            cursor: wait;
         }
 
-        .action {
-            padding: 14px 18px;
-            border: 0;
-            border-radius: 10px;
-            background: #6F4E37;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #conversation {
-            margin-top: 24px;
-        }
-
-        .message {
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 12px;
-            overflow-wrap: anywhere;
-        }
-
-        .user {
-            background: #E8EFDF;
-        }
-
-        .assistant {
-            background: #F4EDDB;
+        .mic-icon {
+            font-size: 64px;
+            line-height: 1;
         }
 
         #status {
-            text-align: center;
-            min-height: 24px;
+            min-height: 54px;
+            margin: 28px 0 12px;
+            padding: 16px;
+            border-radius: 14px;
+            background: #F4EDDB;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .logout-form {
+            margin-top: 24px;
         }
 
         .logout-button {
-            padding: 12px 20px;
-            border: 2px solid white;
-            border-radius: 10px;
+            padding: 14px 24px;
+            border: 0;
+            border-radius: 12px;
             background: #6F4E37;
             color: white;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .logout-button:hover {
-            background: #513825;
+        /* Keyboard-only helper; screen readers can still announce it. */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <h1>Padayon AI Assistant</h1>
-        <p>
-            Hello, {{ $therapist->name }}.
-            You can speak or type your question.
-        </p>
-        <form action="{{ route('logout') }}" method="POST" style="margin-top: 16px;">
-            @csrf
-            <button type="submit" class="action" style="background: #6F4E37;">
-                Log Out
-            </button>
-        </form>
-    </header>
-
     <main>
         <section class="panel" aria-labelledby="assistant-heading">
-            <h2 id="assistant-heading">How can I help you today?</h2>
 
-            <p>
-                Press the microphone and speak, or type your question below.
-            </p>
 
-            <button type="button" id="micButton" class="mic" aria-label="Start speaking">
-                🎙
+            <button type="button" id="micButton" class="mic" aria-label="Talk to Aira, your Padayon AI assistant"
+                aria-describedby="status">
+                <span class="mic-icon" aria-hidden="true">🎙</span>
+                <span id="buttonLabel">TAP TO TALK</span>
             </button>
 
-            <p id="status" role="status" aria-live="polite">
-                Ready to assist.
+            <p id="status" role="status" aria-live="polite" aria-atomic="true">
+                Ready to assist. Tap the big button to begin.
             </p>
 
-            <form id="chatForm">
-                <div class="actions">
-                    <input type="text" id="messageInput" maxlength="2000" placeholder="Type your question..."
-                        aria-label="Your question" required>
-
-                    <button class="action" type="submit" id="sendButton">
-                        Send
-                    </button>
-                </div>
+            <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                @csrf
+                <button type="submit" class="logout-button">
+                    Log Out
+                </button>
             </form>
 
-            <div class="actions" style="margin-top: 16px;">
-                <button type="button" class="action" id="stopButton">
-                    Stop speaking
-                </button>
-
-            </div>
-
-            <div id="conversation" aria-live="polite"></div>
+            <div id="conversation" class="sr-only" aria-live="off"></div>
         </section>
     </main>
 
-    <script>
-        (() => {
-            const chatUrl = @json(route('therapist.ai.chat'));
-            const csrfToken = document.querySelector(
-                'meta[name="csrf-token"]'
-            ).content;
+    
+<script>
+    (() => {
+        const chatUrl = @json(route('therapist.ai.chat'));
+        const csrfToken = document.querySelector(
+            'meta[name="csrf-token"]'
+        ).content;
+        const therapistName = @json(auth('therapist')->user()->name ?? 'there');
 
-            const form = document.getElementById('chatForm');
-            const input = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendButton');
-            const micButton = document.getElementById('micButton');
-            const status = document.getElementById('status');
-            const conversation = document.getElementById('conversation');
+        const micButton = document.getElementById('micButton');
+        const buttonLabel = document.getElementById('buttonLabel');
+        const status = document.getElementById('status');
 
-            let messages = [];
-            let busy = false;
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
 
-            const SpeechRecognition =
-                window.SpeechRecognition ||
-                window.webkitSpeechRecognition;
+        let recognition = null;
+        let messages = [];
+        let busy = false;
+        let listening = false;
+        let greeted = false;
+        let silenceTimer = null;
+        let silenceReminderActive = false;
+        let preferredVoice = null;
+        let speechRequestId = 0;
 
-            let recognition = null;
+        // --------------------------------------------------
+        // STATUS AND BUTTON
+        // --------------------------------------------------
 
-            function setStatus(message) {
-                status.textContent = message;
+        function setStatus(message) {
+            status.textContent = message;
+        }
+
+        function setButton(label, icon = '🎙') {
+            buttonLabel.textContent = label;
+            micButton.querySelector('.mic-icon').textContent = icon;
+        }
+
+        // --------------------------------------------------
+        // FEMALE VOICE SELECTION
+        // --------------------------------------------------
+
+        function selectFemaleVoice() {
+            if (!('speechSynthesis' in window)) {
+                return null;
             }
 
-            function addMessage(role, content) {
-                const item = document.createElement('div');
-                item.className = `message ${role}`;
+            const voices = window.speechSynthesis.getVoices();
 
-                const label = document.createElement('strong');
-                label.textContent = role === 'user' ?
-                    'You: ' :
-                    'Padayon AI: ';
-
-                const text = document.createElement('span');
-                text.textContent = content;
-
-                item.append(label, text);
-                conversation.appendChild(item);
-
-                item.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end'
-                });
+            if (!voices.length) {
+                return null;
             }
 
-            function speak(text) {
+            const englishVoices = voices.filter(voice =>
+                /^en(?:-|$)/i.test(voice.lang)
+            );
+
+            // Prefer known feminine-sounding English voices.
+            // Voice names differ between Windows, Android, and iOS.
+            const femaleVoicePattern =
+                /female|samantha|karen|moira|tessa|victoria|zira|aria|jenny|ava|emma|sara|susan|hazel|serena|fiona|google uk english female|microsoft.*(zira|aria|jenny|ava|emma)/i;
+
+            preferredVoice =
+                englishVoices.find(voice =>
+                    femaleVoicePattern.test(voice.name)
+                ) ||
+                null;
+
+            // If a matching female voice is unavailable, prefer
+            // an English Philippines voice before other English voices.
+            if (!preferredVoice) {
+                preferredVoice =
+                    englishVoices.find(voice =>
+                        /^en-PH$/i.test(voice.lang)
+                    ) ||
+                    englishVoices.find(voice =>
+                        /^en-US$/i.test(voice.lang)
+                    ) ||
+                    englishVoices.find(voice =>
+                        /^en-GB$/i.test(voice.lang)
+                    ) ||
+                    englishVoices[0] ||
+                    null;
+            }
+
+            return preferredVoice;
+        }
+
+        if ('speechSynthesis' in window) {
+            selectFemaleVoice();
+
+            // Some browsers load voices after the page loads.
+            window.speechSynthesis.addEventListener(
+                'voiceschanged',
+                () => {
+                    selectFemaleVoice();
+                }
+            );
+        }
+
+        // --------------------------------------------------
+        // SPEECH SYNTHESIS
+        // --------------------------------------------------
+
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function speak(text) {
+            return new Promise(resolve => {
                 if (!('speechSynthesis' in window)) {
-                    setStatus('Your browser cannot read responses aloud.');
+                    setStatus(text);
+                    resolve();
                     return;
                 }
 
-                window.speechSynthesis.cancel();
+                const currentRequest = ++speechRequestId;
+
+                stopSpeaking();
+
+                // Refresh the voice selection if voices are available now.
+                if (!preferredVoice) {
+                    selectFemaleVoice();
+                }
 
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-PH';
-                utterance.rate = 0.95;
 
-                utterance.onstart = () => setStatus('Padayon AI is speaking.');
-                utterance.onend = () => setStatus('Ready to assist.');
-                utterance.onerror = () => setStatus('Response displayed.');
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                    utterance.lang = preferredVoice.lang;
+                } else {
+                    utterance.lang = 'en-PH';
+                }
 
-                window.speechSynthesis.speak(utterance);
-            }
+                utterance.rate = 1.0;
+                utterance.pitch = 1.1;
+                utterance.volume = 1;
 
-            async function sendMessage(text) {
-                if (busy || !text.trim()) return;
+                let finished = false;
 
-                busy = true;
-                sendButton.disabled = true;
+                function finish() {
+                    if (finished) return;
+                    finished = true;
 
-                messages.push({
-                    role: 'user',
-                    content: text.trim()
-                });
-
-                addMessage('user', text.trim());
-                input.value = '';
-                setStatus('Thinking. Please wait.');
-
-                try {
-                    const response = await fetch(chatUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({
-                            messages: messages.slice(-10)
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(
-                            data.message || 'Unable to contact the assistant.'
-                        );
+                    // Do not let an older utterance reset the
+                    // interface while a newer utterance is speaking.
+                    if (currentRequest === speechRequestId) {
+                        setButton('TAP TO TALK');
                     }
 
-                    messages.push({
-                        role: 'assistant',
-                        content: data.reply
-                    });
-
-                    // Keep only the most recent ten messages.
-                    messages = messages.slice(-10);
-
-                    addMessage('assistant', data.reply);
-                    speak(data.reply);
-
-                } catch (error) {
-                    setStatus(error.message);
-                } finally {
-                    busy = false;
-                    sendButton.disabled = false;
-                    input.focus();
+                    resolve();
                 }
+
+                utterance.onstart = () => {
+                    if (currentRequest !== speechRequestId) return;
+
+                    setStatus(text);
+                    setButton('AIRA IS SPEAKING', '🔊');
+                };
+
+                utterance.onend = finish;
+                utterance.onerror = finish;
+
+                window.speechSynthesis.speak(utterance);
+            });
+        }
+
+        // --------------------------------------------------
+        // SPEECH RECOGNITION
+        // --------------------------------------------------
+
+        function createRecognition() {
+            if (!SpeechRecognition) {
+                return null;
             }
 
-            form.addEventListener('submit', event => {
-                event.preventDefault();
-                sendMessage(input.value);
-            });
+            const instance = new SpeechRecognition();
 
-            micButton.addEventListener('click', () => {
-                if (!SpeechRecognition) {
-                    setStatus(
-                        'Voice recognition is unavailable. Please type your question.'
+            instance.lang = 'en-PH';
+            instance.continuous = false;
+            instance.interimResults = false;
+            instance.maxAlternatives = 1;
+
+            instance.onstart = () => {
+                listening = true;
+                silenceReminderActive = false;
+
+                setButton('LISTENING...', '👂');
+                setStatus('Listening. Please speak now.');
+
+                clearTimeout(silenceTimer);
+
+                silenceTimer = setTimeout(async () => {
+                    if (!listening || busy) return;
+
+                    silenceReminderActive = true;
+                    listening = false;
+
+                    clearTimeout(silenceTimer);
+
+                    try {
+                        recognition?.stop();
+                    } catch (error) {
+                        // Recognition may already have stopped.
+                    }
+
+                    await speak(
+                        'I cannot hear you speaking. Tap the button when you are ready to try again.'
                     );
-                    input.focus();
+
+                    setButton('TAP TO TALK');
+                    setStatus(
+                        'Ready for your next question. Tap the big button to talk.'
+                    );
+                }, 7000);
+            };
+
+            instance.onresult = event => {
+                clearTimeout(silenceTimer);
+
+                const transcript =
+                    event.results?.[0]?.[0]?.transcript?.trim();
+
+                listening = false;
+
+                if (!transcript) {
+                    setStatus(
+                        'I did not catch that. Tap the button and try again.'
+                    );
+                    setButton('TAP TO TALK');
                     return;
                 }
 
-                if (recognition) {
-                    recognition.stop();
+                sendMessage(transcript);
+            };
+
+            instance.onerror = async event => {
+                clearTimeout(silenceTimer);
+                listening = false;
+
+                setButton('TAP TO TALK');
+
+                // Prevent a duplicate reminder after the silence timer.
+                if (silenceReminderActive) {
+                    return;
                 }
 
-                recognition = new SpeechRecognition();
-                recognition.lang = 'en-PH';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-
-                recognition.onstart = () => {
-                    setStatus('Listening. Please speak now.');
-                    micButton.setAttribute('aria-label', 'Listening');
+                const errors = {
+                    'no-speech':
+                        'I did not hear you. Please tap the button and try again.',
+                    'not-allowed':
+                        'Microphone permission is blocked. Please enable microphone access in your browser.',
+                    'service-not-allowed':
+                        'Speech recognition is blocked by the browser.',
+                    'audio-capture':
+                        'I cannot find a working microphone.',
+                    'network':
+                        'Voice recognition needs a working network connection.'
                 };
 
-                recognition.onresult = event => {
-                    const transcript =
-                        event.results[0][0].transcript;
+                const message = errors[event.error] ||
+                    'I could not hear you clearly. Please try again.';
 
-                    input.value = transcript;
-                    sendMessage(transcript);
-                };
+                setStatus(message);
+                await speak(message);
+            };
 
-                recognition.onerror = event => {
-                    setStatus(
-                        event.error === 'not-allowed' ?
-                        'Microphone permission was denied.' :
-                        'Voice recognition failed. Please type instead.'
-                    );
-                };
+            instance.onend = () => {
+                listening = false;
+                clearTimeout(silenceTimer);
 
-                recognition.onend = () => {
-                    micButton.setAttribute('aria-label', 'Start speaking');
-                };
+                if (!busy && !window.speechSynthesis?.speaking) {
+                    setButton('TAP TO TALK');
+                }
+            };
+
+            return instance;
+        }
+
+        async function startListening() {
+            if (busy || listening) return;
+
+            if (!SpeechRecognition) {
+                await speak(
+                    'Voice recognition is not available on this browser. Please try a supported browser with microphone access enabled.'
+                );
+                return;
+            }
+
+            stopSpeaking();
+
+            try {
+                recognition = createRecognition();
+
+                if (!recognition) {
+                    throw new Error('Speech recognition is unavailable.');
+                }
 
                 recognition.start();
+            } catch (error) {
+                setStatus(
+                    'I could not start the microphone. Please wait a moment and tap again.'
+                );
+                setButton('TAP TO TALK');
+            }
+        }
+
+        // --------------------------------------------------
+        // SEND QUESTION TO LARAVEL / GROQ
+        // --------------------------------------------------
+
+        async function sendMessage(text) {
+            if (busy || !text.trim()) return;
+
+            busy = true;
+            micButton.disabled = true;
+
+            setButton('PLEASE WAIT', '⏳');
+            setStatus('Finding your answer...');
+
+            messages.push({
+                role: 'user',
+                content: text.trim()
             });
 
-            document.getElementById('stopButton').addEventListener('click', () => {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
+            messages = messages.slice(-10);
+
+            try {
+                const response = await fetch(chatUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        messages: messages
+                    })
+                });
+
+                let data;
+
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    throw new Error('The server returned an invalid response.');
                 }
 
-                if (recognition) {
-                    recognition.stop();
+                if (response.status === 401) {
+                    await speak(
+                        'Your session may have expired. Please log in again.'
+                    );
+                    return;
                 }
 
-                setStatus('Speech stopped.');
-            });
-        })();
-    </script>
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ||
+                        'The assistant is temporarily unavailable.'
+                    );
+                }
+
+                if (
+                    typeof data.reply !== 'string' ||
+                    !data.reply.trim()
+                ) {
+                    throw new Error(
+                        'I received an empty answer. Please try again.'
+                    );
+                }
+
+                messages.push({
+                    role: 'assistant',
+                    content: data.reply.trim()
+                });
+
+                messages = messages.slice(-10);
+
+                await speak(data.reply.trim());
+
+                setStatus(
+                    'Ready for your next question. Tap the big button to talk again.'
+                );
+            } catch (error) {
+                console.error('Aira assistant error:', error);
+
+                await speak(
+                    'Sorry, I could not get an answer just now. Please tap the button to try again.'
+                );
+
+                setStatus(
+                    'Ready to try again. Tap the big button when you are ready.'
+                );
+            } finally {
+                busy = false;
+                micButton.disabled = false;
+                setButton('TAP TO TALK');
+            }
+        }
+
+        // --------------------------------------------------
+        // MAIN BUTTON
+        // --------------------------------------------------
+
+        micButton.addEventListener('click', async () => {
+            if (busy || listening) return;
+
+            // Warm up voice selection on the first user interaction.
+            if (!preferredVoice) {
+                selectFemaleVoice();
+            }
+
+            // Greet the therapist once per page session.
+            if (!greeted) {
+                greeted = true;
+
+                await speak(
+                    `Hello, ${therapistName}. I am Aira, your AI assistant.`
+                );
+            }
+
+            // Keep this short to reduce the time before listening.
+            await speak('I am listening.');
+
+            await startListening();
+        });
+
+        // --------------------------------------------------
+        // INITIAL PAGE STATE
+        // --------------------------------------------------
+
+        if (!SpeechRecognition) {
+            setStatus(
+                'Tap the button to begin. Your browser may need help enabling voice recognition.'
+            );
+        } else {
+            setStatus(
+                'Ready to assist. Tap the big button to begin.'
+            );
+        }
+    })();
+</script>
+
 </body>
 
 </html>

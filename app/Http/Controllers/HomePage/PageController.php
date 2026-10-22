@@ -10,11 +10,38 @@ use App\Models\HomeSliderImage;
 use App\Models\Services;
 use App\Models\Therapists;
 use App\Models\WebsiteSetting;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
     public function showHomePage()
     {
+        // Redirect authenticated therapists to Padayon AI
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        // Redirect authenticated web users
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            // Require email verification for normal users
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
+        // Load existing homepage data for guests
         $therapists = Therapists::query()
             ->whereIn('status', ['available', 'unavailable'])
             ->orderBy('name')
@@ -30,7 +57,7 @@ class PageController extends Controller
 
         $whyChooseBoxes = HomepageSection::where('section_key', 'like', 'why_choose_box_%')->get()->keyBy('section_key');
 
-        return view('home.home', compact('therapists', 'homeSliderImages', 'heroSection', 'introSection','whyChooseSection','whyChooseBoxes'));
+        return view('home.home', compact('therapists', 'homeSliderImages', 'heroSection', 'introSection', 'whyChooseSection', 'whyChooseBoxes'));
     }
 
     public function showAboutPage()
