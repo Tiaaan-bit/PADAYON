@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.auth')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Padayon Massage Center - Verify Email</title>
-    @vite('resources/css/app.css')
-</head>
+@section('title', 'Padayon Massage Center - Verify Email')
 
-<body class="min-h-screen bg-[#F4EDDB] flex items-center justify-center p-4">
+@section('content')
 
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 mx-auto">
 
@@ -101,6 +95,4 @@
         </form>
 
     </div>
-</body>
-
-</html>
+@endsection

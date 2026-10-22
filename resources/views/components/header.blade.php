@@ -1,31 +1,31 @@
 <nav
-    class="h-17.5 relative w-full px-4 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between z-30 bg-[#849753] border-b-2 border-[#6F4E37] transition-all">
+    class="h-17.5 relative w-full px-4 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between z-30 bg-transparent  transition-all">
 
-    {{-- LOGO + BRAND --}}
-    <a href="{{ route('home.showHomePage') }}" class="flex items-center gap-3">
-        <img src="{{ !empty($websiteSettings?->logo_path)
-            ? asset('storage/' . $websiteSettings->logo_path)
-            : asset('build/assets/images/logo.png') }}"
-            alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}" class="h-16 w-16 object-contain">
+   {{-- LOGO + BRAND --}}
+<a href="{{ route('home.showHomePage') }}"
+class="hidden md:inline-flex items-center gap-3 px-4 text-sm text-white transition-all bg-[#6F4E37] rounded-full hover:opacity-90 active:scale-95 min-h-11 font-medium">
 
+<img src="{{ !empty($websiteSettings?->logo_path)
+    ? asset('storage/' . $websiteSettings->logo_path)
+    : asset('build/assets/images/logo.png') }}"
+    alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
+    class="h-12s w-12 object-contain">
 
+<div class="leading-tight text-left">
+    <h1 class="text-white font-semibold text-sm">
+        {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
+    </h1>
 
-        <div class="leading-tight">
-            <h1 class="text-white font-semibold text-lg">
-                {{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}
+    <span class="font-bold text-white text-xs">
+        {{ $websiteSettings?->website_subname ?? 'SubName' }}
+    </span>
+</div>
 
-            </h1>
-
-            <span class="font-bold text-white text-xs">
-                {{ $websiteSettings?->website_subname ?? 'SubName' }}
-            </span>
-        </div>
-
-    </a>
+</a>
 
 
     {{-- DESKTOP NAVIGATION --}}
-    <ul class="items-center hidden gap-10 text-white md:flex">
+    <ul class="items-center hidden gap-10 text-[#849753] md:flex">
 
         <li>
             <a class="font-bold transition hover:border-b-2 border-[#2F2420]" href="{{ route('home.showHomePage') }}">

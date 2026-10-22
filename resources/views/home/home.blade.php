@@ -9,10 +9,9 @@
     {{-- HERO SECTION --}}
     {{-- ========================================================= --}}
 
-    <section class="px-4 py-16 pt-30">
+    <section class="px-4 py-16 pt-30    ">
 
-        <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 max-w-7xl mx-auto -mt-10">
-
+        <div class="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
 
             {{-- TEXT --}}
             <div class="flex-1 lg:max-w-2xl lg:pr-12 order-1 lg:order-2">
@@ -116,8 +115,7 @@
     {{-- THERAPISTS SECTION --}}
     {{-- ========================================================= --}}
 
-    <section class="flex items-center px-6 py-16 text-black bg-[#F4EDDB] md:px-16 lg:px-24 xl:px-32 pt-32">
-
+    <section class="flex items-center px-6 py-16 text-black bg-transparent md:px-16 lg:px-24 xl:px-32 pt-32">
         <div class="grid items-center w-full grid-cols-1 gap-12 mx-auto max-w-7xl lg:grid-cols-2 lg:gap-16">
 
 
@@ -165,8 +163,7 @@
     {{-- WHY CHOOSE US SECTION --}}
     {{-- ========================================================= --}}
 
-    <section class="py-24 lg:py-32 bg-[#F4EDDB]">
-
+    <section class="py-24 lg:py-32 bg-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
 

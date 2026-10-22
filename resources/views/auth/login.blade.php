@@ -1,23 +1,8 @@
-<!DOCTYPE html>
+@extends('layouts.auth')
 
-<html lang="en">
+@section('title', 'Padayon Massage Center - Login')
 
-<head>
-
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Padayon Massage Center - Sign In</title>
-
-    @vite('resources/css/app.css')
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.webp') }}">
-
-
-</head>
-
-<body class="min-h-screen bg-[#D6BB9E] flex items-center justify-center p-4">
+@section('content')
 
 
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
@@ -440,11 +425,14 @@
         </div>
     @endif
 
+@endsection
+
 
     {{-- ================================================================ --}}
     {{-- PASSWORD TOGGLE SCRIPT --}}
     {{-- ================================================================ --}}
 
+    @push('scripts')
     <script>
         const password = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
@@ -756,6 +744,5 @@
     @endif
 
 
-</body>
 
-</html>
+    @endpush

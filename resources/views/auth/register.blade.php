@@ -1,24 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.auth')
 
-<head>
+@section('title', 'Padayon Massage Center - Register')
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>
-        Padayon Massage Center - Create Account
-    </title>
-
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-
-    @vite('resources/css/app.css')
-
-</head>
-
-
-<body class="min-h-screen bg-[#D6BB9E] flex items-center justify-center p-4">
+@section('content')
 
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-8">
 
@@ -367,6 +351,4 @@
 
     </div>
 
-</body>
-
-</html>
+@endsection

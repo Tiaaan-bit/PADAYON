@@ -10,9 +10,6 @@
             class="h-14 w-14 animate-spin rounded-full border-4 border-white/40 border-t-[#6F4E37]"
         ></div>
 
-        <p class="text-sm font-semibold text-white drop-shadow-lg">
-            Loading...
-        </p>
     </div>
 </div>
 

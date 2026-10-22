@@ -90,7 +90,8 @@
         </div>
         <div class="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-3">
             {{-- INTRODUCTION SECTION --}}
-            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <section
+                class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div class="border-b border-gray-100 p-5">
                     <h3 class="text-lg font-bold text-gray-800">
                         Introduction Section
@@ -98,7 +99,8 @@
                 </div>
 
                 <form action="{{ route('admin.home-slider.section.update', 'introduction') }}" method="POST"
-                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    class="flex flex-1 flex-col space-y-5 p-5">
+                    @csrf
                     @method('PUT')
 
                     <input type="hidden" name="section_key" value="introduction">
@@ -150,7 +152,7 @@
                         @endif
                     </div>
 
-                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                    <div class="mt-auto flex justify-end"> <button type="submit"
                             class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
                             Save
                         </button>
@@ -159,7 +161,8 @@
             </section>
 
             {{-- HERO SECTION --}}
-            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <section
+                class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div class="border-b border-gray-100 p-5">
                     <h3 class="text-lg font-bold text-gray-800">
                         Hero Section
@@ -167,7 +170,8 @@
                 </div>
 
                 <form action="{{ route('admin.home-slider.section.update', 'hero') }}" method="POST"
-                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    class="flex flex-1 flex-col space-y-5 p-5">
+                    @csrf
                     @method('PUT')
 
                     <input type="hidden" name="section_key" value="hero">
@@ -202,7 +206,7 @@
                         @endif
                     </div>
 
-                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                    <div class="mt-auto flex justify-end"> <button type="submit"
                             class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
                             Save
                         </button>
@@ -212,7 +216,8 @@
 
 
             {{-- WHY CHOOSE PADAYON SECTION --}}
-            <section class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <section
+                class="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div class="border-b border-gray-100 p-5">
                     <h3 class="text-lg font-bold text-gray-800">
                         Why Choose Padayon Section
@@ -220,7 +225,8 @@
                 </div>
 
                 <form action="{{ route('admin.home-slider.section.update', 'why_choose') }}" method="POST"
-                class="flex flex-1 flex-col space-y-5 p-5"                    @csrf
+                    class="flex flex-1 flex-col space-y-5 p-5">
+                    @csrf
                     @method('PUT')
 
                     <input type="hidden" name="section_key" value="why_choose">
@@ -268,7 +274,7 @@
                     </div>
 
                     {{-- SAVE ALL --}}
-                    <div class="mt-auto flex justify-end">                        <button type="submit"
+                    <div class="mt-auto flex justify-end"> <button type="submit"
                             class="rounded-xl bg-[#849753] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#718344]">
                             Save
                         </button>

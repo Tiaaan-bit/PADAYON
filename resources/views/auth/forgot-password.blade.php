@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Padayon Massage Center - Forgot Password</title>
-    @vite('resources/css/app.css')
-</head>
-<body class="min-h-screen bg-[#F4EDDB] flex items-center justify-center p-4">
+@extends('layouts.auth')
+
+@section('title', 'Padayon Massage Center - Forgot Password')
+
+@section('content')
 
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
 
@@ -73,5 +69,4 @@
         </p>
 
     </div>
-</body>
-</html>
+@endsection

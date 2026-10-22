@@ -62,6 +62,31 @@ class PageController extends Controller
 
     public function showAboutPage()
     {
+        // Redirect authenticated therapists to Padayon AI
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        // Redirect authenticated web users
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            // Require email verification for normal users
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
         $aboutPageSetting = AboutPageSetting::firstOrCreate(
             ['id' => 1],
             [
@@ -77,6 +102,31 @@ class PageController extends Controller
 
     public function showContactPage()
     {
+        // Redirect authenticated therapists to Padayon AI
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        // Redirect authenticated web users
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            // Require email verification for normal users
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
         $settings = WebsiteSetting::firstOrCreate(
             ['id' => 1],
             [
@@ -95,6 +145,31 @@ class PageController extends Controller
 
     public function showServicesPage()
     {
+        // Redirect authenticated therapists to Padayon AI
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        // Redirect authenticated web users
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            // Require email verification for normal users
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
         $services = Services::query()->where('status', 'active')->orderBy('name')->orderBy('duration_minutes')->get()->groupBy('name');
 
         $addOns = AddOns::query()->where('status', 'active')->orderBy('name')->get();

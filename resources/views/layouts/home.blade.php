@@ -19,7 +19,10 @@
     @stack('styles')
 </head>
 
-<body class="bg-[#F4EDDB] font-sans">
+
+<body
+    class="bg-[#F4EDDB] font-sans min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+    style="background-image: url('{{ asset('images/background.png') }}');">
 
     {{-- Header --}}
     <x-header />
@@ -36,5 +39,6 @@
     @stack('scripts')
 
 </body>
+
 
 </html>

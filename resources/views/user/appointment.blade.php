@@ -168,29 +168,6 @@
                         <input type="hidden" name="payment_type" x-model="payment_type">
 
 
-                        {{-- VALIDATION ERRORS --}}
-
-                        @if ($errors->any())
-
-                            <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-5">
-
-                                <h3 class="font-semibold text-red-800">
-                                    Please fix the following:
-                                </h3>
-
-                                <ul class="mt-2 space-y-1 text-sm text-red-700">
-
-                                    @foreach ($errors->all() as $error)
-                                        <li>
-                                            • {{ $error }}
-                                        </li>
-                                    @endforeach
-
-                                </ul>
-
-                            </div>
-
-                        @endif
 
 
                         {{-- ========================================================

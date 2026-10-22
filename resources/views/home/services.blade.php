@@ -4,12 +4,7 @@
 
 @section('content')
 
-    <section class="relative bg-[#F4EDDB] py-20 px-4 overflow-hidden">
-
-        {{-- Background Decoration --}}
-        <div class="absolute top-0 right-0 opacity-10">
-            <img src="{{ asset('images/bamboo.png') }}" class="w-72" alt="">
-        </div>
+<section class="relative bg-transparent py-20 px-4 overflow-hidden">
 
         <div class="max-w-6xl mx-auto relative z-10">
 

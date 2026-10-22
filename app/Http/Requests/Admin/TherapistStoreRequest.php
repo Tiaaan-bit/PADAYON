@@ -19,8 +19,8 @@ class TherapistStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
 
-            'email' => ['required', 'email', 'max:255', Rule::unique('therapists', 'email')->ignore($therapist->id)],
-
+            'email' => ['required', 'email', 'max:255', Rule::unique('therapists', 'email')],
+            
             'password' => ['required', 'string', 'min:8', 'confirmed'],
 
             'description' => ['nullable', 'string'],
