@@ -7,16 +7,18 @@
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
 
         {{-- Logo --}}
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-amber-100 rounded-2xl mb-3">
-                <svg class="w-8 h-8 text-[#849753]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800">Forgot Password?</h1>
-            <p class="text-sm text-gray-500 mt-1">No worries — we'll send you a reset link</p>
-        </div>
 
+        <div class="text-center mb-8">
+
+            <img src="{{ !empty($websiteSettings?->logo_path)
+                ? asset('storage/' . $websiteSettings->logo_path)
+                : asset('build/assets/images/logo.png') }}"
+                alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
+                class="h-40 w-auto mx-auto object-contain mb-4">
+
+                <h1 class="text-2xl font-bold text-gray-800">Forgot Password?</h1>
+                <p class="text-sm text-gray-500 mt-1">No worries — we'll send you a reset link</p>
+        </div>
         {{-- Flash Messages --}}
         @if(session('success'))
             <div class="mb-5 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">

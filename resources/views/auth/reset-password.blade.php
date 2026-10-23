@@ -8,14 +8,15 @@
 
         {{-- Logo --}}
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 rounded-2xl mb-3">
-                <svg class="w-8 h-8 text-[#849753]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4"/>
-                </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800">Reset Password</h1>
-            <p class="text-sm text-gray-500 mt-1">Choose a strong new password</p>
+
+            <img src="{{ !empty($websiteSettings?->logo_path)
+                ? asset('storage/' . $websiteSettings->logo_path)
+                : asset('build/assets/images/logo.png') }}"
+                alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
+                class="h-40 w-auto mx-auto object-contain mb-4">
+
+                <h1 class="text-2xl font-bold text-gray-800">Reset Password</h1>
+                <p class="text-sm text-gray-500 mt-1">Choose a strong new password</p>
         </div>
 
         {{-- Flash / Errors --}}

@@ -8,14 +8,14 @@
 
         {{-- Icon --}}
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
-                <svg class="w-9 h-9 text-[#849753]" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <path
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800">Verify Your Email</h1>
+
+            <img src="{{ !empty($websiteSettings?->logo_path)
+                ? asset('storage/' . $websiteSettings->logo_path)
+                : asset('build/assets/images/logo.png') }}"
+                alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
+                class="h-40 w-auto mx-auto object-contain mb-4">
+
+                <h1 class="text-2xl font-bold text-gray-800">Verify Your Email</h1>
             <p class="text-sm text-gray-500 mt-1">One more step before you get started</p>
         </div>
 
