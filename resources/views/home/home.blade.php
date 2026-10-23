@@ -183,9 +183,9 @@
 
                 {{-- BOX 1 --}}
                 <div
-                    class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
+                    class="group bg-[#6F4E37] backdrop-blur-sm  rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                    <h3 class="text-xl font-bold leading-tight text-white  lg:text-2xl">
                         {{ $whyChooseBoxes['why_choose_box_1']?->heading
                             ?? 'Authentic Filipino healing touch' }}
                     </h3>
@@ -195,9 +195,9 @@
 
                 {{-- BOX 2 --}}
                 <div
-                    class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
+                    class="group bg-[#6F4E37] backdrop-blur-sm  rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                    <h3 class="text-xl font-bold leading-tight text-white  lg:text-2xl">
                         {{ $whyChooseBoxes['why_choose_box_2']?->heading
                             ?? 'Authentic Filipino healing touch' }}
                     </h3>
@@ -207,9 +207,9 @@
 
                 {{-- BOX 3 --}}
                 <div
-                    class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
+                    class="group bg-[#6F4E37] backdrop-blur-sm  rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                    <h3 class="text-xl font-bold leading-tight text-white  lg:text-2xl">
                         {{ $whyChooseBoxes['why_choose_box_3']?->heading
                             ?? 'Authentic Filipino healing touch' }}
                     </h3>
@@ -225,9 +225,9 @@
 
                 {{-- BOX 4 --}}
                 <div
-                    class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
+                    class="group bg-[#6F4E37] backdrop-blur-sm  rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                    <h3 class="text-xl font-bold leading-tight text-white  lg:text-2xl">
                         {{ $whyChooseBoxes['why_choose_box_4']?->heading
                             ?? 'Authentic Filipino healing touch' }}
                     </h3>
@@ -237,9 +237,9 @@
 
                 {{-- BOX 5 --}}
                 <div
-                    class="group bg-white/80 backdrop-blur-sm hover:bg-white rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
+                    class="group bg-[#6F4E37] backdrop-blur-sm  rounded-2xl p-6 lg:p-8 border border-slate-100/50 hover:border-[#849753]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden text-center">
 
-                    <h3 class="text-xl font-bold leading-tight text-slate-900 lg:text-2xl">
+                    <h3 class="text-xl font-bold leading-tight text-white lg:text-2xl">
                         {{ $whyChooseBoxes['why_choose_box_5']?->heading
                             ?? 'Authentic Filipino healing touch' }}
                     </h3>

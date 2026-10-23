@@ -33,12 +33,10 @@ class LoginController extends Controller
         | Clear Existing Authentication
         |--------------------------------------------------------------------------
         |
-        | Your application has two guards:
         |
         | web       = users + admins
         | therapist = therapists
         |
-        | Make sure an old session does not remain authenticated.
         |
         */
 
@@ -128,25 +126,7 @@ class LoginController extends Controller
 
             $therapist = Auth::guard('therapist')->user();
 
-            /*
-            |--------------------------------------------------------------------------
-            | OPTIONAL: CHECK THERAPIST STATUS
-            |--------------------------------------------------------------------------
-            */
-
-            if (isset($therapist->status) && $therapist->status !== 'available') {
-                Auth::guard('therapist')->logout();
-
-                return back()
-                    ->withErrors([
-                        'email' => 'Your therapist account is not active.',
-                    ])
-                    ->onlyInput('email');
-            }
-
-            if (method_exists($therapist, 'markOnline')) {
-                $therapist->markOnline();
-            }
+            
 
             return redirect()->intended(
         route('therapist.ai.index')
