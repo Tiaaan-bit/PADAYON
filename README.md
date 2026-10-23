@@ -1,63 +1,57 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Padayon Massage Center
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Blind Massage Specialists | Powered by DiverseCare Wellness Hub**
 
-## About Laravel
+## About Padayon
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Padayon Massage Center is an initiative that promotes inclusivity, equal opportunities, and sustainable livelihood for blind and visually impaired massage therapists.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The word *Padayon* means to continue moving forward and persevere. It represents the determination of blind massage therapists to overcome barriers, develop their skills, and pursue meaningful employment.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Padayon believes that visual impairment should not define a person's abilities or limit their opportunities. Through their massage skills, dedication, and professionalism, blind massage therapists can provide valuable services while building confidence, independence, and a better future.
 
-## Learning Laravel
+Powered by DiverseCare Wellness Hub, Padayon aims to create a welcoming environment where customers can access massage services and therapists are recognized for their skills, dignity, and contributions.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Our Mission
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+To provide professional massage services while creating meaningful livelihood opportunities for blind and visually impaired massage therapists through an inclusive and supportive working environment.
 
-## Laravel Sponsors
+## Our Vision
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+To help build a more inclusive community where people with visual impairments have equal opportunities to work, grow professionally, and achieve greater independence.
 
-### Premium Partners
+## Our Core Values
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Inclusivity** — Promoting equal opportunities regardless of visual ability.
+- **Dignity** — Recognizing every therapist's worth, skills, and contributions.
+- **Perseverance** — Continuing forward despite challenges.
+- **Accessibility** — Making services and digital systems easier to use.
+- **Professionalism** — Providing quality service, respect, and customer care.
+- **Empowerment** — Supporting blind and visually impaired therapists in building sustainable livelihoods.
 
-## Contributing
+## Why Padayon Matters
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+People with visual impairments may encounter barriers to employment and access to opportunities. Padayon seeks to help address these barriers by supporting blind massage therapists and connecting customers with massage services.
 
-## Code of Conduct
+Beyond providing massage services, Padayon represents the importance of recognizing ability, creating opportunities, and building a community where everyone has the chance to contribute and thrive.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## The Padayon Management System
 
-## Security Vulnerabilities
+The Padayon Massage Center web application helps organize the center's daily operations through:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Customer registration and account management
+- Online massage appointment booking
+- Therapist and service management
+- Appointment scheduling and tracking
+- Payment management and payment history
+- Email and SMS notifications
+- Administrative tools for managing website content
+- An AI-powered voice assistant designed to help therapists access appointment information
 
-## License
+By combining inclusive livelihood opportunities with digital technology, Padayon aims to make service management more organized, accessible, and efficient.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-# PADAYON
->>>>>>> a4fa76ff98013bb65f8f72abb642cbf5dc75044a
+## Our Commitment
+
+Padayon is committed to promoting dignity, independence, and equal opportunities through professional massage services and supportive technology.
+
+**Padayon — moving forward together toward a more inclusive future.**
