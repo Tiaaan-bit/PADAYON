@@ -9,7 +9,7 @@
     {{-- HERO SECTION --}}
     {{-- ========================================================= --}}
 
-    <section class="px-4 py-16 pt-30    ">
+    <section class="px-4 py-16 pt-20">
 
         <div class="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
 

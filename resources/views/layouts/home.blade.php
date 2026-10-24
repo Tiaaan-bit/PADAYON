@@ -10,9 +10,9 @@
     </title>
 
     <link rel="icon" type="image/png"
-    href="{{ !empty($websiteSettings?->logo_path)
-        ? asset('storage/' . $websiteSettings->logo_path)
-        : asset('build/assets/images/logo.png') }}">
+        href="{{ !empty($websiteSettings?->logo_path)
+            ? asset('storage/' . $websiteSettings->logo_path)
+            : asset('build/assets/images/logo.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -20,9 +20,7 @@
 </head>
 
 
-<body
-    class="bg-[#F4EDDB] font-sans min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
-    style="background-image: url('{{ asset('images/background.png') }}');">
+<body class="bg-[#F4EDDB]  min-h-screen bg-cover bg-center bg-no-repeat bg-fixed" style="background-image: url('{{ asset('images/background.png') }}');">
 
     {{-- Header --}}
     <x-header />

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AboutPageSettingController;
 use App\Http\Controllers\Admin\AdminAddOnsController;
+use App\Http\Controllers\Admin\AdminAiController;
 use App\Http\Controllers\Admin\AdminAppointmentsController;
 use App\Http\Controllers\Admin\AdminCalendarController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Staff\StaffQuickBookController;
 use App\Http\Controllers\Staff\StaffTherapistController;
 use App\Http\Controllers\Staff\StaffTransactionsController;
 use App\Http\Controllers\Therapist\TherapistAiController;
+use App\Http\Controllers\User\CustomerAiController;
 use App\Http\Controllers\User\MyAppointmentController;
 use App\Http\Controllers\User\NotificationController;
 use App\Http\Controllers\User\PaymentHistoryController;
@@ -42,6 +44,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserSearchController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
+
 
 
 
@@ -121,6 +124,10 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::view('/help', 'user.help')->name('help');
 
         Route::get('/search', [UserSearchController::class, 'index'])->name('search');
+
+        Route::get('/ai-assistant', [CustomerAiController::class, 'index'])->name('ai.index');
+        Route::post('/ai-assistant/chat', [CustomerAiController::class, 'chat'])->middleware('throttle:20,1')->name('ai.chat');
+        
     });
 
 
@@ -210,7 +217,8 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/website-settings/close-bookings-today',[WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
         Route::post('/website-settings/reopen-bookings-today',[WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
 
-        
+        Route::get('/ai', [AdminAiController::class, 'index'])->name('ai.index');
+        Route::post('/ai/chat', [AdminAiController::class, 'chat'])->name('ai.chat');
 
     });
     

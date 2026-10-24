@@ -77,7 +77,7 @@
     {{-- MOBILE MENU --}}
     <div
         id="mobile-menu"
-        class="absolute left-0 top-full z-50 hidden w-full border-t border-white/20 bg-[#849753] p-4 shadow-xl md:hidden">
+        class="absolute left-0 top-full z-50 hidden w-full border-t border-white/20 bg-[#6F4E37] p-4 shadow-xl md:hidden">
 
         <ul class="flex flex-col gap-2 text-lg text-white">
 
@@ -111,7 +111,7 @@
 
             <li class="mt-2 border-t border-white/20 pt-4">
                 <a href="{{ route('login') }}"
-                    class="block rounded-full bg-[#6F4E37] px-6 py-3 text-center font-semibold text-white transition hover:bg-[#5a3f2d]">
+                    class="block rounded-full bg-[#849753] px-6 py-3 text-center font-semibold text-white transition hover:bg-[#5a3f2d]">
                     Login
                 </a>
             </li>

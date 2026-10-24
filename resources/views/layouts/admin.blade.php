@@ -47,6 +47,9 @@
 
     </div>
 
+    @include("components.aira-floating-for-admin")    
+
+
 
     @stack('scripts')
 

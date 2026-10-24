@@ -36,12 +36,14 @@
     @include('components.PageLoading')
     @include('components.userSidebar')
     @include('components.toast-notification')
+    
 
+    @include("components.aira-floating")    
 
 
     <div class="min-h-screen transition-all duration-300" :class="sidebarOpen ? 'lg:ml-60' : 'lg:ml-20'">
 
-
+         
         @include('components.UserHeader')
 
 
@@ -49,9 +51,12 @@
 
             @yield('content')
 
-        </main>
+        </main>    
+
 
     </div>
+    @include("components.aira-floating")    
+
 
     @stack('scripts')
 
