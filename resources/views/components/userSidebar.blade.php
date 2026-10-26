@@ -57,7 +57,7 @@
         {{-- DASHBOARD --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.dashboard') }}" wire:navigate
+        <a href="{{ route('user.dashboard') }}" wire:navigate data-sidebar-tooltip="Dashboard"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -91,7 +91,7 @@
         {{-- BOOK APPOINTMENT --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.appointment') }}" wire:navigate
+        <a href="{{ route('user.appointment') }}" wire:navigate data-sidebar-tooltip="Book Appointment"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -125,7 +125,7 @@
         {{-- APPOINTMENTS HISTORY --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.my-appointments') }}" wire:navigate
+        <a href="{{ route('user.my-appointments') }}" wire:navigate data-sidebar-tooltip="Appointments History"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -157,7 +157,7 @@
         {{-- PAYMENTS HISTORY --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.payment-history') }}" wire:navigate
+        <a href="{{ route('user.payment-history') }}" wire:navigate data-sidebar-tooltip="Payment History"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -191,7 +191,7 @@
         {{-- THERAPISTS --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.therapists.index') }}" wire:navigate
+        <a href="{{ route('user.therapists.index') }}" wire:navigate data-sidebar-tooltip="Therapist"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -232,39 +232,10 @@
 
 
         {{-- ===================================================== --}}
-        {{-- PROFILE --}}
-        {{-- ===================================================== --}}
-
-        <a href="{{ route('user.profile') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('user.profile*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3" />
-                <path
-                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-            </svg>
-
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Settings
-            </span>
-
-        </a>
-
-        {{-- ===================================================== --}}
         {{-- HELP CENTER --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('user.help') }}" wire:navigate aria-label="Help Center"
+        <a href="{{ route('user.help') }}" wire:navigate data-sidebar-tooltip="Help Center"
             class="flex items-center
        rounded-xl
        text-sm
@@ -288,48 +259,6 @@
                 Help 
             </span>
         </a>
-
-        <div>
-
-            <form method="POST" action="{{ route('logout') }}">
-
-                @csrf
-
-                <button type="submit"
-                    class="w-full
-                       flex items-center
-                       rounded-xl
-                       text-sm
-                       font-medium
-                       text-white
-                       hover:bg-red-500
-                       transition-all"
-                    :class="sidebarOpen
-                        ?
-                        'gap-3 px-3 py-2.5' :
-                        'justify-center px-2 py-3'">
-
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                        viewBox="0 0 24 24">
-
-                        <path d="M10 17l5-5-5-5" />
-
-                        <path d="M15 12H3" />
-
-                        <path d="M21 19V5a2 2 0 00-2-2h-6" />
-
-                    </svg>
-
-
-                    <span x-show="sidebarOpen" x-cloak>
-                        Logout
-                    </span>
-
-                </button>
-
-            </form>
-
-        </div>
 
     </nav>
 
@@ -555,4 +484,80 @@
             });
         }
     }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.querySelector('aside.fixed.top-0.left-0');
+
+    if (!sidebar) return;
+
+    const tooltip = document.createElement('div');
+
+    tooltip.textContent = '';
+    tooltip.style.cssText = `
+        position: fixed;
+        display: none;
+        z-index: 99999;
+        padding: 9px 13px;
+        background: #6F4E37;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: opacity 150ms ease, transform 150ms ease;
+    `;
+
+    document.body.appendChild(tooltip);
+
+    let hideTimer;
+
+    function hideTooltip() {
+        clearTimeout(hideTimer);
+        tooltip.style.opacity = '0';
+        tooltip.style.transform = 'translateX(-4px)';
+
+        hideTimer = setTimeout(() => {
+            tooltip.style.display = 'none';
+        }, 150);
+    }
+
+    document.querySelectorAll('[data-sidebar-tooltip]').forEach(link => {
+        link.addEventListener('mouseenter', function () {
+            clearTimeout(hideTimer);
+
+            // Only show when the desktop sidebar is collapsed.
+            if (window.innerWidth < 1024 || sidebar.offsetWidth > 100) {
+                hideTooltip();
+                return;
+            }
+
+            const rect = this.getBoundingClientRect();
+
+            tooltip.textContent = this.dataset.sidebarTooltip;
+            tooltip.style.display = 'block';
+            tooltip.style.left = `${rect.right + 12}px`;
+            tooltip.style.top = `${rect.top + rect.height / 2}px`;
+            tooltip.style.transform = 'translateY(-50%) translateX(0)';
+
+            requestAnimationFrame(() => {
+                tooltip.style.opacity = '1';
+            });
+        });
+
+        link.addEventListener('mouseleave', hideTooltip);
+    });
+
+    // Hide the tooltip when the sidebar expands or the page resizes.
+    window.addEventListener('resize', hideTooltip);
+
+    document.addEventListener('click', hideTooltip);
+});
 </script>

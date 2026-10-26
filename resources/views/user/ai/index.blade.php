@@ -28,11 +28,11 @@
             {{-- AIRA CHARACTER --}}
             <div class="border-[#eee5d9] bg-white px-4 py-5 text-center">
                 <div class="mx-auto flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52">
-                    <img id="aira-character" src="{{ asset('images/aira/aira-idle.gif') }}"
-                        data-idle="{{ asset('images/aira/aira-idle.gif') }}"
-                        data-typing="{{ asset('images/aira/aira-typing.gif') }}"
-                        data-listening="{{ asset('images/aira/aira-listening.gif') }}"
-                        data-talking="{{ asset('images/aira/aira-talking.gif') }}" alt="Aira, your Padayon AI assistant"
+                    <img id="aira-character" src="{{ asset('images/aira/idel1.gif') }}"
+                        data-idle="{{ asset('images/aira/idel1.gif') }}"
+                        data-typing="{{ asset('images/aira/listening1.gif') }}"
+                        data-listening="{{ asset('images/aira/listening1.gif') }}"
+                        data-talking="{{ asset('images/aira/talking1.gif') }}" alt="Aira, your Padayon AI assistant"
                         class="h-full w-full object-contain">
                 </div>
             </div>

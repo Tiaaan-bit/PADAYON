@@ -1,185 +1,210 @@
-<div id="page-loading-screen"
-    class="fixed inset-0 z-99999 hidden items-center justify-center bg-transparent backdrop-blur-sm" role="status"
-    aria-live="polite" aria-label="Processing your request" aria-hidden="true">
-    <div class="flex flex-col items-center gap-4 px-6 text-center">
-        <div class="h-14 w-14 animate-spin rounded-full border-4 border-[#849753]/25 border-t-[#6F4E37]"
-            aria-hidden="true"></div>
-
-        <h2 class="text-lg font-semibold text-[#6F4E37]">
-            Please wait do not close or refresh this page
-        </h2>
-    </div>
+<div
+    id="page-loading-screen"
+    class="fixed top-0 left-0 z-999999 h-1 w-full overflow-hidden"
+    style="display: none;"
+    role="status"
+    aria-label="Loading page"
+    aria-live="polite"
+>
+    <div
+        id="page-loading-progress"
+        class="h-full w-0 bg-[#849753]"
+        style="width: 0%; transition: width 0.25s ease;"
+    ></div>
 </div>
 
 <script>
-    (() => {
-        const loaderId = 'page-loading-screen';
+(() => {
+    if (window.__padayonPageLoaderInitialized) return;
+    window.__padayonPageLoaderInitialized = true;
 
-        // Prevent duplicate initialization.
-        if (window.__padayonPageLoaderInitialized) return;
-        window.__padayonPageLoaderInitialized = true;
+    let requests = 0;
+    let navigating = false;
+    let progress = 0;
+    let progressTimer;
+    let hideTimer;
 
-        let activeRequests = 0;
-        let navigationInProgress = false;
-        let loaderTimer = null;
+    function loader() {
+        return document.getElementById('page-loading-screen');
+    }
 
-        function showLoader() {
-            const loader = document.getElementById(loaderId);
+    function bar() {
+        return document.getElementById('page-loading-progress');
+    }
 
-            if (!loader) return;
+    function showLoader() {
+        const screen = loader();
+        const progressBar = bar();
 
-            clearTimeout(loaderTimer);
+        if (!screen || !progressBar) return;
 
-            loader.classList.remove('hidden');
-            loader.classList.add('flex');
-            loader.setAttribute('aria-hidden', 'false');
-        }
+        clearTimeout(hideTimer);
+        clearInterval(progressTimer);
 
-        function hideLoader(force = false) {
-            const loader = document.getElementById(loaderId);
+        screen.style.display = 'block';
 
-            if (!loader) return;
+        if (progress === 0) {
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0%';
 
-            if (force) {
-                activeRequests = 0;
-                navigationInProgress = false;
-            }
-
-            // Do not hide while another request is still running.
-            if (activeRequests > 0 || navigationInProgress) return;
-
-            loaderTimer = setTimeout(() => {
-                if (activeRequests > 0 || navigationInProgress) return;
-
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-                loader.setAttribute('aria-hidden', 'true');
-            }, 150);
-        }
-
-        // Normal internal link navigation.
-        document.addEventListener('click', (event) => {
-            const target = event.target;
-
-            if (!(target instanceof Element)) return;
-
-            const link = target.closest('a[href]');
-
-            if (!link) return;
-
-            if (
-                event.button !== 0 ||
-                event.ctrlKey ||
-                event.metaKey ||
-                event.shiftKey ||
-                event.altKey ||
-                event.defaultPrevented
-            ) return;
-
-            if (
-                link.target === '_blank' ||
-                link.hasAttribute('download') ||
-                link.hasAttribute('data-no-loader') ||
-                link.hasAttribute('data-bs-toggle') ||
-                link.getAttribute('href')?.startsWith('#') ||
-                link.getAttribute('href')?.startsWith('javascript:')
-            ) return;
-
-            if (link.getAttribute('aria-disabled') === 'true') return;
-
-            let url;
-
-            try {
-                url = new URL(link.href, window.location.href);
-            } catch {
-                return;
-            }
-
-            if (
-                url.origin !== window.location.origin ||
-                url.href === window.location.href
-            ) return;
-
-            showLoader();
-        }, true);
-
-        // Regular Blade form submissions.
-        document.addEventListener('submit', (event) => {
-            const form = event.target;
-
-            if (!(form instanceof HTMLFormElement)) return;
-
-            if (
-                event.defaultPrevented ||
-                form.hasAttribute('data-no-loader')
-            ) return;
-
-            // Livewire requests are handled by Livewire's request hook.
-            if (form.hasAttribute('wire:submit')) return;
-
-            // Do not show a loader for forms that open another tab.
-            if (form.target === '_blank') return;
-
-            activeRequests++;
-            showLoader();
-        }, true);
-
-        // Livewire 3 request and navigation support.
-        function attachLivewireHooks() {
-            if (!window.Livewire || window.__padayonLivewireHooksAttached) {
-                return;
-            }
-
-            window.__padayonLivewireHooksAttached = true;
-
-            Livewire.hook('request', ({
-                succeed,
-                fail
-            }) => {
-                activeRequests++;
-                showLoader();
-
-                let completed = false;
-
-                const finishRequest = () => {
-                    if (completed) return;
-
-                    completed = true;
-                    activeRequests = Math.max(0, activeRequests - 1);
-
-                    hideLoader();
-                };
-
-                succeed(() => finishRequest());
-                fail(() => finishRequest());
+            requestAnimationFrame(() => {
+                progressBar.style.transition = 'width 0.25s ease';
+                progress = 10;
+                progressBar.style.width = progress + '%';
             });
         }
 
-        document.addEventListener('livewire:init', attachLivewireHooks);
+        progressTimer = setInterval(() => {
+            if (progress < 90) {
+                progress += Math.max(0.5, (90 - progress) * 0.08);
+                progressBar.style.width = progress + '%';
+            }
+        }, 150);
+    }
 
-        // Support cases where Livewire initialized before this script.
-        attachLivewireHooks();
+    function hideLoader(force = false) {
+        if (force) {
+            requests = 0;
+            navigating = false;
+        }
 
-        // Livewire wire:navigate events.
-        document.addEventListener('livewire:navigate', () => {
-            navigationInProgress = true;
+        if (requests > 0 || navigating) return;
+
+        clearTimeout(hideTimer);
+
+        hideTimer = setTimeout(() => {
+            if (requests > 0 || navigating) return;
+
+            clearInterval(progressTimer);
+
+            const screen = loader();
+            const progressBar = bar();
+
+            if (!screen || !progressBar) return;
+
+            progress = 100;
+            progressBar.style.width = '100%';
+
+            setTimeout(() => {
+                if (requests > 0 || navigating) return;
+
+                screen.style.display = 'none';
+                progress = 0;
+                progressBar.style.transition = 'none';
+                progressBar.style.width = '0%';
+
+                requestAnimationFrame(() => {
+                    progressBar.style.transition = 'width 0.25s ease';
+                });
+            }, 200);
+        }, 150);
+    }
+
+    // Normal internal links.
+    document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const link = target.closest('a[href]');
+        if (!link) return;
+
+        if (
+            event.button !== 0 ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.altKey ||
+            event.defaultPrevented ||
+            link.target === '_blank' ||
+            link.hasAttribute('download') ||
+            link.hasAttribute('data-no-loader') ||
+            link.hasAttribute('data-bs-toggle') ||
+            link.getAttribute('aria-disabled') === 'true'
+        ) return;
+
+        const href = link.getAttribute('href');
+
+        if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+            return;
+        }
+
+        try {
+            const url = new URL(link.href, window.location.href);
+
+            if (
+                url.origin === window.location.origin &&
+                url.href !== window.location.href
+            ) {
+                showLoader();
+            }
+        } catch {}
+    }, true);
+
+    // Standard Blade forms.
+    document.addEventListener('submit', (event) => {
+        const form = event.target;
+
+        if (!(form instanceof HTMLFormElement)) return;
+
+        if (
+            event.defaultPrevented ||
+            form.hasAttribute('data-no-loader') ||
+            form.hasAttribute('wire:submit') ||
+            form.target === '_blank'
+        ) return;
+
+        requests++;
+        showLoader();
+    }, true);
+
+    // Livewire 3 requests.
+    function attachLivewire() {
+        if (
+            !window.Livewire ||
+            window.__padayonLivewireLoaderAttached
+        ) return;
+
+        window.__padayonLivewireLoaderAttached = true;
+
+        Livewire.hook('request', ({ succeed, fail }) => {
+            requests++;
             showLoader();
-        });
 
-        document.addEventListener('livewire:navigated', () => {
-            navigationInProgress = false;
-            hideLoader();
-        });
+            let finished = false;
 
-        // Hide when a normal page finishes loading or is restored.
-        window.addEventListener('pageshow', () => {
-            hideLoader(true);
-        });
+            const finish = () => {
+                if (finished) return;
+                finished = true;
 
-        // Reset the overlay state when leaving a normal page.
-        window.addEventListener('pagehide', () => {
-            clearTimeout(loaderTimer);
-        });
+                requests = Math.max(0, requests - 1);
+                hideLoader();
+            };
 
-    })();
+            succeed(finish);
+            fail(finish);
+        });
+    }
+
+    document.addEventListener('livewire:init', attachLivewire);
+    attachLivewire();
+
+    // Livewire wire:navigate.
+    document.addEventListener('livewire:navigate', () => {
+        navigating = true;
+        showLoader();
+    });
+
+    document.addEventListener('livewire:navigated', () => {
+        navigating = false;
+        hideLoader();
+    });
+
+    // Reset when a page loads or is restored.
+    window.addEventListener('pageshow', () => hideLoader(true));
+
+    window.addEventListener('pagehide', () => {
+        clearTimeout(hideTimer);
+        clearInterval(progressTimer);
+    });
+})();
 </script>

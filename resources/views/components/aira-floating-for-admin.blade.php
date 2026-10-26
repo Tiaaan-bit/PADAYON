@@ -12,7 +12,7 @@
                transition-transform duration-300 hover:scale-105
                sm:bottom-6 sm:right-6 sm:h-28 sm:w-28">
 
-        <img src="{{ asset('images/aira/aira-idle.gif') }}"
+        <img src="{{ asset('images/aira/idel1.gif') }}"
             alt="Admin AI Assistant"
             class="block h-full w-full object-contain bg-transparent drop-shadow-lg">
     </a>

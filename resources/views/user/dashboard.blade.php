@@ -73,17 +73,16 @@
                     @keydown.left.prevent="previous()" @keydown.right.prevent="next()" tabindex="0"
                     aria-label="Padayon image announcements slider"
                     class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
-                       h-55 sm:h-75 md:h-100 lg:min-h-125
-                       xl:min-h-[calc(100vh-150px)]">
+                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]">
                     {{-- Display the posted images --}}
                     <template x-if="images.length > 0">
                         <div class="absolute inset-0">
                             <template x-for="(image, index) in images" :key="image.url">
                                 <img x-show="currentIndex === index" x-transition.opacity.duration.500ms
                                     :src="image.url" :alt="image.alt"
-                                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
-                                    h-55 sm:h-75 md:h-100 lg:min-h-125
-                                    xl:min-h-[calc(100vh-150px)]"                                    :loading="index === 0 ? 'eager' : 'lazy'">
+                                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
+                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]"
+                                    :loading="index === 0 ? 'eager' : 'lazy'">
                             </template>
 
                             {{-- Slide indicators --}}
@@ -105,9 +104,9 @@
                     {{-- Fallback when the admin has not posted any images --}}
                     <template x-if="images.length === 0">
                         <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome to Padayon Massage Center"
-                            loading="eager" class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-sm
-                            h-55 sm:h-75 md:h-100 lg:min-h-125
-                            xl:min-h-[calc(100vh-150px)]">
+                            loading="eager"
+                            class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
+                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]">
                     </template>
                 </div>
 
@@ -546,7 +545,8 @@
                                             <p
                                                 class="text-xs font-semibold
                                        text-gray-900 truncate">
-                                                {{ $appointment->service->name ?? 'Service' }} - {{ $appointment->service->description ?? 'Description' }} 
+                                                {{ $appointment->service->name ?? 'Service' }} -
+                                                {{ $appointment->service->description ?? 'Description' }}
                                             </p>
 
                                             {{-- Therapist --}}
@@ -676,7 +676,8 @@
 
                                             {{-- Service Name --}}
                                             <p class="text-xs font-semibold text-gray-900 truncate">
-                                                {{ $appointment->service->name ?? 'Service' }} - {{ $appointment->service->description ?? 'Description' }} 
+                                                {{ $appointment->service->name ?? 'Service' }} -
+                                                {{ $appointment->service->description ?? 'Description' }}
                                             </p>
 
                                             {{-- Therapist --}}
@@ -801,10 +802,10 @@
         }
 
         /*
-                                        |--------------------------------------------------------------------------
-                                        | Appointment Hover Popup
-                                        |--------------------------------------------------------------------------
-                                        */
+                                                |--------------------------------------------------------------------------
+                                                | Appointment Hover Popup
+                                                |--------------------------------------------------------------------------
+                                                */
 
         .calendar-popup {
             visibility: hidden;
@@ -822,10 +823,10 @@
         }
 
         /*
-                                        |--------------------------------------------------------------------------
-                                        | Hover Highlight
-                                        |--------------------------------------------------------------------------
-                                        */
+                                                |--------------------------------------------------------------------------
+                                                | Hover Highlight
+                                                |--------------------------------------------------------------------------
+                                                */
 
         .calendar-highlight {
             opacity: 0;

@@ -1,4 +1,4 @@
-<nav class="relative z-50 flex h-17.5 w-full items-center justify-between bg-transparent px-4 transition-all md:px-8 lg:px-12 xl:px-16">
+<nav class="relative z-50 flex h-17.5 w-full items-center justify-between bg-transparent px-4 transition-all md:px-8 lg:px-12 xl:px-16 ">
 
     {{-- LOGO + BRAND --}}
     <a href="{{ route('home.showHomePage') }}"

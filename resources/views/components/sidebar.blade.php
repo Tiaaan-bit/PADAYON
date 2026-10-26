@@ -405,14 +405,6 @@
             {{-- SUBMENU --}}
             <div x-cloak x-show="settingsOpen && sidebarOpen" x-transition
                 class="ml-5 space-y-1 border-l border-white/30 pl-3">
-                {{-- PROFILE SETTINGS --}}
-                <a href="{{ route('admin.profile') }}" wire:navigate
-                    class="block rounded-lg px-3 py-2.5 text-sm transition
-        {{ request()->routeIs('admin.profile*')
-            ? 'bg-[#6F4E37] text-white'
-            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                    Profile Settings
-                </a>
 
                 {{-- WEBSITE SETTINGS --}}
                 <a href="{{ route('admin.website-settings.edit') }}" wire:navigate
@@ -465,43 +457,6 @@
             </span>
 
         </a>
-
-        <div>
-
-            <form method="POST" action="{{ route('logout') }}">
-
-                @csrf
-
-                <button type="submit"
-                    class="w-full
-                           flex items-center
-                           rounded-xl
-                           text-sm
-                           font-medium
-                           text-white
-                           hover:bg-red-500
-                           transition-all"
-                    :class="sidebarOpen
-                        ?
-                        'gap-3 px-3 py-2.5' :
-                        'justify-center px-2 py-3'">
-
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                        viewBox="0 0 24 24">
-                        <path d="M10 17l5-5-5-5" />
-                        <path d="M15 12H3" />
-                        <path d="M21 19V5a2 2 0 00-2-2h-6" />
-                    </svg>
-
-                    <span x-show="sidebarOpen" x-cloak>
-                        Logout
-                    </span>
-
-                </button>
-
-            </form>
-
-        </div>
 
     </nav>
 

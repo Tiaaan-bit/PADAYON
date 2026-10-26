@@ -1,4 +1,5 @@
 <header class="sticky top-0 z-40 bg-[#D6BB9E]">
+
     <div class="flex items-center justify-between gap-3 h-20 px-3 sm:px-6 lg:px-8">
 
         {{-- LOGO + BRAND --}}
@@ -89,24 +90,90 @@
                 @endif
             </a>
 
-            {{-- USER PROFILE --}}
-            <a href="{{ route('user.profile') }}" wire:navigate
-                class="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3
-                       border-l border-[#6F4E37]/20">
+            {{-- USER PROFILE DROPDOWN --}}
+            <div x-data="{ open: false }" class="relative pl-2 sm:pl-3 border-l border-[#6F4E37]/20">
 
-                <div
-                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-full
-                            bg-[#6F4E37] flex items-center justify-center
-                            text-white font-bold text-sm shrink-0">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
+                {{-- PROFILE BUTTON --}}
+                <button type="button" @click="open = !open" @click.outside="open = false"
+                    @keydown.escape.window="open = false" :aria-expanded="open" aria-haspopup="true"
+                    aria-label="Open user menu"
+                    class="flex items-center gap-2 rounded-full p-1
+                           hover:bg-[#849753]/10 transition">
 
-                <div class="hidden sm:block max-w-32">
-                    <p class="text-sm font-semibold text-[#2F2420] truncate">
-                        {{ auth()->user()->name }}
-                    </p>
+                    {{-- PROFILE INITIAL --}}
+                    <div
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full
+                                bg-[#6F4E37] flex items-center justify-center
+                                text-white font-bold text-sm shrink-0">
+
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+
+                    {{-- USER NAME --}}
+                    <div class="hidden sm:block max-w-32">
+                        <p class="text-sm font-semibold text-[#2F2420] truncate">
+                            {{ auth()->user()->name }}
+                        </p>
+                    </div>
+
+                    {{-- DOWN ARROW --}}
+                    <svg class="w-4 h-4 text-[#6F4E37]
+                                transition-transform duration-200"
+                        :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                </button>
+
+                {{-- DROPDOWN MENU --}}
+                <div x-cloak x-show="open" x-transition.origin.top.right @click.outside="open = false"
+                    class="absolute right-0 top-full mt-3 w-56
+                           rounded-xl bg-white border border-gray-200
+                           shadow-lg py-2 z-50">
+
+                    {{-- SETTINGS / PROFILE --}}
+                    <a href="{{ route('user.profile') }}" wire:navigate @click="open = false"
+                        class="flex items-center gap-3 px-4 py-3 text-sm
+                               text-[#2F2420] hover:bg-[#F4EDDB]
+                               transition">
+
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                            viewBox="0 0 24 24">
+
+                            <circle cx="12" cy="12" r="3" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.4 15a1.7 1.7 0 000-2l1.1-.9-1.5-2.6-1.4.5a7 7 0 00-1.7-1L15.6 7h-3.1l-.3 2a7 7 0 00-1.7 1l-1.4-.5-1.5 2.6 1.1.9a1.7 1.7 0 000 2l-1.1.9 1.5 2.6 1.4-.5a7 7 0 001.7 1l.3 2h3.1l.3-2a7 7 0 001.7-1l1.4.5 1.5-2.6-1.1-.9z" />
+                        </svg>
+
+                        <span>Settings</span>
+                    </a>
+
+                    {{-- LOGOUT --}}
+                    <div class="border-t border-gray-100 mt-1 pt-1">
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+
+                            <button type="submit"
+                                class="w-full flex items-center gap-3 px-4 py-3
+                                       text-sm hover:bg-red-50
+                                       transition text-left">
+
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                                    viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 17l5-5-5-5m5 5H3m9-9h5a2 2 0 012 2v14a2 2 0 01-2 2h-5" />
+                                </svg>
+
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </a>
+            </div>
+
         </div>
     </div>
 
@@ -115,6 +182,7 @@
 
         <form action="{{ route('user.search') }}" method="GET">
             <div class="relative">
+
                 <input type="search" name="search" value="{{ request('search') }}"
                     placeholder="Search appointments, services, therapists..." aria-label="Search"
                     class="w-full h-11 pl-11 pr-4 rounded-full
@@ -130,6 +198,7 @@
                            text-[#6F4E37] hover:text-[#849753]">
 
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
                         <circle cx="11" cy="11" r="7" />
                         <path d="m16 16 4 4" />
                     </svg>
@@ -142,27 +211,33 @@
 {{-- MOBILE SEARCH TOGGLE SCRIPT --}}
 <script>
     (() => {
-        const toggle = document.getElementById('mobile-search-toggle');
-        const search = document.getElementById('mobile-user-search');
+        function initializeMobileSearch() {
+            const toggle = document.getElementById('mobile-search-toggle');
+            const search = document.getElementById('mobile-user-search');
 
-        if (!toggle || !search || toggle.dataset.initialized === 'true') {
-            return;
+            if (!toggle || !search || toggle.dataset.initialized === 'true') {
+                return;
+            }
+
+            toggle.dataset.initialized = 'true';
+
+            toggle.addEventListener('click', () => {
+                const isHidden = search.classList.toggle('hidden');
+
+                toggle.setAttribute('aria-expanded', String(!isHidden));
+                toggle.setAttribute(
+                    'aria-label',
+                    isHidden ? 'Open search' : 'Close search'
+                );
+
+                if (!isHidden) {
+                    search.querySelector('input[type="search"]')?.focus();
+                }
+            });
         }
 
-        toggle.dataset.initialized = 'true';
+        initializeMobileSearch();
 
-        toggle.addEventListener('click', () => {
-            const isHidden = search.classList.toggle('hidden');
-
-            toggle.setAttribute('aria-expanded', String(!isHidden));
-            toggle.setAttribute(
-                'aria-label',
-                isHidden ? 'Open search' : 'Close search'
-            );
-
-            if (!isHidden) {
-                search.querySelector('input[type="search"]')?.focus();
-            }
-        });
+        document.addEventListener('livewire:navigated', initializeMobileSearch);
     })();
 </script>
