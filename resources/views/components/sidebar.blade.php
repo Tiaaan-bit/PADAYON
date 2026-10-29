@@ -354,6 +354,36 @@
 
         </a>
 
+        <a href="{{ route('admin.ai.index') }}" wire:navigate
+            class="flex items-center
+                   rounded-xl
+                   text-sm
+                   font-medium
+                   transition-all
+                   {{ request()->routeIs('admin.ai.index*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+            :class="sidebarOpen
+                ?
+                'gap-3 px-3 py-2.5' :
+                'justify-center px-2 py-3'">
+
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+
+                <!-- Analytics Chart -->
+                <path d="M3 3v18h18" />
+                <path d="m7 14 4-4 4 3 5-7" />
+
+                <!-- AI Sparkle -->
+                <path d="M17 3l.8 2.2L20 6l-2.2.8L17 9l-.8-2.2L14 6l2.2-.8L17 3Z" />
+
+            </svg>
+
+            <span x-show="sidebarOpen" x-cloak class="truncate">
+                AI Analytics
+            </span>
+
+        </a>
+
 
         {{-- ===================================================== --}}
         {{-- SETTINGS WITH SUBMENU --}}
@@ -424,7 +454,7 @@
                     Home Page Settings
                 </a>
 
-                {{-- About Page--}}
+                {{-- About Page --}}
                 <a href="{{ route('admin.about-settings.edit') }}" wire:navigate
                     class="block rounded-lg px-3 py-2.5 text-sm transition
         {{ request()->routeIs('admin.about-settings.*')

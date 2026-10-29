@@ -24,18 +24,18 @@ class TherapistAiController extends Controller
         return view('therapist.ai.index', compact('therapist'));
     }
 
-    public function chat(
-        Request $request,
-        TherapistAiService $ai,
-        TherapistAppointmentService $appointments
-    ): JsonResponse {
+    public function chat(Request $request, TherapistAiService $ai, TherapistAppointmentService $appointments): JsonResponse
+    {
         /** @var Therapists|null $therapist */
         $therapist = Auth::guard('therapist')->user();
 
-        if (! $therapist instanceof Therapists) {
-            return response()->json([
-                'message' => 'Your therapist session has expired. Please sign in again.',
-            ], 401);
+        if (!$therapist instanceof Therapists) {
+            return response()->json(
+                [
+                    'message' => 'Your therapist session has expired. Please sign in again.',
+                ],
+                401,
+            );
         }
 
         $validated = $request->validate([
@@ -45,19 +45,24 @@ class TherapistAiController extends Controller
         ]);
 
         $messages = collect($validated['messages'])
-            ->map(fn (array $message): array => [
-                'role' => $message['role'],
-                'content' => trim($message['content']),
-            ])
+            ->map(
+                fn(array $message): array => [
+                    'role' => $message['role'],
+                    'content' => trim($message['content']),
+                ],
+            )
             ->values()
             ->all();
 
         // Reject empty messages, including whitespace-only messages.
         foreach ($messages as $message) {
             if ($message['content'] === '') {
-                return response()->json([
-                    'message' => 'Please enter a message before sending.',
-                ], 422);
+                return response()->json(
+                    [
+                        'message' => 'Please enter a message before sending.',
+                    ],
+                    422,
+                );
             }
         }
 
@@ -65,21 +70,18 @@ class TherapistAiController extends Controller
         $lastMessage = $messages[array_key_last($messages)];
 
         if ($lastMessage['role'] !== 'user') {
-            return response()->json([
-                'message' => 'Please send a message to continue.',
-            ], 422);
+            return response()->json(
+                [
+                    'message' => 'Please send a message to continue.',
+                ],
+                422,
+            );
         }
 
         try {
-            $appointmentContext = $appointments->contextForQuestion(
-                $therapist,
-                $lastMessage['content']
-            );
+            $appointmentContext = $appointments->contextForQuestion($therapist, $lastMessage['content']);
 
-            $answer = $ai->reply(
-                $messages,
-                $appointmentContext
-            );
+            $answer = $ai->reply($messages, $appointmentContext);
 
             return response()->json([
                 'reply' => $answer,
@@ -91,9 +93,12 @@ class TherapistAiController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            return response()->json([
-                'message' => 'The AI assistant is temporarily unavailable. Please try again.',
-            ], 503);
+            return response()->json(
+                [
+                    'message' => 'The AI assistant is temporarily unavailable. Please try again.',
+                ],
+                503,
+            );
         }
     }
 }

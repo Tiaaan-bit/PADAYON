@@ -14,9 +14,9 @@
     </title>
 
     <link rel="icon" type="image/png"
-    href="{{ !empty($websiteSettings?->logo_path)
-        ? asset('storage/' . $websiteSettings->logo_path)
-        : asset('build/assets/images/logo.png') }}">
+        href="{{ !empty($websiteSettings?->logo_path)
+            ? asset('storage/' . $websiteSettings->logo_path)
+            : asset('build/assets/images/logo.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -30,20 +30,20 @@
 </head>
 
 
-<body class="bg-[#D6BB9E] font-sans overflow-x-hidden" x-data="{ sidebarOpen: false }" @close-sidebar.window="sidebarOpen = false">
+<body class="bg-[#D6BB9E] font-sans overflow-x-hidden" x-data="{ sidebarOpen: false }"
+    @close-sidebar.window="sidebarOpen = false">
 
 
     @include('components.PageLoading')
     @include('components.userSidebar')
     @include('components.toast-notification')
-    
 
-    @include("components.aira-floating")    
+
 
 
     <div class="min-h-screen transition-all duration-300" :class="sidebarOpen ? 'lg:ml-60' : 'lg:ml-20'">
 
-         
+
         @include('components.UserHeader')
 
 
@@ -51,11 +51,10 @@
 
             @yield('content')
 
-        </main>    
+        </main>
 
 
     </div>
-    @include("components.aira-floating")    
 
 
     @stack('scripts')

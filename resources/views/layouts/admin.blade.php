@@ -22,13 +22,14 @@
 </head>
 
 
-<body class="bg-[#D6BB9E] font-sans overflow-x-hidden" x-data="{ sidebarOpen: false }"@close-sidebar.window="sidebarOpen = false">
+<body class="bg-[#D6BB9E] font-sans overflow-x-hidden"
+    x-data="{ sidebarOpen: false }"@close-sidebar.window="sidebarOpen = false">
 
 
     @include('components.PageLoading')
 
     @include('components.sidebar')
-    
+
     @include('components.toast-notification')
 
 
@@ -46,9 +47,6 @@
         </main>
 
     </div>
-
-    @include("components.aira-floating-for-admin")    
-
 
 
     @stack('scripts')
