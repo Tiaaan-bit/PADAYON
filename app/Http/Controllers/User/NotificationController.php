@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,28 +12,14 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             abort(403);
         }
 
-        $posts = Post::query()
-            ->whereNotNull('published_at')
-            ->latest('published_at')
-            ->take(5)
-            ->get();
-
-            
-
         return view('user.notifications', [
-            'posts' => $posts,
+            'unreadNotifications' => $user->unreadNotifications()->latest()->get(),
 
-            'unreadNotifications' => $user->unreadNotifications()
-                ->latest()
-                ->get(),
-
-            'readNotifications' => $user->readNotifications()
-                ->latest()
-                ->get(),
+            'readNotifications' => $user->readNotifications()->latest()->get(),
         ]);
     }
 
@@ -42,13 +27,11 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             abort(403);
         }
 
-        $notification = $user->notifications()
-            ->where('id', $id)
-            ->firstOrFail();
+        $notification = $user->notifications()->where('id', $id)->firstOrFail();
 
         $notification->markAsRead();
 
@@ -59,7 +42,7 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             abort(403);
         }
 
@@ -72,16 +55,27 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             abort(403);
         }
 
-        $notification = $user->notifications()
-            ->where('id', $id)
-            ->firstOrFail();
+        $notification = $user->notifications()->where('id', $id)->firstOrFail();
 
         $notification->delete();
 
         return back()->with('success', 'Notification deleted successfully.');
+    }
+
+    public function destroyAll()
+    {
+        $user = Auth::user();
+
+        if (!$user instanceof User) {
+            abort(403);
+        }
+
+        $deletedCount = $user->readNotifications()->delete();
+
+        return redirect()->route('user.notifications')->with('success', 'All read notifications deleted successfully.');
     }
 }

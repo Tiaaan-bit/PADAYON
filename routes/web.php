@@ -45,12 +45,8 @@ use App\Http\Controllers\User\UserSearchController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 
-
-
-
 Schedule::command('appointments:send-reminders')->everyMinute()->timezone('Asia/Manila')->withoutOverlapping();
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
-
 
 // ── Redirect root ─────────────────────────────────────────────────────────────
 Route::get('/', [PageController::class, 'showHomePage'])->name('home.showHomePage');
@@ -61,11 +57,13 @@ Route::get('/services', [PageController::class, 'showServicesPage'])->name('home
 // ── Guest routes ──────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:login')->name('login.store');
-    
+    Route::post('/login', [LoginController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('login.store');
+
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
-    Route::get('/register/walk-in/{token}',[WalkInRegistrationController::class, 'create'])->name('walk-in.register');
+    Route::get('/register/walk-in/{token}', [WalkInRegistrationController::class, 'create'])->name('walk-in.register');
 
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLink'])->name('password.email');
@@ -82,8 +80,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // ── User routes (auth.user middleware = verified users only) ──────────────────
-Route::middleware('auth.user')->prefix('user')->name('user.')->group(function () {
-
+Route::middleware('auth.user')
+    ->prefix('user')
+    ->name('user.')
+    ->group(function () {
         //---User Dashboard---//
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
@@ -92,16 +92,16 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::get('/appointments/create', [UserAppointmentController::class, 'create'])->name('appointments.create');
         Route::post('/appointments/store', [UserAppointmentController::class, 'store'])->name('appointments.store');
         Route::get('/appointments/available-slots', [UserAppointmentController::class, 'availableSlots'])->name('appointments.availableSlots');
-        Route::get('/appointments/{appointment}/payment/success', [UserAppointmentController::class,'paymentSuccess',])->name('appointments.payment.success');
-        Route::get('/appointments/{appointment}/payment/cancel', [UserAppointmentController::class,'paymentCancel',])->name('appointments.payment.cancel');
-        Route::post('/appointments/{appointment}/pay-again',[UserAppointmentController::class, 'payAgain'])->name('appointments.payment.retry');
+        Route::get('/appointments/{appointment}/payment/success', [UserAppointmentController::class, 'paymentSuccess'])->name('appointments.payment.success');
+        Route::get('/appointments/{appointment}/payment/cancel', [UserAppointmentController::class, 'paymentCancel'])->name('appointments.payment.cancel');
+        Route::post('/appointments/{appointment}/pay-again', [UserAppointmentController::class, 'payAgain'])->name('appointments.payment.retry');
 
         //---User MyAppointment---//
         Route::get('/my-appointments', [MyAppointmentController::class, 'index'])->name('my-appointments');
         Route::put('/my-appointments/{appointment}/cancel', [MyAppointmentController::class, 'cancel'])->name('my-appointments.cancel');
-        Route::get('/my-appointments/{appointment}/reschedule',[MyAppointmentController::class, 'showReschedule'])->name('appointments.reschedule');
-        Route::get('/my-appointments/{appointment}/reschedule/slots',[MyAppointmentController::class, 'availableRescheduleSlots'])->name('appointments.reschedule.slots');
-        Route::put('/my-appointments/{appointment}/reschedule',[MyAppointmentController::class, 'reschedule'])->name('appointments.reschedule.update');
+        Route::get('/my-appointments/{appointment}/reschedule', [MyAppointmentController::class, 'showReschedule'])->name('appointments.reschedule');
+        Route::get('/my-appointments/{appointment}/reschedule/slots', [MyAppointmentController::class, 'availableRescheduleSlots'])->name('appointments.reschedule.slots');
+        Route::put('/my-appointments/{appointment}/reschedule', [MyAppointmentController::class, 'reschedule'])->name('appointments.reschedule.update');
 
         //---User Payment History---//
         Route::get('/payment-history', [PaymentHistoryController::class, 'index'])->name('payment-history');
@@ -111,8 +111,9 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
         Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::post('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
 
-         //---User Therapist---//
+        //---User Therapist---//
         Route::get('/therapists', [TherapistsController::class, 'index'])->name('therapists.index');
         Route::post('/therapists/{therapist}/feedback', [TherapistsController::class, 'storeFeedback'])->name('therapists.feedback');
 
@@ -126,18 +127,18 @@ Route::middleware('auth.user')->prefix('user')->name('user.')->group(function ()
         Route::get('/search', [UserSearchController::class, 'index'])->name('search');
 
         Route::get('/ai-assistant', [CustomerAiController::class, 'index'])->name('ai.index');
-        Route::post('/ai-assistant/chat', [CustomerAiController::class, 'chat'])->middleware('throttle:20,1')->name('ai.chat');
-        
+        Route::post('/ai-assistant/chat', [CustomerAiController::class, 'chat'])
+            ->middleware('throttle:20,1')
+            ->name('ai.chat');
     });
 
-
-    Route::post('/webhooks/paymongo', [PayMongoWebhookController::class,'handle',])->name('webhooks.paymongo');
-
-
+Route::post('/webhooks/paymongo', [PayMongoWebhookController::class, 'handle'])->name('webhooks.paymongo');
 
 // ── Admin routes (auth.admin middleware = admins only) ────────────────────────
-Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function () {
-
+Route::middleware('auth.admin')
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
         //---Admin Dashboard Controller---//
         Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
 
@@ -174,7 +175,7 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/therapists', [AdminTherapistController::class, 'store'])->name('therapist.store');
         Route::put('/therapists/{therapist}', [AdminTherapistController::class, 'update'])->name('therapist.update');
         Route::delete('/therapists/{therapist}', [AdminTherapistController::class, 'destroy'])->name('therapist.destroy');
-        Route::get( '/therapists/{therapist}/feedback',[AdminTherapistController::class, 'feedback'])->name('therapist.feedback');
+        Route::get('/therapists/{therapist}/feedback', [AdminTherapistController::class, 'feedback'])->name('therapist.feedback');
 
         //---Admin Appointment Controller---//
         Route::get('/appointments', [AdminAppointmentsController::class, 'index'])->name('appointments');
@@ -183,94 +184,87 @@ Route::middleware('auth.admin')->prefix('admin')->name('admin.')->group(function
 
         //---Admin Transaction Controller---//
         Route::get('/transactions', [AdminTransactionsController::class, 'transactions'])->name('transactions');
-        Route::post('/transactions/{appointment}/mark-paid',[AdminTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
+        Route::post('/transactions/{appointment}/mark-paid', [AdminTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
 
         //---Admin Reports Controller---//
         Route::get('/reports', [AdminReportsController::class, 'reports'])->name('reports');
 
         //---Admin Quick Book Controller---//
-        Route::get('/quick-book',[AdminQuickBookController::class, 'index'])->name('quick-book');
-        Route::post('/quick-book',[AdminQuickBookController::class, 'store'])->name('quick-book.store');
-        Route::get('/quick-book/available-slots',[AdminQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
+        Route::get('/quick-book', [AdminQuickBookController::class, 'index'])->name('quick-book');
+        Route::post('/quick-book', [AdminQuickBookController::class, 'store'])->name('quick-book.store');
+        Route::get('/quick-book/available-slots', [AdminQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
 
         Route::get('/calendar', [AdminCalendarController::class, 'index'])->name('calendar');
         Route::get('/calendar/events', [AdminCalendarController::class, 'events'])->name('calendar.events');
 
-        
         Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
 
         Route::view('/help', 'admin.help')->name('help');
-        
+
         Route::get('/website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
         Route::put('/website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
 
         Route::get('/home-slider', [HomeSliderImageController::class, 'index'])->name('home-slider.index');
-        Route::put('/home-slider/{slot}', [HomeSliderImageController::class, 'update'])->whereNumber('slot')->name('home-slider.update');
-        Route::delete('/home-slider/{slot}', [HomeSliderImageController::class, 'destroy'])->whereNumber('slot')->name('home-slider.destroy');
-        Route::put('/home-slider/section/{sectionKey}', [HomeSliderImageController::class,'updateSection',])->name('home-slider.section.update');
-        
-        Route::get('/admin/about-settings',[AboutPageSettingController::class, 'edit'])->name('about-settings.edit');
-        Route::put('/admin/about-settings',[AboutPageSettingController::class, 'update'])->name('about-settings.update');
+        Route::put('/home-slider/{slot}', [HomeSliderImageController::class, 'update'])
+            ->whereNumber('slot')
+            ->name('home-slider.update');
+        Route::delete('/home-slider/{slot}', [HomeSliderImageController::class, 'destroy'])
+            ->whereNumber('slot')
+            ->name('home-slider.destroy');
+        Route::put('/home-slider/section/{sectionKey}', [HomeSliderImageController::class, 'updateSection'])->name('home-slider.section.update');
 
-        Route::post('/website-settings/close-bookings-today',[WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
-        Route::post('/website-settings/reopen-bookings-today',[WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
+        Route::get('/admin/about-settings', [AboutPageSettingController::class, 'edit'])->name('about-settings.edit');
+        Route::put('/admin/about-settings', [AboutPageSettingController::class, 'update'])->name('about-settings.update');
+
+        Route::post('/website-settings/close-bookings-today', [WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
+        Route::post('/website-settings/reopen-bookings-today', [WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
 
         Route::get('/ai', [AdminAiController::class, 'index'])->name('ai.index');
         Route::post('/ai/chat', [AdminAiController::class, 'chat'])->name('ai.chat');
-
-    });
-    
-
-    Route::middleware('auth.therapist')->prefix('therapist')->name('therapist.')->group(function () {
-
-
-        Route::get('/ai-assistant', [TherapistAiController::class,'index',])->name('ai.index');
-        Route::post('/ai-assistant/chat', [TherapistAiController::class,'chat',])->middleware('throttle:20,1')->name('ai.chat');
-
-
     });
 
+Route::middleware('auth.therapist')
+    ->prefix('therapist')
+    ->name('therapist.')
+    ->group(function () {
+        Route::get('/ai-assistant', [TherapistAiController::class, 'index'])->name('ai.index');
+        Route::post('/ai-assistant/chat', [TherapistAiController::class, 'chat'])
+            ->middleware('throttle:20,1')
+            ->name('ai.chat');
+    });
 
-
-    Route::middleware(['auth.staff'])->prefix('staff')->name('staff.')->group(function () {
-
-        Route::get('/dashboard',[StaffDashboardController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth.staff'])
+    ->prefix('staff')
+    ->name('staff.')
+    ->group(function () {
+        Route::get('/dashboard', [StaffDashboardController::class, 'dashboard'])->name('dashboard');
 
         //---Admin Quick Book Controller---//
-        Route::get('/quick-book',[StaffQuickBookController::class, 'index'])->name('quick-book');
-        Route::post('/quick-book',[StaffQuickBookController::class, 'store'])->name('quick-book.store');
-        Route::get('/quick-book/available-slots',[StaffQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
-
+        Route::get('/quick-book', [StaffQuickBookController::class, 'index'])->name('quick-book');
+        Route::post('/quick-book', [StaffQuickBookController::class, 'store'])->name('quick-book.store');
+        Route::get('/quick-book/available-slots', [StaffQuickBookController::class, 'availableSlots'])->name('quick-book.available-slots');
 
         Route::get('/appointments', [StaffAppointmentsController::class, 'index'])->name('appointments');
         Route::put('/appointments/{appointment}/status', [StaffAppointmentsController::class, 'updateStatus'])->name('appointments.updateStatus');
         Route::put('/appointments/{appointment}/cancel', [StaffAppointmentsController::class, 'cancel'])->name('appointments.cancel');
 
-
         Route::get('/transactions', [StaffTransactionsController::class, 'transactions'])->name('transactions');
-        Route::post('/transactions/{appointment}/mark-paid',[StaffTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
-
-
+        Route::post('/transactions/{appointment}/mark-paid', [StaffTransactionsController::class, 'markAsPaid'])->name('transactions.mark-paid');
 
         Route::get('/therapists', [StaffTherapistController::class, 'index'])->name('therapists');
         Route::put('/therapists/{therapist}', [StaffTherapistController::class, 'update'])->name('therapist.update');
-        
+
         Route::get('/calendar', [StaffCalendarController::class, 'index'])->name('calendar');
         Route::get('/calendar/events', [StaffCalendarController::class, 'events'])->name('calendar.events');
-
 
         Route::get('/profile', [StaffProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [StaffProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [StaffProfileController::class, 'updatePassword'])->name('profile.password');
 
         Route::view('/help', 'staff.help')->name('help');
-
     });
 
 // ── Logout ────────────────────────────────────────────────────────────────────
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-

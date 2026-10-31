@@ -1135,7 +1135,7 @@ class UserAppointmentController extends Controller
         */
 
         if ($validated['payment_method'] === 'branch') {
-            return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please wait for confirmation.');
+            return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please visit our center to confirm your appointment.');
         }
 
         /*

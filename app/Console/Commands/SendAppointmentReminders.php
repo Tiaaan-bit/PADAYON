@@ -20,12 +20,12 @@ class SendAppointmentReminders extends Command
         $timezone = 'Asia/Manila';
         $now = Carbon::now($timezone);
 
-        $windowStart = $now->copy()->addHours(24);
+        $windowStart = $now->copy()->addMinutes(30);
         $windowEnd = $windowStart->copy()->addMinute();
 
         $appointments = UsersAppointments::query()
             ->with('user')
-            ->where('status', AppointmentStatus::CONFIRMED->value)
+            ->whereIn('status', [AppointmentStatus::CONFIRMED->value, AppointmentStatus::PENDING->value])
             ->whereNull('reminder_sent_at')
             ->whereBetween('appointment_date', [$windowStart->toDateString(), $windowEnd->toDateString()])
             ->get();
