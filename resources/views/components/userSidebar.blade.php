@@ -256,7 +256,7 @@
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                Help 
+                Help
             </span>
         </a>
 
@@ -296,29 +296,13 @@
                     <path d="M9 21v-6h6v6" />
 
                 </svg>
-                <span class="text-[10px] font-medium leading-tight">Home</span>
+                <span class="text-[10px] font-medium leading-tight">Dashboard</span>
                 @if (request()->routeIs('user.dashboard'))
                     <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
                 @endif
             </a>
 
-            {{-- Appointments --}}
-            <a href="{{ route('user.my-appointments') }}"
-                class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
-                        {{ request()->routeIs('user.my-appointments*') ? 'text-white' : 'text-white' }}">
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
 
-                    <path d="M4 5h16v15H4z" />
-
-                    <path d="M8 9h8M8 13h8M8 17h5" />
-
-                </svg>
-                <span class="text-[10px] font-medium leading-tight">Appts</span>
-                @if (request()->routeIs('user.my-appointments*'))
-                    <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
-                @endif
-            </a>
 
             {{-- Book --}}
             <a href="{{ route('user.appointment') }}"
@@ -339,6 +323,23 @@
                     <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
                 @endif
             </a>
+            {{-- Appointments --}}
+            <a href="{{ route('user.my-appointments') }}"
+                class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
+                        {{ request()->routeIs('user.my-appointments*') ? 'text-white' : 'text-white' }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+
+                    <path d="M4 5h16v15H4z" />
+
+                    <path d="M8 9h8M8 13h8M8 17h5" />
+
+                </svg>
+                <span class="text-[10px] font-medium leading-tight">Appointments</span>
+                @if (request()->routeIs('user.my-appointments*'))
+                    <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
+                @endif
+            </a>
 
             {{-- Transactions --}}
             <a href="{{ route('user.payment-history') }}"
@@ -354,7 +355,7 @@
                     <path d="M7 15h4" />
 
                 </svg>
-                <span class="text-[10px] font-medium leading-tight">Pay</span>
+                <span class="text-[10px] font-medium leading-tight">Payments</span>
                 @if (request()->routeIs('user.payment-history*'))
                     <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
                 @endif
@@ -427,7 +428,7 @@
                     <path
                         d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
                 </svg>
-                Profile Settings
+                Settings
             </a>
 
             <a href="{{ route('user.help') }}" onclick="toggleMoreDrawer()"
@@ -438,25 +439,9 @@
                     <path
                         d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
                 </svg>
-                Help
+                Help Center
             </a>
-            
 
-        
-
-            <div class="border-t border-white/10 my-2"></div>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-[#6F4E37] text-white hover:bg-red-500/10 hover:text-red-300 transition-all">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                        viewBox="0 0 24 24">
-                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-                    </svg>
-                    Logout
-                </button>
-            </form>
 
         </div>
     </div>
@@ -487,15 +472,15 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.querySelector('aside.fixed.top-0.left-0');
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('aside.fixed.top-0.left-0');
 
-    if (!sidebar) return;
+        if (!sidebar) return;
 
-    const tooltip = document.createElement('div');
+        const tooltip = document.createElement('div');
 
-    tooltip.textContent = '';
-    tooltip.style.cssText = `
+        tooltip.textContent = '';
+        tooltip.style.cssText = `
         position: fixed;
         display: none;
         z-index: 99999;
@@ -515,49 +500,49 @@ document.addEventListener('DOMContentLoaded', function () {
         transition: opacity 150ms ease, transform 150ms ease;
     `;
 
-    document.body.appendChild(tooltip);
+        document.body.appendChild(tooltip);
 
-    let hideTimer;
+        let hideTimer;
 
-    function hideTooltip() {
-        clearTimeout(hideTimer);
-        tooltip.style.opacity = '0';
-        tooltip.style.transform = 'translateX(-4px)';
-
-        hideTimer = setTimeout(() => {
-            tooltip.style.display = 'none';
-        }, 150);
-    }
-
-    document.querySelectorAll('[data-sidebar-tooltip]').forEach(link => {
-        link.addEventListener('mouseenter', function () {
+        function hideTooltip() {
             clearTimeout(hideTimer);
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateX(-4px)';
 
-            // Only show when the desktop sidebar is collapsed.
-            if (window.innerWidth < 1024 || sidebar.offsetWidth > 100) {
-                hideTooltip();
-                return;
-            }
+            hideTimer = setTimeout(() => {
+                tooltip.style.display = 'none';
+            }, 150);
+        }
 
-            const rect = this.getBoundingClientRect();
+        document.querySelectorAll('[data-sidebar-tooltip]').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
 
-            tooltip.textContent = this.dataset.sidebarTooltip;
-            tooltip.style.display = 'block';
-            tooltip.style.left = `${rect.right + 12}px`;
-            tooltip.style.top = `${rect.top + rect.height / 2}px`;
-            tooltip.style.transform = 'translateY(-50%) translateX(0)';
+                // Only show when the desktop sidebar is collapsed.
+                if (window.innerWidth < 1024 || sidebar.offsetWidth > 100) {
+                    hideTooltip();
+                    return;
+                }
 
-            requestAnimationFrame(() => {
-                tooltip.style.opacity = '1';
+                const rect = this.getBoundingClientRect();
+
+                tooltip.textContent = this.dataset.sidebarTooltip;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${rect.right + 12}px`;
+                tooltip.style.top = `${rect.top + rect.height / 2}px`;
+                tooltip.style.transform = 'translateY(-50%) translateX(0)';
+
+                requestAnimationFrame(() => {
+                    tooltip.style.opacity = '1';
+                });
             });
+
+            link.addEventListener('mouseleave', hideTooltip);
         });
 
-        link.addEventListener('mouseleave', hideTooltip);
+        // Hide the tooltip when the sidebar expands or the page resizes.
+        window.addEventListener('resize', hideTooltip);
+
+        document.addEventListener('click', hideTooltip);
     });
-
-    // Hide the tooltip when the sidebar expands or the page resizes.
-    window.addEventListener('resize', hideTooltip);
-
-    document.addEventListener('click', hideTooltip);
-});
 </script>

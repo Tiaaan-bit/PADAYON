@@ -959,47 +959,6 @@
 
             </a>
 
-
-
-
-
-
-
-            {{-- Divider --}}
-            <div class="border-t border-white/10 my-2"></div>
-
-
-            {{-- Logout --}}
-            <form method="POST" action="{{ route('logout') }}">
-
-                @csrf
-
-                <button type="submit"
-                    class="w-full
-                           flex items-center gap-3
-                           px-4 py-3
-                           rounded-xl
-                           text-sm
-                           font-medium
-                           bg-[#6F4E37]
-                           text-white
-                           hover:bg-red-500/10
-                           hover:text-red-300
-                           transition-all">
-
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                        viewBox="0 0 24 24">
-                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                        <path d="M16 17l5-5-5-5" />
-                        <path d="M21 12H9" />
-                    </svg>
-
-                    Logout
-
-                </button>
-
-            </form>
-
         </div>
 
     </div>

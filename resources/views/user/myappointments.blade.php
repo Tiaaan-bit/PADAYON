@@ -379,8 +379,8 @@
                                             </span>
                                         @elseif ($status === AppointmentStatus::REJECTED)
                                             <span
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                                                 {{ $status->label() }}
                                             </span>
                                         @elseif ($status === AppointmentStatus::CANCELLED)
@@ -397,8 +397,9 @@
                                             </span>
                                         @else
                                             <span
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>                                                {{ $status?->label() ?? 'N/A' }}
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                                                {{ $status?->label() ?? 'N/A' }}
                                             </span>
                                         @endif
 
@@ -407,64 +408,59 @@
                                     {{-- ACTION --}}
                                     <td class="px-5 py-4" @click.stop>
                                         <div class="flex flex-col gap-2">
-                                    
+
                                             @php
                                                 $canReschedule =
                                                     $status === AppointmentStatus::CONFIRMED &&
                                                     $appointment->payment_method === 'gcash' &&
                                                     $appointment->appointment_date &&
                                                     $appointment->appointment_date->greaterThanOrEqualTo(
-                                                        now('Asia/Manila')->startOfDay()
+                                                        now('Asia/Manila')->startOfDay(),
                                                     );
-                                    
+
                                                 $canCancel =
                                                     $status === AppointmentStatus::PENDING &&
                                                     $appointment->payment_method === 'branch';
                                             @endphp
-                                    
-                                    
+
+
                                             {{-- =========================================================
                                                 RESCHEDULE
                                             ========================================================== --}}
                                             @if ($canReschedule)
-                                                <a
-                                                    href="{{ route('user.appointments.reschedule', $appointment->id) }}"
-                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-[#849753] hover:bg-[#849753] hover:text-white text-sm font-medium transition"
-                                                >
+                                                <a href="{{ route('user.appointments.reschedule', $appointment->id) }}"
+                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-[#849753] hover:bg-[#849753] hover:text-white text-sm font-medium transition">
                                                     Reschedule
                                                 </a>
                                             @endif
-                                    
-                                    
+
+
                                             {{-- =========================================================
                                                 CANCEL — PAY AT COUNTER ONLY
                                             ========================================================== --}}
                                             @if ($canCancel)
                                                 <form
                                                     action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
-                                                    method="POST"
-                                                >
+                                                    method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                    
-                                                    <button
-                                                        type="submit"
+
+                                                    <button type="submit"
                                                         onclick="return confirm('Cancel this appointment?')"
-                                                        class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm transition"
-                                                    >
+                                                        class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm transition">
                                                         Cancel
                                                     </button>
                                                 </form>
                                             @endif
-                                    
-                                    
+
+
                                             {{-- =========================================================
                                                 NO ACTION
                                             ========================================================== --}}
                                             @if (!$canReschedule && !$canCancel)
                                                 <span>No Action</span>
                                             @endif
-                                    
+
                                         </div>
                                     </td>
 
