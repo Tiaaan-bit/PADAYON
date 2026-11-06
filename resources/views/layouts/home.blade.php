@@ -9,6 +9,9 @@
         @yield('title', 'Padayon Massage Center')
     </title>
 
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#849753">
+
     <link rel="icon" type="image/png"
         href="{{ !empty($websiteSettings?->logo_path)
             ? asset('storage/' . $websiteSettings->logo_path)
@@ -20,7 +23,8 @@
 </head>
 
 
-<body class="bg-[#F4EDDB]  min-h-screen bg-cover bg-center bg-no-repeat bg-fixed" style="background-image: url('{{ asset('images/background.png') }}');">
+<body class="bg-[#F4EDDB]  min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+    style="background-image: url('{{ asset('images/background.png') }}');">
 
     {{-- Header --}}
     <x-header />
@@ -36,6 +40,27 @@
     {{-- Page-specific JavaScript --}}
     @stack('scripts')
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration =
+                        await navigator.serviceWorker.register('/sw.js');
+
+                    console.log(
+                        'Padayon PWA registered:',
+                        registration.scope
+                    );
+
+                } catch (error) {
+                    console.error(
+                        'Padayon PWA registration failed:',
+                        error
+                    );
+                }
+            });
+        }
+    </script>
 </body>
 
 

@@ -8,6 +8,18 @@
 
     <title>Padayon AI Assistant</title>
 
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+    <meta name="theme-color" content="#849753">
+
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <link rel="apple-touch-icon" href="{{ asset('icons/padayon-192.png') }}">
+
     <style>
         * {
             box-sizing: border-box;
@@ -169,452 +181,471 @@
         </section>
     </main>
 
-    
-<script>
-    (() => {
-        const chatUrl = @json(route('therapist.ai.chat'));
-        const csrfToken = document.querySelector(
-            'meta[name="csrf-token"]'
-        ).content;
-        const therapistName = @json(auth('therapist')->user()->name ?? 'there');
 
-        const micButton = document.getElementById('micButton');
-        const buttonLabel = document.getElementById('buttonLabel');
-        const status = document.getElementById('status');
+    <script>
+        (() => {
+            const chatUrl = @json(route('therapist.ai.chat'));
+            const csrfToken = document.querySelector(
+                'meta[name="csrf-token"]'
+            ).content;
+            const therapistName = @json(auth('therapist')->user()->name ?? 'there');
 
-        const SpeechRecognition =
-            window.SpeechRecognition ||
-            window.webkitSpeechRecognition;
+            const micButton = document.getElementById('micButton');
+            const buttonLabel = document.getElementById('buttonLabel');
+            const status = document.getElementById('status');
 
-        let recognition = null;
-        let messages = [];
-        let busy = false;
-        let listening = false;
-        let greeted = false;
-        let silenceTimer = null;
-        let silenceReminderActive = false;
-        let preferredVoice = null;
-        let speechRequestId = 0;
+            const SpeechRecognition =
+                window.SpeechRecognition ||
+                window.webkitSpeechRecognition;
 
-        // --------------------------------------------------
-        // STATUS AND BUTTON
-        // --------------------------------------------------
+            let recognition = null;
+            let messages = [];
+            let busy = false;
+            let listening = false;
+            let greeted = false;
+            let silenceTimer = null;
+            let silenceReminderActive = false;
+            let preferredVoice = null;
+            let speechRequestId = 0;
 
-        function setStatus(message) {
-            status.textContent = message;
-        }
+            // --------------------------------------------------
+            // STATUS AND BUTTON
+            // --------------------------------------------------
 
-        function setButton(label, icon = '🎙') {
-            buttonLabel.textContent = label;
-            micButton.querySelector('.mic-icon').textContent = icon;
-        }
-
-        // --------------------------------------------------
-        // FEMALE VOICE SELECTION
-        // --------------------------------------------------
-
-        function selectFemaleVoice() {
-            if (!('speechSynthesis' in window)) {
-                return null;
+            function setStatus(message) {
+                status.textContent = message;
             }
 
-            const voices = window.speechSynthesis.getVoices();
-
-            if (!voices.length) {
-                return null;
+            function setButton(label, icon = '🎙') {
+                buttonLabel.textContent = label;
+                micButton.querySelector('.mic-icon').textContent = icon;
             }
 
-            const englishVoices = voices.filter(voice =>
-                /^en(?:-|$)/i.test(voice.lang)
-            );
+            // --------------------------------------------------
+            // FEMALE VOICE SELECTION
+            // --------------------------------------------------
 
-            // Prefer known feminine-sounding English voices.
-            // Voice names differ between Windows, Android, and iOS.
-            const femaleVoicePattern =
-                /female|samantha|karen|moira|tessa|victoria|zira|aria|jenny|ava|emma|sara|susan|hazel|serena|fiona|google uk english female|microsoft.*(zira|aria|jenny|ava|emma)/i;
+            function selectFemaleVoice() {
+                if (!('speechSynthesis' in window)) {
+                    return null;
+                }
 
-            preferredVoice =
-                englishVoices.find(voice =>
-                    femaleVoicePattern.test(voice.name)
-                ) ||
-                null;
+                const voices = window.speechSynthesis.getVoices();
 
-            // If a matching female voice is unavailable, prefer
-            // an English Philippines voice before other English voices.
-            if (!preferredVoice) {
+                if (!voices.length) {
+                    return null;
+                }
+
+                const englishVoices = voices.filter(voice =>
+                    /^en(?:-|$)/i.test(voice.lang)
+                );
+
+                // Prefer known feminine-sounding English voices.
+                // Voice names differ between Windows, Android, and iOS.
+                const femaleVoicePattern =
+                    /female|samantha|karen|moira|tessa|victoria|zira|aria|jenny|ava|emma|sara|susan|hazel|serena|fiona|google uk english female|microsoft.*(zira|aria|jenny|ava|emma)/i;
+
                 preferredVoice =
                     englishVoices.find(voice =>
-                        /^en-PH$/i.test(voice.lang)
+                        femaleVoicePattern.test(voice.name)
                     ) ||
-                    englishVoices.find(voice =>
-                        /^en-US$/i.test(voice.lang)
-                    ) ||
-                    englishVoices.find(voice =>
-                        /^en-GB$/i.test(voice.lang)
-                    ) ||
-                    englishVoices[0] ||
                     null;
-            }
 
-            return preferredVoice;
-        }
-
-        if ('speechSynthesis' in window) {
-            selectFemaleVoice();
-
-            // Some browsers load voices after the page loads.
-            window.speechSynthesis.addEventListener(
-                'voiceschanged',
-                () => {
-                    selectFemaleVoice();
-                }
-            );
-        }
-
-        // --------------------------------------------------
-        // SPEECH SYNTHESIS
-        // --------------------------------------------------
-
-        function stopSpeaking() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-        }
-
-        function speak(text) {
-            return new Promise(resolve => {
-                if (!('speechSynthesis' in window)) {
-                    setStatus(text);
-                    resolve();
-                    return;
-                }
-
-                const currentRequest = ++speechRequestId;
-
-                stopSpeaking();
-
-                // Refresh the voice selection if voices are available now.
+                // If a matching female voice is unavailable, prefer
+                // an English Philippines voice before other English voices.
                 if (!preferredVoice) {
-                    selectFemaleVoice();
+                    preferredVoice =
+                        englishVoices.find(voice =>
+                            /^en-PH$/i.test(voice.lang)
+                        ) ||
+                        englishVoices.find(voice =>
+                            /^en-US$/i.test(voice.lang)
+                        ) ||
+                        englishVoices.find(voice =>
+                            /^en-GB$/i.test(voice.lang)
+                        ) ||
+                        englishVoices[0] ||
+                        null;
                 }
 
-                const utterance = new SpeechSynthesisUtterance(text);
+                return preferredVoice;
+            }
 
-                if (preferredVoice) {
-                    utterance.voice = preferredVoice;
-                    utterance.lang = preferredVoice.lang;
-                } else {
-                    utterance.lang = 'en-PH';
+            if ('speechSynthesis' in window) {
+                selectFemaleVoice();
+
+                // Some browsers load voices after the page loads.
+                window.speechSynthesis.addEventListener(
+                    'voiceschanged',
+                    () => {
+                        selectFemaleVoice();
+                    }
+                );
+            }
+
+            // --------------------------------------------------
+            // SPEECH SYNTHESIS
+            // --------------------------------------------------
+
+            function stopSpeaking() {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
                 }
+            }
 
-                utterance.rate = 1.0;
-                utterance.pitch = 1.1;
-                utterance.volume = 1;
-
-                let finished = false;
-
-                function finish() {
-                    if (finished) return;
-                    finished = true;
-
-                    // Do not let an older utterance reset the
-                    // interface while a newer utterance is speaking.
-                    if (currentRequest === speechRequestId) {
-                        setButton('TAP TO TALK');
+            function speak(text) {
+                return new Promise(resolve => {
+                    if (!('speechSynthesis' in window)) {
+                        setStatus(text);
+                        resolve();
+                        return;
                     }
 
-                    resolve();
-                }
+                    const currentRequest = ++speechRequestId;
 
-                utterance.onstart = () => {
-                    if (currentRequest !== speechRequestId) return;
+                    stopSpeaking();
 
-                    setStatus(text);
-                    setButton('AIRA IS SPEAKING', '🔊');
-                };
+                    // Refresh the voice selection if voices are available now.
+                    if (!preferredVoice) {
+                        selectFemaleVoice();
+                    }
 
-                utterance.onend = finish;
-                utterance.onerror = finish;
+                    const utterance = new SpeechSynthesisUtterance(text);
 
-                window.speechSynthesis.speak(utterance);
-            });
-        }
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
+                        utterance.lang = preferredVoice.lang;
+                    } else {
+                        utterance.lang = 'en-PH';
+                    }
 
-        // --------------------------------------------------
-        // SPEECH RECOGNITION
-        // --------------------------------------------------
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.1;
+                    utterance.volume = 1;
 
-        function createRecognition() {
-            if (!SpeechRecognition) {
-                return null;
+                    let finished = false;
+
+                    function finish() {
+                        if (finished) return;
+                        finished = true;
+
+                        // Do not let an older utterance reset the
+                        // interface while a newer utterance is speaking.
+                        if (currentRequest === speechRequestId) {
+                            setButton('TAP TO TALK');
+                        }
+
+                        resolve();
+                    }
+
+                    utterance.onstart = () => {
+                        if (currentRequest !== speechRequestId) return;
+
+                        setStatus(text);
+                        setButton('AIRA IS SPEAKING', '🔊');
+                    };
+
+                    utterance.onend = finish;
+                    utterance.onerror = finish;
+
+                    window.speechSynthesis.speak(utterance);
+                });
             }
 
-            const instance = new SpeechRecognition();
+            // --------------------------------------------------
+            // SPEECH RECOGNITION
+            // --------------------------------------------------
 
-            instance.lang = 'en-PH';
-            instance.continuous = false;
-            instance.interimResults = false;
-            instance.maxAlternatives = 1;
+            function createRecognition() {
+                if (!SpeechRecognition) {
+                    return null;
+                }
 
-            instance.onstart = () => {
-                listening = true;
-                silenceReminderActive = false;
+                const instance = new SpeechRecognition();
 
-                setButton('LISTENING...', '👂');
-                setStatus('Listening. Please speak now.');
+                instance.lang = 'en-PH';
+                instance.continuous = false;
+                instance.interimResults = false;
+                instance.maxAlternatives = 1;
 
-                clearTimeout(silenceTimer);
+                instance.onstart = () => {
+                    listening = true;
+                    silenceReminderActive = false;
 
-                silenceTimer = setTimeout(async () => {
-                    if (!listening || busy) return;
-
-                    silenceReminderActive = true;
-                    listening = false;
+                    setButton('LISTENING...', '👂');
+                    setStatus('Listening. Please speak now.');
 
                     clearTimeout(silenceTimer);
 
-                    try {
-                        recognition?.stop();
-                    } catch (error) {
-                        // Recognition may already have stopped.
-                    }
+                    silenceTimer = setTimeout(async () => {
+                        if (!listening || busy) return;
 
-                    await speak(
-                        'I cannot hear you speaking. Tap the button when you are ready to try again.'
-                    );
+                        silenceReminderActive = true;
+                        listening = false;
 
-                    setButton('TAP TO TALK');
-                    setStatus(
-                        'Ready for your next question. Tap the big button to talk.'
-                    );
-                }, 7000);
-            };
+                        clearTimeout(silenceTimer);
 
-            instance.onresult = event => {
-                clearTimeout(silenceTimer);
+                        try {
+                            recognition?.stop();
+                        } catch (error) {
+                            // Recognition may already have stopped.
+                        }
 
-                const transcript =
-                    event.results?.[0]?.[0]?.transcript?.trim();
+                        await speak(
+                            'I cannot hear you speaking. Tap the button when you are ready to try again.'
+                        );
 
-                listening = false;
-
-                if (!transcript) {
-                    setStatus(
-                        'I did not catch that. Tap the button and try again.'
-                    );
-                    setButton('TAP TO TALK');
-                    return;
-                }
-
-                sendMessage(transcript);
-            };
-
-            instance.onerror = async event => {
-                clearTimeout(silenceTimer);
-                listening = false;
-
-                setButton('TAP TO TALK');
-
-                // Prevent a duplicate reminder after the silence timer.
-                if (silenceReminderActive) {
-                    return;
-                }
-
-                const errors = {
-                    'no-speech':
-                        'I did not hear you. Please tap the button and try again.',
-                    'not-allowed':
-                        'Microphone permission is blocked. Please enable microphone access in your browser.',
-                    'service-not-allowed':
-                        'Speech recognition is blocked by the browser.',
-                    'audio-capture':
-                        'I cannot find a working microphone.',
-                    'network':
-                        'Voice recognition needs a working network connection.'
+                        setButton('TAP TO TALK');
+                        setStatus(
+                            'Ready for your next question. Tap the big button to talk.'
+                        );
+                    }, 7000);
                 };
 
-                const message = errors[event.error] ||
-                    'I could not hear you clearly. Please try again.';
+                instance.onresult = event => {
+                    clearTimeout(silenceTimer);
 
-                setStatus(message);
-                await speak(message);
-            };
+                    const transcript =
+                        event.results?.[0]?.[0]?.transcript?.trim();
 
-            instance.onend = () => {
-                listening = false;
-                clearTimeout(silenceTimer);
+                    listening = false;
 
-                if (!busy && !window.speechSynthesis?.speaking) {
+                    if (!transcript) {
+                        setStatus(
+                            'I did not catch that. Tap the button and try again.'
+                        );
+                        setButton('TAP TO TALK');
+                        return;
+                    }
+
+                    sendMessage(transcript);
+                };
+
+                instance.onerror = async event => {
+                    clearTimeout(silenceTimer);
+                    listening = false;
+
                     setButton('TAP TO TALK');
-                }
-            };
 
-            return instance;
-        }
+                    // Prevent a duplicate reminder after the silence timer.
+                    if (silenceReminderActive) {
+                        return;
+                    }
 
-        async function startListening() {
-            if (busy || listening) return;
+                    const errors = {
+                        'no-speech': 'I did not hear you. Please tap the button and try again.',
+                        'not-allowed': 'Microphone permission is blocked. Please enable microphone access in your browser.',
+                        'service-not-allowed': 'Speech recognition is blocked by the browser.',
+                        'audio-capture': 'I cannot find a working microphone.',
+                        'network': 'Voice recognition needs a working network connection.'
+                    };
 
-            if (!SpeechRecognition) {
-                await speak(
-                    'Voice recognition is not available on this browser. Please try a supported browser with microphone access enabled.'
-                );
-                return;
+                    const message = errors[event.error] ||
+                        'I could not hear you clearly. Please try again.';
+
+                    setStatus(message);
+                    await speak(message);
+                };
+
+                instance.onend = () => {
+                    listening = false;
+                    clearTimeout(silenceTimer);
+
+                    if (!busy && !window.speechSynthesis?.speaking) {
+                        setButton('TAP TO TALK');
+                    }
+                };
+
+                return instance;
             }
 
-            stopSpeaking();
+            async function startListening() {
+                if (busy || listening) return;
 
-            try {
-                recognition = createRecognition();
-
-                if (!recognition) {
-                    throw new Error('Speech recognition is unavailable.');
-                }
-
-                recognition.start();
-            } catch (error) {
-                setStatus(
-                    'I could not start the microphone. Please wait a moment and tap again.'
-                );
-                setButton('TAP TO TALK');
-            }
-        }
-
-        // --------------------------------------------------
-        // SEND QUESTION TO LARAVEL / GROQ
-        // --------------------------------------------------
-
-        async function sendMessage(text) {
-            if (busy || !text.trim()) return;
-
-            busy = true;
-            micButton.disabled = true;
-
-            setButton('PLEASE WAIT', '⏳');
-            setStatus('Finding your answer...');
-
-            messages.push({
-                role: 'user',
-                content: text.trim()
-            });
-
-            messages = messages.slice(-10);
-
-            try {
-                const response = await fetch(chatUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        messages: messages
-                    })
-                });
-
-                let data;
-
-                try {
-                    data = await response.json();
-                } catch (error) {
-                    throw new Error('The server returned an invalid response.');
-                }
-
-                if (response.status === 401) {
+                if (!SpeechRecognition) {
                     await speak(
-                        'Your session may have expired. Please log in again.'
+                        'Voice recognition is not available on this browser. Please try a supported browser with microphone access enabled.'
                     );
                     return;
                 }
 
-                if (!response.ok) {
-                    throw new Error(
-                        data.message ||
-                        'The assistant is temporarily unavailable.'
-                    );
-                }
+                stopSpeaking();
 
-                if (
-                    typeof data.reply !== 'string' ||
-                    !data.reply.trim()
-                ) {
-                    throw new Error(
-                        'I received an empty answer. Please try again.'
+                try {
+                    recognition = createRecognition();
+
+                    if (!recognition) {
+                        throw new Error('Speech recognition is unavailable.');
+                    }
+
+                    recognition.start();
+                } catch (error) {
+                    setStatus(
+                        'I could not start the microphone. Please wait a moment and tap again.'
                     );
+                    setButton('TAP TO TALK');
                 }
+            }
+
+            // --------------------------------------------------
+            // SEND QUESTION TO LARAVEL / GROQ
+            // --------------------------------------------------
+
+            async function sendMessage(text) {
+                if (busy || !text.trim()) return;
+
+                busy = true;
+                micButton.disabled = true;
+
+                setButton('PLEASE WAIT', '⏳');
+                setStatus('Finding your answer...');
 
                 messages.push({
-                    role: 'assistant',
-                    content: data.reply.trim()
+                    role: 'user',
+                    content: text.trim()
                 });
 
                 messages = messages.slice(-10);
 
-                await speak(data.reply.trim());
+                try {
+                    const response = await fetch(chatUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            messages: messages
+                        })
+                    });
 
+                    let data;
+
+                    try {
+                        data = await response.json();
+                    } catch (error) {
+                        throw new Error('The server returned an invalid response.');
+                    }
+
+                    if (response.status === 401) {
+                        await speak(
+                            'Your session may have expired. Please log in again.'
+                        );
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.message ||
+                            'The assistant is temporarily unavailable.'
+                        );
+                    }
+
+                    if (
+                        typeof data.reply !== 'string' ||
+                        !data.reply.trim()
+                    ) {
+                        throw new Error(
+                            'I received an empty answer. Please try again.'
+                        );
+                    }
+
+                    messages.push({
+                        role: 'assistant',
+                        content: data.reply.trim()
+                    });
+
+                    messages = messages.slice(-10);
+
+                    await speak(data.reply.trim());
+
+                    setStatus(
+                        'Ready for your next question. Tap the big button to talk again.'
+                    );
+                } catch (error) {
+                    console.error('Aira assistant error:', error);
+
+                    await speak(
+                        'Sorry, I could not get an answer just now. Please tap the button to try again.'
+                    );
+
+                    setStatus(
+                        'Ready to try again. Tap the big button when you are ready.'
+                    );
+                } finally {
+                    busy = false;
+                    micButton.disabled = false;
+                    setButton('TAP TO TALK');
+                }
+            }
+
+            // --------------------------------------------------
+            // MAIN BUTTON
+            // --------------------------------------------------
+
+            micButton.addEventListener('click', async () => {
+                if (busy || listening) return;
+
+                // Warm up voice selection on the first user interaction.
+                if (!preferredVoice) {
+                    selectFemaleVoice();
+                }
+
+                // Greet the therapist once per page session.
+                if (!greeted) {
+                    greeted = true;
+
+                    await speak(
+                        `Hello, ${therapistName}. I am Aira, your AI assistant.`
+                    );
+                }
+
+                // Keep this short to reduce the time before listening.
+                await speak('I am listening.');
+
+                await startListening();
+            });
+
+            // --------------------------------------------------
+            // INITIAL PAGE STATE
+            // --------------------------------------------------
+
+            if (!SpeechRecognition) {
                 setStatus(
-                    'Ready for your next question. Tap the big button to talk again.'
+                    'Tap the button to begin. Your browser may need help enabling voice recognition.'
                 );
-            } catch (error) {
-                console.error('Aira assistant error:', error);
-
-                await speak(
-                    'Sorry, I could not get an answer just now. Please tap the button to try again.'
-                );
-
+            } else {
                 setStatus(
-                    'Ready to try again. Tap the big button when you are ready.'
-                );
-            } finally {
-                busy = false;
-                micButton.disabled = false;
-                setButton('TAP TO TALK');
-            }
-        }
-
-        // --------------------------------------------------
-        // MAIN BUTTON
-        // --------------------------------------------------
-
-        micButton.addEventListener('click', async () => {
-            if (busy || listening) return;
-
-            // Warm up voice selection on the first user interaction.
-            if (!preferredVoice) {
-                selectFemaleVoice();
-            }
-
-            // Greet the therapist once per page session.
-            if (!greeted) {
-                greeted = true;
-
-                await speak(
-                    `Hello, ${therapistName}. I am Aira, your AI assistant.`
+                    'Ready to assist. Tap the big button to begin.'
                 );
             }
+        })();
+    </script>
 
-            // Keep this short to reduce the time before listening.
-            await speak('I am listening.');
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration =
+                        await navigator.serviceWorker.register('/sw.js');
 
-            await startListening();
-        });
+                    console.log(
+                        'Padayon PWA registered:',
+                        registration.scope
+                    );
 
-        // --------------------------------------------------
-        // INITIAL PAGE STATE
-        // --------------------------------------------------
-
-        if (!SpeechRecognition) {
-            setStatus(
-                'Tap the button to begin. Your browser may need help enabling voice recognition.'
-            );
-        } else {
-            setStatus(
-                'Ready to assist. Tap the big button to begin.'
-            );
+                } catch (error) {
+                    console.error(
+                        'Padayon PWA registration failed:',
+                        error
+                    );
+                }
+            });
         }
-    })();
-</script>
+    </script>
+
+
 
 </body>
 

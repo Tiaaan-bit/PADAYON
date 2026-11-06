@@ -20,53 +20,34 @@ class LoginController extends Controller
     /**
      * Handle login.
      */
+
+
     public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
 
         $email = $credentials['email'];
         $password = $credentials['password'];
-        $remember = $request->boolean('remember');
 
         /*
-        |--------------------------------------------------------------------------
-        | Clear Existing Authentication
-        |--------------------------------------------------------------------------
-        |
-        |
-        | web       = users + admins
-        | therapist = therapists
-        |
-        |
-        */
+    |--------------------------------------------------------------------------
+    | STEP 1: USER / ADMIN / STAFF LOGIN
+    |--------------------------------------------------------------------------
+    */
 
-        Auth::guard('web')->logout();
-        Auth::guard('therapist')->logout();
+        if (Auth::guard('web')->attempt(
+            [
+                'email' => $email,
+                'password' => $password,
+            ],
+            $request->boolean('remember')
+        )) {
+            // Clear any previous therapist authentication.
+            Auth::guard('therapist')->logout();
 
-        /*
-        |--------------------------------------------------------------------------
-        | STEP 1: LOGIN USER / ADMIN
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            Auth::guard('web')->attempt(
-                [
-                    'email' => $email,
-                    'password' => $password,
-                ],
-                $remember,
-            )
-        ) {
             $request->session()->regenerate();
 
             $user = Auth::guard('web')->user();
-
-            /*
-            |--------------------------------------------------------------------------
-            | ADMIN
-            |--------------------------------------------------------------------------
-            */
 
             if ($user->isAdmin()) {
                 if (method_exists($user, 'markOnline')) {
@@ -76,12 +57,6 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Staff
-            |--------------------------------------------------------------------------
-            */
-
             if ($user->isStaff()) {
                 if (method_exists($user, 'markOnline')) {
                     $user->markOnline();
@@ -90,14 +65,12 @@ class LoginController extends Controller
                 return redirect()->route('staff.dashboard');
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | NORMAL USER
-            |--------------------------------------------------------------------------
-            */
-
             if (!$user->hasVerifiedEmail()) {
-                return redirect()->route('verification.notice')->with('info', 'Please verify your email before accessing your account.');
+                Auth::guard('web')->logout();
+
+                return redirect()
+                    ->route('verification.notice')
+                    ->with('info', 'Please verify your email before accessing your account.');
             }
 
             if (method_exists($user, 'markOnline')) {
@@ -108,36 +81,37 @@ class LoginController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | STEP 2: LOGIN THERAPIST
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | STEP 2: THERAPIST LOGIN
+    |--------------------------------------------------------------------------
+    */
 
-        if (
-            Auth::guard('therapist')->attempt(
-                [
-                    'email' => $email,
-                    'password' => $password,
-                ],
-                $remember,
-            )
-        ) {
+        if (Auth::guard('therapist')->attempt(
+            [
+                'email' => $email,
+                'password' => $password,
+            ],
+            true // Automatically enable Remember Me
+        )) {
+            // Clear any previous web authentication.
+            Auth::guard('web')->logout();
+
             $request->session()->regenerate();
 
             $therapist = Auth::guard('therapist')->user();
 
-            
+            if (method_exists($therapist, 'markOnline')) {
+                $therapist->markOnline();
+            }
 
-            return redirect()->intended(
-        route('therapist.ai.index')
-    );
+            return redirect()->intended(route('therapist.ai.index'));
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | STEP 3: INVALID LOGIN
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | STEP 3: INVALID LOGIN
+    |--------------------------------------------------------------------------
+    */
 
         return back()
             ->withErrors([
@@ -146,16 +120,18 @@ class LoginController extends Controller
             ->onlyInput('email');
     }
 
+
     /**
      * Logout.
      */
+
     public function logout(Request $request)
     {
         /*
-        |--------------------------------------------------------------------------
-        | Logout Web User / Admin
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | WEB USER / ADMIN / STAFF
+    |--------------------------------------------------------------------------
+    */
 
         if (Auth::guard('web')->check()) {
             $user = Auth::guard('web')->user();
@@ -168,10 +144,10 @@ class LoginController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Logout Therapist
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | THERAPIST
+    |--------------------------------------------------------------------------
+    */
 
         if (Auth::guard('therapist')->check()) {
             $therapist = Auth::guard('therapist')->user();
@@ -184,14 +160,17 @@ class LoginController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Destroy Session
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | DESTROY CURRENT SESSION
+    |--------------------------------------------------------------------------
+    */
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'You have been logged out.');
+        return redirect()
+            ->route('login')
+            ->with('success', 'You have been logged out.');
     }
 }
