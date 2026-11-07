@@ -24,13 +24,13 @@ class MyAppointmentController extends Controller
         $closedDate = WebsiteSetting::query()
             ->whereKey(1)
             ->value('booking_closed_date');
-    
+
         if (empty($closedDate)) {
             return false;
         }
-    
+
         $timezone = 'Asia/Manila';
-    
+
         return Carbon::parse($closedDate, $timezone)->toDateString()
             === Carbon::parse($date, $timezone)->toDateString();
     }

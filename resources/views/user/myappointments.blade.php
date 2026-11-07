@@ -410,13 +410,40 @@
                                         <div class="flex flex-col gap-2">
 
                                             @php
+                                                $timezone = 'Asia/Manila';
+
+                                                $now = now($timezone);
+
                                                 $canReschedule =
                                                     $status === AppointmentStatus::CONFIRMED &&
                                                     $appointment->payment_method === 'gcash' &&
                                                     $appointment->appointment_date &&
-                                                    $appointment->appointment_date->greaterThanOrEqualTo(
-                                                        now('Asia/Manila')->startOfDay(),
+                                                    $appointment->appointment_time &&
+                                                    $appointment->appointment_end_time &&
+                                                    !cache()->has("appointment_rescheduled_{$appointment->id}");
+
+                                                if ($canReschedule) {
+                                                    $start = \Carbon\Carbon::parse(
+                                                        $appointment->appointment_date->format('Y-m-d') .
+                                                            ' ' .
+                                                            $appointment->appointment_time,
+                                                        $timezone,
                                                     );
+
+                                                    $end = \Carbon\Carbon::parse(
+                                                        $appointment->appointment_date->format('Y-m-d') .
+                                                            ' ' .
+                                                            $appointment->appointment_end_time,
+                                                        $timezone,
+                                                    );
+
+                                                    // Handle appointments crossing midnight.
+                                                    if ($end->lessThanOrEqualTo($start)) {
+                                                        $end->addDay();
+                                                    }
+
+                                                    $canReschedule = $now->lt($end);
+                                                }
 
                                                 $canCancel =
                                                     $status === AppointmentStatus::PENDING &&

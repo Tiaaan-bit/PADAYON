@@ -361,6 +361,23 @@
                 @endif
             </a>
 
+            <a href="{{ route('user.notifications') }}"
+                class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0
+                        {{ request()->routeIs('user.notifications*') ? 'text-white' : 'text-white' }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
+                    viewBox="0 0 24 24">
+
+                    <path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2z" />
+
+                    <path d="M18 16H6l1.2-1.2A2 2 0 008 13.4V10a4 4 0 118 0v3.4a2 2 0 00.8 1.4L18 16z" />
+
+                </svg>
+                <span class="text-[10px] font-medium leading-tight">Notifications</span>
+                @if (request()->routeIs('user.notifications*'))
+                    <span class="w-1 h-1 rounded-full bg-[#6F4E37] mt-0.5"></span>
+                @endif
+            </a>
+
             {{-- More (opens drawer) --}}
             <button onclick="toggleMoreDrawer()"
                 class="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-white transition-all min-w-0">
@@ -453,15 +470,32 @@
         const drawer = document.getElementById('more-drawer');
         const backdrop = document.getElementById('drawer-backdrop');
         const sheet = document.getElementById('drawer-sheet');
+        const aira = document.getElementById('aira-floating-button');
+
         const isOpen = !sheet.classList.contains('translate-y-full');
 
         if (isOpen) {
+            // Close drawer
             sheet.classList.add('translate-y-full');
             backdrop.classList.remove('opacity-100');
             backdrop.classList.add('opacity-0');
-            setTimeout(() => drawer.classList.add('pointer-events-none'), 300);
+
+            if (aira) {
+                aira.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+            }
+
+            setTimeout(() => {
+                drawer.classList.add('pointer-events-none');
+            }, 300);
+
         } else {
+            // Open drawer
             drawer.classList.remove('pointer-events-none');
+
+            if (aira) {
+                aira.classList.add('opacity-0', 'invisible', 'pointer-events-none');
+            }
+
             requestAnimationFrame(() => {
                 sheet.classList.remove('translate-y-full');
                 backdrop.classList.remove('opacity-0');

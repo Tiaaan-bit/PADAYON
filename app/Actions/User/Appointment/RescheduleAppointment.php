@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Models\WebsiteSetting;
+use App\Support\BookingRules;
 
 class RescheduleAppointment
 {
@@ -42,6 +43,14 @@ class RescheduleAppointment
     public function execute(UsersAppointments $appointment, string $newDate, string $newTime): UsersAppointments
     {
         $this->validateAppointment($appointment);
+        if (
+            cache()->get("appointment_rescheduled_{$appointment->id}", 0)
+            >= BookingRules::MAX_RESCHEDULES_PER_APPOINTMENT
+        ) {
+            throw ValidationException::withMessages([
+                'appointment' => 'This appointment can only be rescheduled once.',
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -243,6 +252,12 @@ class RescheduleAppointment
             return $appointment->fresh(['service', 'therapist', 'addOn']);
         });
 
+        // Remember that this appointment has been rescheduled.
+        cache()->forever(
+            "appointment_rescheduled_{$appointment->id}",
+            1
+        );
+
         return $updatedAppointment;
     }
 
@@ -367,13 +382,48 @@ class RescheduleAppointment
 
     private function validateAppointment(UsersAppointments $appointment): void
     {
+        // 1. Verify appointment ownership.
         if ((int) $appointment->user_id !== (int) Auth::id()) {
             abort(403);
         }
 
-        if (!in_array($appointment->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED], true)) {
+        // 2. Verify appointment status.
+        if (!in_array($appointment->status, [
+            AppointmentStatus::PENDING,
+            AppointmentStatus::CONFIRMED,
+        ], true)) {
             throw ValidationException::withMessages([
                 'appointment' => 'This appointment cannot be rescheduled.',
+            ]);
+        }
+
+        // 3. Verify payment method.
+        if (
+            $appointment->status !== AppointmentStatus::CONFIRMED ||
+            $appointment->payment_method !== 'gcash'
+        ) {
+            throw ValidationException::withMessages([
+                'appointment' => 'Only confirmed GCash appointments can be rescheduled.',
+            ]);
+        }
+
+        // 4. Verify appointment schedule exists.
+        if (
+            !$appointment->appointment_date ||
+            !$appointment->appointment_time ||
+            !$appointment->appointment_end_time
+        ) {
+            throw ValidationException::withMessages([
+                'appointment' => 'Unable to verify the appointment schedule.',
+            ]);
+        }
+
+        // 5. Verify original appointment has not ended.
+        $range = $this->getAppointmentRange($appointment);
+
+        if ($this->manilaNow()->greaterThanOrEqualTo($range['end'])) {
+            throw ValidationException::withMessages([
+                'appointment' => 'This appointment has already ended and can no longer be rescheduled.',
             ]);
         }
     }

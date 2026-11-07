@@ -73,10 +73,10 @@
 
             {{-- NOTIFICATIONS --}}
             <a href="{{ route('user.notifications') }}" wire:navigate aria-label="Notifications"
-                class="relative flex items-center justify-center
-                       w-10 h-10 rounded-full
-                       text-[#6F4E37] hover:bg-[#849753]/10
-                       transition-all">
+                class="relative hidden md:flex items-center justify-center
+           w-10 h-10 rounded-full
+           text-[#6F4E37] hover:bg-[#849753]/10
+           transition-all">
 
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                     <path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2z" />
@@ -84,92 +84,88 @@
                 </svg>
 
                 @if (auth()->user()->unreadNotifications->count() > 0)
-                    <span
-                        class="absolute top-1.5 right-1.5
-                                 w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
                 @endif
             </a>
 
-            {{-- USER PROFILE DROPDOWN --}}
-            <div x-data="{ open: false }" class="relative pl-2 sm:pl-3 border-l border-[#6F4E37]/20">
+            {{-- USER PROFILE + DROPDOWN --}}
+            <div class="flex items-center gap-3 sm:gap-4">
 
-                {{-- PROFILE BUTTON --}}
-                <button type="button" @click="open = !open" @click.outside="open = false"
-                    @keydown.escape.window="open = false" :aria-expanded="open" aria-haspopup="true"
-                    aria-label="Open user menu"
-                    class="flex items-center gap-2 rounded-full p-1
-                           hover:bg-[#849753]/10 transition">
+                <div x-data="{ open: false }" class="relative flex items-center gap-3 pl-3 border-l border-[#6F4E37]/30">
 
-                    {{-- PROFILE INITIAL --}}
+                    {{-- AVATAR --}}
                     <div
-                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full
-                                bg-[#6F4E37] flex items-center justify-center
-                                text-white font-bold text-sm shrink-0">
-
+                        class="w-10 h-10 rounded-full bg-[#6F4E37]
+                            flex items-center justify-center
+                            text-white font-bold text-sm shrink-0">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
 
                     {{-- USER NAME --}}
-                    <div class="hidden sm:block max-w-32">
-                        <p class="text-sm font-semibold text-[#2F2420] truncate">
+                    <div class="hidden sm:block">
+                        <p class="text-sm font-semibold text-[#2F2420]">
                             {{ auth()->user()->name }}
                         </p>
                     </div>
 
-                    {{-- DOWN ARROW --}}
-                    <svg class="w-4 h-4 text-[#6F4E37]
-                                transition-transform duration-200"
-                        :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24">
+                    {{-- DOWN ARROW BUTTON --}}
+                    <button type="button" @click="open = !open" @click.outside="open = false"
+                        @keydown.escape.window="open = false" :aria-expanded="open" aria-haspopup="true"
+                        aria-label="Open account menu"
+                        class="flex items-center justify-center
+                           w-8 h-8 rounded-full
+                           text-[#6F4E37] hover:bg-[#849753]/20
+                           transition">
 
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
 
-                {{-- DROPDOWN MENU --}}
-                <div x-cloak x-show="open" x-transition.origin.top.right @click.outside="open = false"
-                    class="absolute right-0 top-full mt-3 w-56
+                    {{-- DROPDOWN MENU --}}
+                    <div x-cloak x-show="open" x-transition.origin.top.right @click.outside="open = false"
+                        class="absolute right-0 top-full mt-3 w-48
                            rounded-xl bg-white border border-gray-200
                            shadow-lg py-2 z-50">
 
-                    {{-- SETTINGS / PROFILE --}}
-                    <a href="{{ route('user.profile') }}" wire:navigate @click="open = false"
-                        class="flex items-center gap-3 px-4 py-3 text-sm
-                               text-[#2F2420] hover:bg-[#F4EDDB]
-                               transition">
+                        {{-- SETTINGS --}}
+                        <a href="{{ route('admin.profile') }}" wire:navigate @click="open = false"
+                            class="flex items-center gap-3 px-4 py-3
+                               text-sm text-[#2F2420]
+                               hover:bg-[#F4EDDB] transition">
 
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
-                            viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="3" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.4 15a1.7 1.7 0 000-2l1.1-.9-1.5-2.6-1.4.5a7 7 0 00-1.7-1L15.6 7h-3.1l-.3 2a7 7 0 00-1.7 1l-1.4-.5-1.5 2.6 1.1.9a1.7 1.7 0 000 2l-1.1.9 1.5 2.6 1.4-.5a7 7 0 001.7 1l.3 2h3.1l.3-2a7 7 0 001.7-1l1.4.5 1.5-2.6-1.1-.9z" />
+                            </svg>
 
-                            <circle cx="12" cy="12" r="3" />
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19.4 15a1.7 1.7 0 000-2l1.1-.9-1.5-2.6-1.4.5a7 7 0 00-1.7-1L15.6 7h-3.1l-.3 2a7 7 0 00-1.7 1l-1.4-.5-1.5 2.6 1.1.9a1.7 1.7 0 000 2l-1.1.9 1.5 2.6 1.4-.5a7 7 0 001.7 1l.3 2h3.1l.3-2a7 7 0 001.7-1l1.4.5 1.5-2.6-1.1-.9z" />
-                        </svg>
+                            <span>Settings</span>
+                        </a>
 
-                        <span>Settings</span>
-                    </a>
+                        {{-- LOGOUT --}}
+                        <div class="border-t border-gray-100 mt-1 pt-1">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
 
-                    {{-- LOGOUT --}}
-                    <div class="border-t border-gray-100 mt-1 pt-1">
+                                <button type="submit"
+                                    class="w-full flex items-center gap-3
+                                       px-4 py-3 text-sm 
+                                       hover:bg-red-50 transition text-left">
 
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M10 17l5-5-5-5m5 5H3m9-9h5a2 2 0 012 2v14a2 2 0 01-2 2h-5" />
+                                    </svg>
 
-                            <button type="submit"
-                                class="w-full flex items-center gap-3 px-4 py-3
-                                       text-sm hover:bg-red-50
-                                       transition text-left">
+                                    <span>Logout</span>
+                                </button>
+                            </form>
+                        </div>
 
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
-                                    viewBox="0 0 24 24">
-
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M10 17l5-5-5-5m5 5H3m9-9h5a2 2 0 012 2v14a2 2 0 01-2 2h-5" />
-                                </svg>
-
-                                <span>Logout</span>
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
