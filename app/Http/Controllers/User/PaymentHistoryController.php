@@ -36,16 +36,7 @@ class PaymentHistoryController extends Controller
 
         $payments = (clone $paymentsQuery)->orderByDesc('created_at')->paginate(5)->withQueryString();
 
-        $totalServicePrice = (clone $paymentsQuery)->sum('service_price');
 
-        $totalAddOnPrice = (clone $paymentsQuery)->sum('addons_price');
-
-        $totalAmountPaid = (clone $paymentsQuery)->sum('amount_paid');
-    
-        $totalPending = (clone $paymentsQuery)->where('payment_status', 'pending')->count();
-
-        $totalConfirmed = (clone $paymentsQuery)->where('status', 'confirm')->count();
-
-        return view('user.paymenthistory', compact('payments', 'totalServicePrice', 'totalAddOnPrice', 'totalAmountPaid', 'totalPending', 'totalConfirmed'));
+        return view('user.paymenthistory', compact('payments'));
     }
 }

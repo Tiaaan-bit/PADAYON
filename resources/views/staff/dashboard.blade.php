@@ -188,7 +188,7 @@
                     class="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
-                            <h2 class="font-bold text-gray-900">Today's Schedule</h2>
+                            <h2 class="font-bold text-gray-900">Today's Appointments</h2>
                         </div>
 
                         <a href="{{ route('staff.appointments') }}"
@@ -540,7 +540,7 @@
                         </span>
 
                         <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {{ $offlineTherapistsCount }} Offline
+                            {{ $offlineTherapistsCount }} Unavailable
                         </span>
                     </div>
                     @if ($therapists->isEmpty())

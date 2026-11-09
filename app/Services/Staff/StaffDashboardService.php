@@ -14,7 +14,7 @@ class StaffDashboardService
     public function getDashboardData(): array
     {
         $now = Carbon::now('Asia/Manila');
-        
+
         $today = $now->copy()->startOfDay();
 
         $startOfWeek = $now->copy()->startOfWeek();
@@ -28,7 +28,7 @@ class StaffDashboardService
 
         return [
             'now' => $now,
-            
+
             'todayAppointments' => $appointments,
 
             'todayAppointmentsCount' => $this->dashboardRepository->getTodayAppointmentsCount($today),
@@ -41,7 +41,7 @@ class StaffDashboardService
 
             'busyTherapistsCount' => $therapists->where('dashboard_status', 'busy')->count(),
 
-            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'offline')->count(),
+            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'unavailable')->count(),
 
             'needsAttention' => $this->dashboardRepository->getNeedsAttention($today),
 
@@ -54,7 +54,7 @@ class StaffDashboardService
     }
 
     /**
-     * Determine whether each therapist is available, busy, or offline.
+     * Determine whether each therapist is available, busy, or unavailable.
      *
      * The database status is still the source of availability.
      * "Busy" is calculated from a confirmed appointment in progress.
@@ -69,7 +69,7 @@ class StaffDashboardService
             } elseif ($therapist->status === 'available') {
                 $dashboardStatus = 'available';
             } else {
-                $dashboardStatus = 'offline';
+                $dashboardStatus = 'unavailable';
             }
 
             $therapist->setAttribute('dashboard_status', $dashboardStatus);

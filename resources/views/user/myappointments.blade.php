@@ -33,80 +33,7 @@
             </h2>
         </div>
 
-        {{-- STATISTICS --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
 
-            {{-- TOTAL --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        {{ $totalAppointments ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Appointments
-                    </p>
-                </div>
-            </div>
-
-            {{-- PENDING --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        {{ $pendingAppointments ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Pending
-                    </p>
-                </div>
-            </div>
-
-            {{-- CONFIRMED --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        {{ $confirmedAppointments ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Confirmed
-                    </p>
-                </div>
-            </div>
-
-            {{-- REJECTED --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        {{ $rejectedAppointments ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Rejected
-                    </p>
-                </div>
-            </div>
-
-            {{-- CANCELLED --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        {{ $cancelledAppointments ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Cancelled
-                    </p>
-                </div>
-            </div>
-
-        </div>
 
         {{-- FILTERS --}}
         <form method="GET" action="{{ route('user.my-appointments') }}"
@@ -466,8 +393,7 @@
                                                 CANCEL — PAY AT COUNTER ONLY
                                             ========================================================== --}}
                                             @if ($canCancel)
-                                                <form
-                                                    action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
+                                                <form action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('PUT')
@@ -515,8 +441,7 @@
         {{-- ================================================================ --}}
 
         <div x-show="showAppointmentModal" x-cloak x-transition.opacity class="fixed inset-0 z-50 overflow-y-auto"
-            role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle"
-            @click.self="closeAppointmentModal()">
+            role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle" @click.self="closeAppointmentModal()">
 
             {{-- DARK OVERLAY --}}
             <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="closeAppointmentModal()"></div>

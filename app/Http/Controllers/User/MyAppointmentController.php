@@ -70,19 +70,7 @@ class MyAppointmentController extends Controller
 
         $appointments = $appointmentsQuery->orderByDesc('appointment_date')->orderByDesc('appointment_time')->paginate(5)->withQueryString();
 
-        $statsQuery = UsersAppointments::where('user_id', $user->id);
-
-        $totalAppointments = (clone $statsQuery)->count();
-
-        $pendingAppointments = (clone $statsQuery)->where('status', AppointmentStatus::PENDING)->count();
-
-        $confirmedAppointments = (clone $statsQuery)->where('status', AppointmentStatus::CONFIRMED)->count();
-
-        $rejectedAppointments = (clone $statsQuery)->where('status', AppointmentStatus::REJECTED)->count();
-
-        $cancelledAppointments = (clone $statsQuery)->where('status', AppointmentStatus::CANCELLED)->count();
-
-        return view('user.myappointments', compact('appointments', 'totalAppointments', 'pendingAppointments', 'confirmedAppointments', 'rejectedAppointments', 'cancelledAppointments'));
+        return view('user.myappointments', compact('appointments'));
     }
 
     public function cancel(UsersAppointments $appointment)

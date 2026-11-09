@@ -127,7 +127,7 @@
                     class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm xl:col-span-2">
                     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
-                            <h2 class="font-bold text-gray-900">Today's Schedule</h2>
+                            <h2 class="font-bold text-gray-900"> Today's Appointments</h2>
                             <p class="mt-1 text-xs text-gray-500">
                                 {{ $now->format('F j, Y') }}
                             </p>
@@ -168,7 +168,8 @@
                                             </p>
 
                                             <p class="mt-1 text-sm text-gray-600">
-                                                {{ $appointment->service?->name ?? 'Service not specified' }} - {{ $appointment->service?->description ?? 'Service not specified' }}
+                                                {{ $appointment->service?->name ?? 'Service not specified' }} -
+                                                {{ $appointment->service?->description ?? 'Service not specified' }}
                                             </p>
 
                                             <p class="mt-1 text-xs text-gray-500">
@@ -419,7 +420,7 @@
                         </span>
 
                         <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {{ $offlineTherapistsCount }} Offline
+                            {{ $offlineTherapistsCount }} Unavailable
                         </span>
                     </div>
 

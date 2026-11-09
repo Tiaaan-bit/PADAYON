@@ -14,18 +14,13 @@ enum AppointmentStatus: string
 
     public function label(): string
     {
-        return match($this){
+        return match ($this) {
             self::PENDING => 'Pending',
             self::CONFIRMED => 'Confirmed',
             self::REJECTED => 'Rejected',
             self::CANCELLED => 'Cancelled',
             self::NO_SHOW => 'No Show',
             self::FAILED => 'Failed',
-
-            
         };
     }
-
 }
-
-

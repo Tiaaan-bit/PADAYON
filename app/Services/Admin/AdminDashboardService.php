@@ -43,7 +43,7 @@ class AdminDashboardService
 
             'busyTherapistsCount' => $therapists->where('dashboard_status', 'busy')->count(),
 
-            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'offline')->count(),
+            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'unavailable')->count(),
 
             'needsAttention' => $this->dashboardRepository->getNeedsAttention($today),
 
@@ -62,7 +62,7 @@ class AdminDashboardService
     }
 
     /**
-     * Determine whether each therapist is available, busy, or offline.
+     * Determine whether each therapist is available, busy, or unavailable.
      *
      * The database status is still the source of availability.
      * "Busy" is calculated from a confirmed appointment in progress.
@@ -77,7 +77,7 @@ class AdminDashboardService
             } elseif ($therapist->status === 'available') {
                 $dashboardStatus = 'available';
             } else {
-                $dashboardStatus = 'offline';
+                $dashboardStatus = 'unavailable';
             }
 
             $therapist->setAttribute('dashboard_status', $dashboardStatus);

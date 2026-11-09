@@ -35,89 +35,6 @@
             </h2>
         </div>
 
-
-        {{-- ====================================================== --}}
-        {{-- SUMMARY CARDS --}}
-        {{-- ====================================================== --}}
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-
-            {{-- Total Service Price --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-lg sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalServicePrice ?? 0, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Service Price
-                    </p>
-                </div>
-            </div>
-
-
-            {{-- Total Add-on Price --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-lg sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalAddOnPrice ?? 0, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Add-on Price
-                    </p>
-                </div>
-            </div>
-
-
-            {{-- Total Amount Paid --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-lg sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalAmountPaid ?? 0, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Amount Paid
-                    </p>
-                </div>
-            </div>
-
-
-            {{-- Pending Payments --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-lg sm:text-2xl font-bold text-gray-800">
-                        {{ $totalPending ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Pending Payments
-                    </p>
-                </div>
-            </div>
-
-
-            {{-- Confirmed --}}
-            <div
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center min-w-0">
-                <div class="text-center min-w-0">
-                    <p class="text-lg sm:text-2xl font-bold text-gray-800">
-                        {{ $totalConfirmed ?? 0 }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Confirmed
-                    </p>
-                </div>
-            </div>
-
-        </div>
-
         {{-- ====================================================== --}}
         {{-- FILTERS --}}
         {{-- ====================================================== --}}
@@ -543,24 +460,24 @@
                                             </div>
 
                                             @php
-                                        $servicePrice = (float) ($payment->service_price ?? 0);
-                                        $addonPrice = (float) ($payment->addons_price ?? 0);
+                                                $servicePrice = (float) ($payment->service_price ?? 0);
+                                                $addonPrice = (float) ($payment->addons_price ?? 0);
 
-                                        $totalAppointmentAmount = $servicePrice + $addonPrice;
+                                                $totalAppointmentAmount = $servicePrice + $addonPrice;
 
-                                        $amountPaid = (float) ($payment->amount_paid ?? 0);
+                                                $amountPaid = (float) ($payment->amount_paid ?? 0);
 
-                                        $remainingBalance = max(0, $totalAppointmentAmount - $amountPaid);
+                                                $remainingBalance = max(0, $totalAppointmentAmount - $amountPaid);
 
-                                        $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
-                                    @endphp
+                                                $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
+                                            @endphp
 
-                                    @if (!in_array($paymentStatus, ['unpaid', 'failed']) && $remainingBalance > 0)
-                                        <div class="text-xs mt-1 font-semibold text-red-600">
-                                            Remaining:
-                                            ₱{{ number_format($remainingBalance, 2) }}
-                                        </div>
-                                    @endif  
+                                            @if (!in_array($paymentStatus, ['unpaid', 'failed']) && $remainingBalance > 0)
+                                                <div class="text-xs mt-1 font-semibold text-red-600">
+                                                    Remaining:
+                                                    ₱{{ number_format($remainingBalance, 2) }}
+                                                </div>
+                                            @endif
 
                                         </div>
 
@@ -642,7 +559,7 @@
                                         <div class="flex flex-col gap-2">
 
                                             {{-- PAY AGAIN --}}
-                                            @if ($payment->payment_method === 'gcash' && in_array($payment->payment_status, [ 'pending']))
+                                            @if ($payment->payment_method === 'gcash' && in_array($payment->payment_status, ['pending']))
                                                 <form
                                                     action="{{ route('user.appointments.payment.retry', $payment->id) }}"
                                                     method="POST">
