@@ -39,13 +39,14 @@ class TherapistAiService
                 'For the next appointment, state the date, time, customer, and service when those details are available.',
                 'For today or tomorrow, summarize the schedule and offer a short list if there are multiple appointments.',
                 'For this week or next week, summarize the total and the most relevant appointment details.',
+                'For this month, summarize the total and the most relevant appointment details.',
                 'Answer questions about specific dates using the supplied appointment context.',
                 'Answer questions about appointment counts, confirmed appointments, pending bookings, completed appointments, cancellations, rejected appointments, failed appointments, and no-shows when that information is supplied.',
                 'For workload questions, use the supplied appointment counts and daily workload summaries.',
                 'For free-time questions, explain the gaps between scheduled appointments when gap information is supplied.',
                 'A gap between appointments does not guarantee that the therapist is available for new bookings.',
                 'Never claim that a therapist is available for a new booking unless availability has been explicitly verified.',
-                
+
 
                 // Data accuracy and privacy.
                 'Use the Asia/Manila timezone.',

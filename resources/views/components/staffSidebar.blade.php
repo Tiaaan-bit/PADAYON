@@ -211,27 +211,6 @@
 
         <div class="my-3 border-t border-white/10"></div>
 
-
-        <a href="{{ route('staff.help') }}" wire:navigate title="{{ !($sidebarOpen ?? true) ? 'Help Center' : '' }}"
-            class="flex items-center rounded-xl text-sm font-medium transition-all
-        {{ request()->routeIs('staff.help*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
-                <path stroke-linecap="round" d="M12 17h.01" />
-            </svg>
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Help Center
-            </span>
-
-        </a>
-
     </nav>
 
 
@@ -584,30 +563,6 @@
                 Settings
 
             </a>
-
-            <a href="{{ route('staff.help') }}" wire:navigate onclick="toggleAdminMoreDrawer()"
-                class="flex items-center gap-3
-           px-4 py-3
-           rounded-xl
-           text-sm
-           font-medium
-           text-white
-           hover:bg-white/10
-           transition-all
-           w-full">
-
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" />
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9.6 9a2.5 2.5 0 014.8 1c0 1.5-2.4 2-2.4 3.5" />
-                    <path stroke-linecap="round" d="M12 17h.01" />
-                </svg>
-
-                Help Center
-
-            </a>
-
 
         </div>
 

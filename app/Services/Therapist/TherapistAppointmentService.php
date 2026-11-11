@@ -13,19 +13,33 @@ class TherapistAppointmentService
 {
     private const TIMEZONE = 'Asia/Manila';
 
-    private const EXCLUDED_STATUSES = ['cancelled', 'rejected', 'failed', 'no_show'];
+    private const EXCLUDED_STATUSES = [
+        'cancelled',
+        'rejected',
+        'failed',
+        'no_show',
+    ];
 
     /**
      * Understand therapist questions and return the relevant database context.
      */
-
-    public function contextForQuestion(Therapists $therapist, string $question): ?array
-    {
+    public function contextForQuestion(
+        Therapists $therapist,
+        string $question
+    ): ?array {
         $question = mb_strtolower(trim($question));
 
-        $question = preg_replace('/[^\p{L}\p{N}\s:\/-]/u', ' ', $question) ?? $question;
+        $question = preg_replace(
+            '/[^\p{L}\p{N}\s:\/-]/u',
+            ' ',
+            $question
+        ) ?? $question;
 
-        $question = preg_replace('/\s+/u', ' ', $question) ?? $question;
+        $question = preg_replace(
+            '/\s+/u',
+            ' ',
+            $question
+        ) ?? $question;
 
         if ($question === '') {
             return null;
@@ -33,7 +47,62 @@ class TherapistAppointmentService
 
         $today = Carbon::now(self::TIMEZONE)->startOfDay();
 
-        // Appointment status questions.
+        /*
+        |--------------------------------------------------------------------------
+        | Monthly appointment questions
+        |--------------------------------------------------------------------------
+        */
+
+        $hasMonthName = preg_match(
+            '/\b(january|february|march|april|may|june|july|august|' .
+                'september|october|november|december)\b/u',
+            $question
+        );
+
+        $isMonthlyQuestion = preg_match(
+            '/\b(this month|this months|monthly|month schedule|' .
+                'appointments this month|appointments for this month|' .
+                'bookings this month|my month schedule|' .
+                'rest of the month|remaining days this month|' .
+                'next month|next months|appointments next month|' .
+                'appointments for next month|monthly appointments|' .
+                'schedule this month|schedule next month|' .
+                'how many.*this month|how many.*next month|' .
+                'how busy.*this month|how busy.*next month)\b/u',
+            $question
+        );
+
+        if ($isMonthlyQuestion || $hasMonthName) {
+            $month = $this->extractMonth($question);
+
+            if ($month === null) {
+                $month = Carbon::now(self::TIMEZONE);
+
+                if (preg_match('/\bnext month\b/u', $question)) {
+                    $month->addMonthNoOverflow();
+                }
+            }
+
+            $status = $this->detectStatus($question);
+
+            if ($status !== null) {
+                return $this->getAppointmentsByStatus(
+                    $therapist,
+                    $status,
+                    $month->copy()->startOfMonth()->toDateString(),
+                    $month->copy()->endOfMonth()->toDateString()
+                );
+            }
+
+            return $this->getMonthContext($therapist, $month);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Appointment status questions
+        |--------------------------------------------------------------------------
+        */
+
         $status = $this->detectStatus($question);
 
         if ($status !== null) {
@@ -46,14 +115,33 @@ class TherapistAppointmentService
             }
 
             if ($date !== null) {
-                return $this->getAppointmentsByStatus($therapist, $status, $date->toDateString(), $date->toDateString());
+                return $this->getAppointmentsByStatus(
+                    $therapist,
+                    $status,
+                    $date->toDateString(),
+                    $date->toDateString()
+                );
             }
 
-            return $this->getAppointmentsByStatus($therapist, $status);
+            return $this->getAppointmentsByStatus(
+                $therapist,
+                $status
+            );
         }
 
-        // Free-time questions.
-        if (preg_match('/\b(free time|free slot|free slots|gaps between|' . 'available time|when am i free|when am i available|' . 'am i free|do i have free time|any free time|' . 'any openings|open slot|open slots)\b/u', $question)) {
+        /*
+        |--------------------------------------------------------------------------
+        | Free-time questions
+        |--------------------------------------------------------------------------
+        */
+
+        if (preg_match(
+            '/\b(free time|free slot|free slots|gaps between|' .
+                'available time|when am i free|when am i available|' .
+                'am i free|do i have free time|any free time|' .
+                'any openings|open slot|open slots)\b/u',
+            $question
+        )) {
             $date = $this->extractSpecificDate($question);
 
             if (preg_match('/\b(tomorrow|tomorrows)\b/u', $question)) {
@@ -62,11 +150,24 @@ class TherapistAppointmentService
                 $date = $today->copy();
             }
 
-            return $this->getFreeTimeContext($therapist, ($date ?? $today)->toDateString());
+            return $this->getFreeTimeContext(
+                $therapist,
+                ($date ?? $today)->toDateString()
+            );
         }
 
-        // Workload questions.
-        if (preg_match('/\b(workload|busiest day|busiest|how busy|' . 'appointments per day|sessions per day|' . 'most appointments|least appointments)\b/u', $question)) {
+        /*
+        |--------------------------------------------------------------------------
+        | Workload questions
+        |--------------------------------------------------------------------------
+        */
+
+        if (preg_match(
+            '/\b(workload|busiest day|busiest|how busy|' .
+                'appointments per day|sessions per day|' .
+                'most appointments|least appointments)\b/u',
+            $question
+        )) {
             if (preg_match('/\bnext week\b/u', $question)) {
                 return $this->getNextWeekContext($therapist);
             }
@@ -74,20 +175,51 @@ class TherapistAppointmentService
             return $this->getWorkloadContext($therapist);
         }
 
-        // Next appointment or client.
-        if (preg_match('/\b(next appointment|next client|next customer|' . 'next session|next booking|nearest appointment|' . 'upcoming appointment|upcoming client|upcoming session|' . 'when is my next|who is my next|what is my next|' . 'what service is next|who am i seeing next)\b/u', $question)) {
+        /*
+        |--------------------------------------------------------------------------
+        | Next appointment or client
+        |--------------------------------------------------------------------------
+        */
+
+        if (preg_match(
+            '/\b(next appointment|next client|next customer|' .
+                'next session|next booking|nearest appointment|' .
+                'upcoming appointment|upcoming client|upcoming session|' .
+                'when is my next|who is my next|what is my next|' .
+                'what service is next|who am i seeing next)\b/u',
+            $question
+        )) {
             return $this->getNextAppointmentContext($therapist);
         }
 
-        // Specific dates and weekdays.
+        /*
+        |--------------------------------------------------------------------------
+        | Specific dates and weekdays
+        |--------------------------------------------------------------------------
+        */
+
         $specificDate = $this->extractSpecificDate($question);
 
         if ($specificDate !== null) {
-            return $this->getAppointmentsForDate($therapist, $specificDate->toDateString());
+            return $this->getAppointmentsForDate(
+                $therapist,
+                $specificDate->toDateString()
+            );
         }
 
-        // Weekly schedules.
-        if (preg_match('/\b(this week|weekly|week schedule|schedule this week|' . 'rest of the week|remaining days this week|next week|' . 'how many.*this week|how many.*next week|' . 'appointments.*this week|appointments.*next week)\b/u', $question)) {
+        /*
+        |--------------------------------------------------------------------------
+        | Weekly schedules
+        |--------------------------------------------------------------------------
+        */
+
+        if (preg_match(
+            '/\b(this week|weekly|week schedule|schedule this week|' .
+                'rest of the week|remaining days this week|next week|' .
+                'how many.*this week|how many.*next week|' .
+                'appointments.*this week|appointments.*next week)\b/u',
+            $question
+        )) {
             if (preg_match('/\bnext week\b/u', $question)) {
                 return $this->getNextWeekContext($therapist);
             }
@@ -95,17 +227,47 @@ class TherapistAppointmentService
             return $this->getWeekContext($therapist);
         }
 
-        // Tomorrow's schedule.
+        /*
+        |--------------------------------------------------------------------------
+        | Tomorrow's schedule
+        |--------------------------------------------------------------------------
+        */
+
         if (preg_match('/\b(tomorrow|tomorrows|next day)\b/u', $question)) {
             return $this->getTomorrowContext($therapist);
         }
 
-        // Today's schedule and natural count questions.
-        if (preg_match('/\b(today|todays|tonight|this day)\b/u', $question) || preg_match('/\b(who am i seeing|what do i have|' . 'am i working|am i busy|how many do i have|' . 'do i have any|how many appointments|' . 'how many clients|how many bookings|' . 'what is my schedule|whats my schedule)\b/u', $question) || preg_match('/^(my )?(schedule|appointments|bookings|' . 'clients|customers|sessions)( today)?$/u', $question)) {
+        /*
+        |--------------------------------------------------------------------------
+        | Today's schedule and natural count questions
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            preg_match('/\b(today|todays|tonight|this day)\b/u', $question) ||
+            preg_match(
+                '/\b(who am i seeing|what do i have|' .
+                    'am i working|am i busy|how many do i have|' .
+                    'do i have any|how many appointments|' .
+                    'how many clients|how many bookings|' .
+                    'what is my schedule|whats my schedule)\b/u',
+                $question
+            ) ||
+            preg_match(
+                '/^(my )?(schedule|appointments|bookings|' .
+                    'clients|customers|sessions)( today)?$/u',
+                $question
+            )
+        ) {
             return $this->getTodayContext($therapist);
         }
 
-        // Unrecognized questions should not trigger a guessed database query.
+        /*
+        |--------------------------------------------------------------------------
+        | Unrecognized questions
+        |--------------------------------------------------------------------------
+        */
+
         return null;
     }
 
@@ -116,7 +278,11 @@ class TherapistAppointmentService
     {
         $today = Carbon::now(self::TIMEZONE)->startOfDay();
 
-        $records = $this->appointmentsBetween($therapist, $today->toDateString(), $today->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $today->toDateString(),
+            $today->toDateString()
+        );
 
         return array_merge(
             [
@@ -124,7 +290,7 @@ class TherapistAppointmentService
                 'date' => $today->format('F j, Y'),
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
     }
 
@@ -133,9 +299,15 @@ class TherapistAppointmentService
      */
     public function getTomorrowContext(Therapists $therapist): array
     {
-        $tomorrow = Carbon::now(self::TIMEZONE)->addDay()->startOfDay();
+        $tomorrow = Carbon::now(self::TIMEZONE)
+            ->addDay()
+            ->startOfDay();
 
-        $records = $this->appointmentsBetween($therapist, $tomorrow->toDateString(), $tomorrow->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $tomorrow->toDateString(),
+            $tomorrow->toDateString()
+        );
 
         return array_merge(
             [
@@ -143,7 +315,7 @@ class TherapistAppointmentService
                 'date' => $tomorrow->format('F j, Y'),
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
     }
 
@@ -157,7 +329,11 @@ class TherapistAppointmentService
         $start = $now->copy()->startOfWeek(Carbon::MONDAY);
         $end = $now->copy()->endOfWeek(Carbon::SUNDAY);
 
-        $records = $this->appointmentsBetween($therapist, $start->toDateString(), $end->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $start->toDateString(),
+            $end->toDateString()
+        );
 
         return array_merge(
             [
@@ -168,7 +344,7 @@ class TherapistAppointmentService
                 ],
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
     }
 
@@ -179,10 +355,17 @@ class TherapistAppointmentService
     {
         $now = Carbon::now(self::TIMEZONE);
 
-        $start = $now->copy()->addWeek()->startOfWeek(Carbon::MONDAY);
+        $start = $now->copy()
+            ->addWeek()
+            ->startOfWeek(Carbon::MONDAY);
+
         $end = $start->copy()->endOfWeek(Carbon::SUNDAY);
 
-        $records = $this->appointmentsBetween($therapist, $start->toDateString(), $end->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $start->toDateString(),
+            $end->toDateString()
+        );
 
         return array_merge(
             [
@@ -193,7 +376,39 @@ class TherapistAppointmentService
                 ],
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
+        );
+    }
+
+    /**
+     * Appointments for a specific month.
+     */
+    public function getMonthContext(
+        Therapists $therapist,
+        ?Carbon $month = null
+    ): array {
+        $month = ($month ?? Carbon::now(self::TIMEZONE))->copy();
+
+        $start = $month->copy()->startOfMonth();
+        $end = $month->copy()->endOfMonth();
+
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $start->toDateString(),
+            $end->toDateString()
+        );
+
+        return array_merge(
+            [
+                'query' => 'monthly',
+                'month' => $month->format('F Y'),
+                'date_range' => [
+                    'start' => $start->toDateString(),
+                    'end' => $end->toDateString(),
+                ],
+                'timezone' => self::TIMEZONE,
+            ],
+            $this->summarizeAppointments($records)
         );
     }
 
@@ -208,15 +423,23 @@ class TherapistAppointmentService
         $appointment = $this->baseQuery($therapist)
             ->whereNotIn('status', self::EXCLUDED_STATUSES)
             ->where(function (Builder $query) use ($today, $now) {
-                $query->whereDate('appointment_date', '>', $today)->orWhere(function (Builder $todayQuery) use ($today, $now) {
-                    $todayQuery->whereDate('appointment_date', $today)->where('appointment_time', '>=', $now->format('H:i:s'));
-                });
+                $query->whereDate('appointment_date', '>', $today)
+                    ->orWhere(function (Builder $todayQuery) use ($today, $now) {
+                        $todayQuery->whereDate('appointment_date', $today)
+                            ->where(
+                                'appointment_time',
+                                '>=',
+                                $now->format('H:i:s')
+                            );
+                    });
             })
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->first();
 
-        $records = $appointment ? [$this->formatAppointment($appointment)] : [];
+        $records = $appointment
+            ? [$this->formatAppointment($appointment)]
+            : [];
 
         return array_merge(
             [
@@ -224,18 +447,24 @@ class TherapistAppointmentService
                 'date' => $now->format('F j, Y'),
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
     }
 
     /**
      * Appointments on a specific date.
      */
-    public function getAppointmentsForDate(Therapists $therapist, string $date): array
-    {
+    public function getAppointmentsForDate(
+        Therapists $therapist,
+        string $date
+    ): array {
         $day = Carbon::parse($date, self::TIMEZONE)->startOfDay();
 
-        $records = $this->appointmentsBetween($therapist, $day->toDateString(), $day->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $day->toDateString(),
+            $day->toDateString()
+        );
 
         return array_merge(
             [
@@ -243,7 +472,7 @@ class TherapistAppointmentService
                 'date' => $day->format('l, F j, Y'),
                 'timezone' => self::TIMEZONE,
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
     }
 
@@ -253,21 +482,41 @@ class TherapistAppointmentService
      * Without a date, pending and confirmed results are limited to
      * today and future appointments. Other statuses can include history.
      */
-    public function getAppointmentsByStatus(Therapists $therapist, string $status, ?string $startDate = null, ?string $endDate = null): array
-    {
+    public function getAppointmentsByStatus(
+        Therapists $therapist,
+        string $status,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): array {
         $now = Carbon::now(self::TIMEZONE);
 
-        $query = $this->baseQuery($therapist)->where('status', $status);
+        // The database enum uses "confirm", while the AI uses "confirmed".
+        $databaseStatus = $this->databaseStatusValue($status);
+
+        $query = $this->baseQuery($therapist)
+            ->where('status', $databaseStatus);
 
         if ($startDate !== null && $endDate !== null) {
-            $query->whereBetween('appointment_date', [$startDate, $endDate]);
+            $query->whereBetween(
+                'appointment_date',
+                [$startDate, $endDate]
+            );
         } elseif (in_array($status, ['pending', 'confirmed'], true)) {
-            $query->whereDate('appointment_date', '>=', $now->toDateString());
+            $query->whereDate(
+                'appointment_date',
+                '>=',
+                $now->toDateString()
+            );
         }
 
-        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->get();
+        $appointments = $query
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->get();
 
-        $records = $appointments->map(fn(UsersAppointments $appointment) => $this->formatAppointment($appointment))->all();
+        $records = $appointments
+            ->map(fn(UsersAppointments $appointment) => $this->formatAppointment($appointment))
+            ->all();
 
         return array_merge(
             [
@@ -279,8 +528,19 @@ class TherapistAppointmentService
                     'end' => $endDate,
                 ],
             ],
-            $this->summarizeAppointments($records),
+            $this->summarizeAppointments($records)
         );
+    }
+
+    /**
+     * Convert the AI status name into the actual database status value.
+     */
+    private function databaseStatusValue(string $status): string
+    {
+        return match ($status) {
+            'confirmed' => 'confirm',
+            default => $status,
+        };
     }
 
     /**
@@ -293,13 +553,26 @@ class TherapistAppointmentService
         $start = $now->copy()->startOfWeek(Carbon::MONDAY);
         $end = $now->copy()->endOfWeek(Carbon::SUNDAY);
 
-        $records = $this->appointmentsBetween($therapist, $start->toDateString(), $end->toDateString());
+        $records = $this->appointmentsBetween(
+            $therapist,
+            $start->toDateString(),
+            $end->toDateString()
+        );
 
         $dailyCounts = [];
 
-        $scheduledRecords = array_values(array_filter($records, fn(array $record): bool => !in_array(strtolower((string) ($record['status'] ?? 'unknown')), self::EXCLUDED_STATUSES, true)));
+        $scheduledRecords = array_values(
+            array_filter(
+                $records,
+                fn(array $record): bool => !in_array(
+                    strtolower((string) ($record['status'] ?? 'unknown')),
+                    self::EXCLUDED_STATUSES,
+                    true
+                )
+            )
+        );
 
-        foreach ($records as $record) {
+        foreach ($scheduledRecords as $record) {
             if (empty($record['date_iso'])) {
                 continue;
             }
@@ -319,7 +592,10 @@ class TherapistAppointmentService
             ];
         }
 
-        usort($days, fn(array $a, array $b) => $b['appointments'] <=> $a['appointments']);
+        usort(
+            $days,
+            fn(array $a, array $b) => $b['appointments'] <=> $a['appointments']
+        );
 
         return [
             'query' => 'workload',
@@ -342,26 +618,50 @@ class TherapistAppointmentService
      * This only calculates gaps between scheduled sessions. It does not
      * assume that the therapist is available outside business hours.
      */
-    public function getFreeTimeContext(Therapists $therapist, string $date): array
-    {
+    public function getFreeTimeContext(
+        Therapists $therapist,
+        string $date
+    ): array {
         $day = Carbon::parse($date, self::TIMEZONE)->startOfDay();
 
-        $appointments = $this->baseQuery($therapist)->whereDate('appointment_date', $day->toDateString())->whereNotIn('status', self::EXCLUDED_STATUSES)->orderBy('appointment_time')->get()->map(fn(UsersAppointments $appointment) => $this->formatAppointment($appointment))->filter(fn(array $record) => !empty($record['start_time']) && !empty($record['end_time']) && $record['start_time'] !== 'Time not specified')->values()->all();
+        $appointments = $this->baseQuery($therapist)
+            ->whereDate('appointment_date', $day->toDateString())
+            ->whereNotIn('status', self::EXCLUDED_STATUSES)
+            ->orderBy('appointment_time')
+            ->get()
+            ->map(fn(UsersAppointments $appointment) => $this->formatAppointment($appointment))
+            ->filter(
+                fn(array $record) =>
+                !empty($record['start_time']) &&
+                    !empty($record['end_time']) &&
+                    $record['start_time'] !== 'Time not specified'
+            )
+            ->values()
+            ->all();
 
         $gaps = [];
         $previousEnd = null;
 
         foreach ($appointments as $appointment) {
-            $start = Carbon::parse($day->toDateString() . ' ' . $appointment['start_time'], self::TIMEZONE);
+            $start = Carbon::parse(
+                $day->toDateString() . ' ' . $appointment['start_time'],
+                self::TIMEZONE
+            );
 
-            $end = Carbon::parse($day->toDateString() . ' ' . $appointment['end_time'], self::TIMEZONE);
+            $end = Carbon::parse(
+                $day->toDateString() . ' ' . $appointment['end_time'],
+                self::TIMEZONE
+            );
 
             // An appointment may end after midnight.
             if ($end->lessThanOrEqualTo($start)) {
                 $end->addDay();
             }
 
-            if ($previousEnd !== null && $start->greaterThan($previousEnd)) {
+            if (
+                $previousEnd !== null &&
+                $start->greaterThan($previousEnd)
+            ) {
                 $minutes = (int) $previousEnd->diffInMinutes($start);
 
                 $gaps[] = [
@@ -372,7 +672,10 @@ class TherapistAppointmentService
                 ];
             }
 
-            if ($previousEnd === null || $end->greaterThan($previousEnd)) {
+            if (
+                $previousEnd === null ||
+                $end->greaterThan($previousEnd)
+            ) {
                 $previousEnd = $end;
             }
         }
@@ -396,7 +699,14 @@ class TherapistAppointmentService
         $statuses = [];
 
         foreach ($records as $record) {
-            $status = strtolower((string) ($record['status'] ?? 'unknown'));
+            $status = strtolower(
+                (string) ($record['status'] ?? 'unknown')
+            );
+
+            // Normalize the database value for AI summaries.
+            if ($status === 'confirm') {
+                $status = 'confirmed';
+            }
 
             $statuses[$status] = ($statuses[$status] ?? 0) + 1;
         }
@@ -435,13 +745,56 @@ class TherapistAppointmentService
     }
 
     /**
+     * Extract a month and optional year from the question.
+     */
+    private function extractMonth(string $question): ?Carbon
+    {
+        $months = [
+            'january',
+            'february',
+            'march',
+            'april',
+            'may',
+            'june',
+            'july',
+            'august',
+            'september',
+            'october',
+            'november',
+            'december',
+        ];
+
+        $pattern = '/\b(' . implode('|', $months) . ')\b(?:\s+(\d{4}))?/u';
+
+        if (!preg_match($pattern, $question, $matches)) {
+            return null;
+        }
+
+        $monthName = ucfirst($matches[1]);
+
+        $year = isset($matches[2])
+            ? (int) $matches[2]
+            : Carbon::now(self::TIMEZONE)->year;
+
+        try {
+            return Carbon::createFromFormat(
+                '!F Y',
+                "{$monthName} {$year}",
+                self::TIMEZONE
+            );
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
      * Extract common explicit dates and relative weekdays from a question.
      */
-
     private function extractSpecificDate(string $question): ?Carbon
     {
         $timezone = self::TIMEZONE;
         $now = Carbon::now($timezone);
+
         $weekdays = [
             'monday' => Carbon::MONDAY,
             'tuesday' => Carbon::TUESDAY,
@@ -453,7 +806,13 @@ class TherapistAppointmentService
         ];
 
         // Explicit weekday phrases.
-        if (preg_match('/\b(next|this)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/u', $question, $matches)) {
+        if (
+            preg_match(
+                '/\b(next|this)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/u',
+                $question,
+                $matches
+            )
+        ) {
             $modifier = $matches[1];
             $weekday = $weekdays[$matches[2]];
 
@@ -463,10 +822,17 @@ class TherapistAppointmentService
                 $date->addWeek();
             }
 
-            return $date->addDays($weekday - Carbon::MONDAY)->startOfDay();
+            return $date
+                ->addDays($weekday - Carbon::MONDAY)
+                ->startOfDay();
         }
 
-        $patterns = ['/\b(\d{4}-\d{2}-\d{2})\b/u', '/\b(\d{1,2}\/\d{1,2}\/\d{2,4})\b/u', '/\b((?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:,?\s+\d{4})?)\b/u', '/\b(\d{1,2}\s+(?:january|february|march|april|may|june|july|august|september|october|november|december)(?:\s+\d{4})?)\b/u'];
+        $patterns = [
+            '/\b(\d{4}-\d{2}-\d{2})\b/u',
+            '/\b(\d{1,2}\/\d{1,2}\/\d{2,4})\b/u',
+            '/\b((?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:,?\s+\d{4})?)\b/u',
+            '/\b(\d{1,2}\s+(?:january|february|march|april|may|june|july|august|september|october|november|december)(?:\s+\d{4})?)\b/u',
+        ];
 
         foreach ($patterns as $pattern) {
             if (!preg_match($pattern, $question, $matches)) {
@@ -474,7 +840,10 @@ class TherapistAppointmentService
             }
 
             try {
-                return Carbon::parse($matches[1], $timezone)->startOfDay();
+                return Carbon::parse(
+                    $matches[1],
+                    $timezone
+                )->startOfDay();
             } catch (Throwable) {
                 return null;
             }
@@ -496,7 +865,9 @@ class TherapistAppointmentService
         }
 
         if ($remainingMinutes === 0) {
-            return $hours === 1 ? '1 hour' : "{$hours} hours";
+            return $hours === 1
+                ? '1 hour'
+                : "{$hours} hours";
         }
 
         return "{$hours} hours and {$remainingMinutes} minutes";
@@ -516,10 +887,16 @@ class TherapistAppointmentService
     /**
      * Retrieve appointment records within a date range.
      */
-    private function appointmentsBetween(Therapists $therapist, string $startDate, string $endDate): array
-    {
+    private function appointmentsBetween(
+        Therapists $therapist,
+        string $startDate,
+        string $endDate
+    ): array {
         return $this->baseQuery($therapist)
-            ->whereBetween('appointment_date', [$startDate, $endDate])
+            ->whereBetween(
+                'appointment_date',
+                [$startDate, $endDate]
+            )
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->get()
@@ -530,9 +907,9 @@ class TherapistAppointmentService
     /**
      * Format appointment details for the AI.
      */
-
-    private function formatAppointment(UsersAppointments $appointment): array
-    {
+    private function formatAppointment(
+        UsersAppointments $appointment
+    ): array {
         $status = $appointment->status;
 
         if ($status instanceof BackedEnum) {
@@ -541,7 +918,8 @@ class TherapistAppointmentService
 
         $service = $appointment->service;
 
-        $customerName = $appointment->user?->name ?? ($appointment->walkInCustomer?->name ?? 'Guest customer');
+        $customerName = $appointment->user?->name
+            ?? ($appointment->walkInCustomer?->name ?? 'Guest customer');
 
         return [
             'customer' => $customerName,
@@ -550,17 +928,38 @@ class TherapistAppointmentService
 
             'service_description' => $service?->description,
 
-            'duration_minutes' => $appointment->service_duration ?? $service?->duration_minutes,
+            'duration_minutes' => $appointment->service_duration
+                ?? $service?->duration_minutes,
 
             'add_on' => $appointment->addOn?->name,
 
-            'date' => $appointment->appointment_date ? Carbon::parse($appointment->appointment_date, self::TIMEZONE)->format('l, F j, Y') : null,
+            'date' => $appointment->appointment_date
+                ? Carbon::parse(
+                    $appointment->appointment_date,
+                    self::TIMEZONE
+                )->format('l, F j, Y')
+                : null,
 
-            'date_iso' => $appointment->appointment_date ? Carbon::parse($appointment->appointment_date, self::TIMEZONE)->toDateString() : null,
+            'date_iso' => $appointment->appointment_date
+                ? Carbon::parse(
+                    $appointment->appointment_date,
+                    self::TIMEZONE
+                )->toDateString()
+                : null,
 
-            'start_time' => $appointment->appointment_time ? Carbon::parse($appointment->appointment_time, self::TIMEZONE)->format('g:i A') : 'Time not specified',
+            'start_time' => $appointment->appointment_time
+                ? Carbon::parse(
+                    $appointment->appointment_time,
+                    self::TIMEZONE
+                )->format('g:i A')
+                : 'Time not specified',
 
-            'end_time' => $appointment->appointment_end_time ? Carbon::parse($appointment->appointment_end_time, self::TIMEZONE)->format('g:i A') : null,
+            'end_time' => $appointment->appointment_end_time
+                ? Carbon::parse(
+                    $appointment->appointment_end_time,
+                    self::TIMEZONE
+                )->format('g:i A')
+                : null,
 
             'status' => (string) ($status ?? 'unknown'),
         ];

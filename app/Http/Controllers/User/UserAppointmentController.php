@@ -12,6 +12,7 @@ use App\Models\UsersAppointments;
 use App\Models\WebsiteSetting;
 use App\Services\PayMongoService;
 use App\Support\BookingRules;
+use App\Notifications\AppointmentPendingNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -1134,9 +1135,29 @@ class UserAppointmentController extends Controller
         |--------------------------------------------------------------------------
         */
 
+
         if ($validated['payment_method'] === 'branch') {
-            return redirect()->route('user.my-appointments')->with('success', 'Appointment submitted successfully. Please visit our center to confirm your appointment.');
+
+            try {
+                Auth::user()->notify(
+                    new AppointmentPendingNotification($appointment)
+                );
+            } catch (Throwable $e) {
+                Log::error('Failed to send pending appointment email.', [
+                    'appointment_id' => $appointment->id,
+                    'user_id' => Auth::id(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            return redirect()
+                ->route('user.my-appointments')
+                ->with(
+                    'success',
+                    'Appointment submitted successfully. Please visit our center to confirm your appointment.'
+                );
         }
+
 
         /*
         |--------------------------------------------------------------------------

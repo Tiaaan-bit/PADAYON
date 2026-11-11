@@ -66,8 +66,6 @@ class LoginController extends Controller
             }
 
             if (!$user->hasVerifiedEmail()) {
-                Auth::guard('web')->logout();
-
                 return redirect()
                     ->route('verification.notice')
                     ->with('info', 'Please verify your email before accessing your account.');

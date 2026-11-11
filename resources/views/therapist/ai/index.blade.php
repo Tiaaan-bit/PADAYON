@@ -42,6 +42,7 @@
         }
 
         .panel {
+            position: relative;
             width: 100%;
             max-width: 520px;
             text-align: center;
@@ -116,19 +117,73 @@
             line-height: 1.5;
         }
 
-        .logout-form {
-            margin-top: 24px;
+        /* SETTINGS MENU */
+        .settings-menu {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 20;
         }
 
-        .logout-button {
-            padding: 14px 24px;
+        .settings-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
             border: 0;
             border-radius: 12px;
+            color: #6F4E37;
+            font-size: 25px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .settings-toggle::-webkit-details-marker {
+            display: none;
+        }
+
+        .settings-toggle {
+            list-style: none;
+        }
+
+        .settings-toggle:focus-visible,
+        .settings-logout:focus-visible {
+            outline: 4px solid #849753;
+            outline-offset: 4px;
+        }
+
+        .settings-dropdown {
+            position: absolute;
+            top: 54px;
+            right: 0;
+            width: 180px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #E5DED2;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px #00000018;
+        }
+
+        .settings-dropdown form {
+            margin: 0;
+        }
+
+        .settings-logout {
+            width: 100%;
+            padding: 13px 16px;
+            border: 0;
+            border-radius: 10px;
             background: #6F4E37;
             color: white;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            text-align: left;
+        }
+
+        .settings-logout:hover {
+            background: #573C2B;
         }
 
         /* Keyboard-only helper; screen readers can still announce it. */
@@ -157,7 +212,30 @@
 
 <body>
     <main>
+
+        <details class="settings-menu">
+
+            <summary class="settings-toggle" aria-label="Settings. Open account settings." title="Settings">
+                <span aria-hidden="true">▼</span>
+            </summary>
+
+            <div class="settings-dropdown">
+
+                <form action="{{ route('logout') }}" method="POST" id="logoutForm">
+                    @csrf
+
+                    <button type="submit" class="settings-logout">
+                        Log Out
+                    </button>
+
+                </form>
+
+            </div>
+
+        </details>
         <section class="panel" aria-labelledby="assistant-heading">
+
+
 
 
             <button type="button" id="micButton" class="mic" aria-label="Talk to Aira, your Padayon AI assistant"
@@ -169,13 +247,6 @@
             <p id="status" role="status" aria-live="polite" aria-atomic="true">
                 Ready to assist. Tap the big button to begin.
             </p>
-
-            <form action="{{ route('logout') }}" method="POST" class="logout-form">
-                @csrf
-                <button type="submit" class="logout-button">
-                    Log Out
-                </button>
-            </form>
 
             <div id="conversation" class="sr-only" aria-live="off"></div>
         </section>
@@ -643,6 +714,28 @@
                 }
             });
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const logoutForm = document.getElementById('logoutForm');
+
+            if (!logoutForm) return;
+
+            logoutForm.addEventListener('submit', (event) => {
+
+                const confirmed = window.confirm(
+                    'Are you sure you want to log out of Padayon Therapist Assistant?'
+                );
+
+                if (!confirmed) {
+                    event.preventDefault();
+                }
+
+            });
+
+        });
     </script>
 
 

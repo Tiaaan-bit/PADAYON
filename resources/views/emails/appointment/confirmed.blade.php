@@ -25,8 +25,7 @@
             : null;
     @endphp
 
-    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-        style="background-color:#f4eddb;padding:30px 15px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4eddb;padding:30px 15px;">
         <tr>
             <td align="center">
 
@@ -88,7 +87,8 @@
                                     </td>
 
                                     <td align="right" style="padding:18px;">
-                                        <span style="display:inline-block;padding:7px 12px;background-color:#849753;color:#ffffff;border-radius:20px;font-size:12px;font-weight:bold;">
+                                        <span
+                                            style="display:inline-block;padding:7px 12px;background-color:#849753;color:#ffffff;border-radius:20px;font-size:12px;font-weight:bold;">
                                             CONFIRMED
                                         </span>
                                     </td>
@@ -112,7 +112,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Customer
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $notifiable->name ?? 'N/A' }}
                                     </td>
                                 </tr>
@@ -121,7 +122,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Service
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $appointment->service?->name ?? 'N/A' }}
                                     </td>
                                 </tr>
@@ -130,7 +132,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Therapist
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $appointment->therapist?->name ?? 'N/A' }}
                                     </td>
                                 </tr>
@@ -139,7 +142,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Date
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $appointmentDate }}
                                     </td>
                                 </tr>
@@ -148,7 +152,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Time
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $appointmentTime }}
                                         @if ($appointmentEndTime)
                                             – {{ $appointmentEndTime }}
@@ -160,7 +165,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Add-on
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ $appointment->addOn?->name ?? 'None' }}
                                     </td>
                                 </tr>
@@ -169,7 +175,8 @@
                                     <td style="padding:10px 0;color:#6f4e37;font-size:13px;">
                                         Massage Level
                                     </td>
-                                    <td align="right" style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
+                                    <td align="right"
+                                        style="padding:10px 0;color:#2f2420;font-size:13px;font-weight:bold;">
                                         {{ ucfirst($appointment->level ?? 'N/A') }}
                                     </td>
                                 </tr>
@@ -183,7 +190,8 @@
                     <tr>
                         <td style="padding:0 25px 30px;">
 
-                            <div style="background-color:#faf8f2;border:1px solid #e3dcc9;border-radius:8px;padding:18px;">
+                            <div
+                                style="background-color:#faf8f2;border:1px solid #e3dcc9;border-radius:8px;padding:18px;">
 
                                 <h3 style="margin:0 0 10px;color:#2f2420;font-size:15px;">
                                     Appointment Reminder
@@ -191,7 +199,7 @@
 
                                 <p style="margin:0;color:#6f4e37;font-size:13px;line-height:1.8;">
                                     Please arrive on time for your scheduled appointment.
-                                    If you need to cancel or reschedule, kindly do so through
+                                    If you need to reschedule, kindly do so through
                                     your Padayon Massage Center account or contact our staff.
                                 </p>
 
@@ -229,4 +237,5 @@
     </table>
 
 </body>
+
 </html>

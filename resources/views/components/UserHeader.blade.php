@@ -130,7 +130,7 @@
                            shadow-lg py-2 z-50">
 
                         {{-- SETTINGS --}}
-                        <a href="{{ route('admin.profile') }}" wire:navigate @click="open = false"
+                        <a href="{{ route('user.profile') }}" wire:navigate @click="open = false"
                             class="flex items-center gap-3 px-4 py-3
                                text-sm text-[#2F2420]
                                hover:bg-[#F4EDDB] transition">

@@ -48,6 +48,12 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('appointments:send-reminders')->everyMinute()->timezone('Asia/Manila')->withoutOverlapping();
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
 
+Route::view('/privacy-policy', 'policies.privacy-policy')
+    ->name('privacy-policy');
+
+Route::view('/terms-and-conditions', 'policies.terms-and-conditions')
+    ->name('terms-and-conditions');
+
 // ── Redirect root ─────────────────────────────────────────────────────────────
 Route::get('/', [PageController::class, 'showHomePage'])->name('home.showHomePage');
 Route::get('/about', [PageController::class, 'showAboutPage'])->name('home.showAboutPage');
@@ -201,7 +207,6 @@ Route::middleware('auth.admin')
         Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
 
-        Route::view('/help', 'admin.help')->name('help');
 
         Route::get('/website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
         Route::put('/website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
@@ -262,8 +267,6 @@ Route::middleware(['auth.staff'])
         Route::get('/profile', [StaffProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [StaffProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [StaffProfileController::class, 'updatePassword'])->name('profile.password');
-
-        Route::view('/help', 'staff.help')->name('help');
     });
 
 // ── Logout ────────────────────────────────────────────────────────────────────

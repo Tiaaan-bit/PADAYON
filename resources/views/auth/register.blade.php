@@ -11,8 +11,8 @@
         <a href="{{ route('home.showHomePage') }}"
             class="inline-flex items-center gap-2 text-sm font-medium text-[#849753] hover:underline mb-6">
 
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
 
@@ -127,8 +127,7 @@
                 {{-- Name --}}
                 <div>
 
-                    <label for="name"
-                        class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                    <label for="name" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                         Full Name
                     </label>
 
@@ -157,8 +156,7 @@
                 {{-- Phone --}}
                 <div>
 
-                    <label for="phone"
-                        class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                    <label for="phone" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                         Phone Number
                     </label>
 
@@ -221,13 +219,12 @@
 
                 {{-- Password --}}
                 <div>
-                    <label for="password"
-                        class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    <label for="password" class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-600">
                         Password
                     </label>
 
                     <div class="relative">
-                        <input type="password" id="password" name="password" placeholder="Min. 8 characters"
+                        <input type="password" id="password" name="password" placeholder="XXXXXXX"
                             autocomplete="new-password" required
                             class="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-12 text-sm text-gray-800 outline-none transition
                 focus:border-[#849753] focus:bg-white focus:ring-2 focus:ring-[#849753]
@@ -300,6 +297,66 @@
                 </div>
 
             </div>
+
+
+            {{-- Privacy Policy and Terms & Conditions --}}
+            <div class="flex items-center gap-6">
+
+                {{-- Privacy Policy --}}
+                <div>
+                    <label class="flex 1 items-start gap-2.5 cursor-pointer">
+
+                        <input type="checkbox" name="privacy_policy" value="1" required @checked(old('privacy_policy'))
+                            class="mt-0.5 h-4 w-4 rounded border-gray-300
+                    text-[#849753] focus:ring-[#849753]">
+
+                        <span class="text-xs text-gray-600">
+                            I have read and understood the
+
+                            <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer"
+                                class="font-semibold text-[#849753] hover:underline">
+                                Privacy Policy
+                            </a>.
+                        </span>
+
+                    </label>
+
+                    @error('privacy_policy')
+                        <p class="ml-6 mt-1 text-xs text-red-500">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Terms and Conditions --}}
+                <div>
+                    <label class="flex 1 items-start gap-2.5 cursor-pointer">
+
+                        <input type="checkbox" name="terms_conditions" value="1" required
+                            @checked(old('terms_conditions'))
+                            class="mt-0.5 h-4 w-4 rounded border-gray-300
+                    text-[#849753] focus:ring-[#849753]">
+
+                        <span class="text-xs text-gray-600">
+                            I agree to the
+
+                            <a href="{{ route('terms-and-conditions') }}" target="_blank" rel="noopener noreferrer"
+                                class="font-semibold text-[#849753] hover:underline">
+                                Terms and Conditions
+                            </a>.
+                        </span>
+
+                    </label>
+
+                    @error('terms_conditions')
+                        <p class="ml-6 mt-1 text-xs text-red-500">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+            </div>
+
 
             {{-- Password visibility toggle --}}
             <script>

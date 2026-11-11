@@ -104,7 +104,7 @@
                             </p>
                         </div>
 
-                
+
                     </div>
 
                 </div>
@@ -197,7 +197,7 @@
                                         :class="selectedTime === slot.start ?
                                             'border-[#849753] bg-[#849753] text-white' :
                                             'border-gray-200 bg-white text-gray-700 hover:border-[#849753] hover:bg-[#F4EDDB]'"
-                                        class="rounded-xl border p-4 text-left transition">
+                                        class="rounded-xl border p-4 text-center transition">
 
                                         <span class="block font-semibold" x-text="slot.label"></span>
 
@@ -205,7 +205,6 @@
                                             :class="selectedTime === slot.start ?
                                                 'text-white/80' :
                                                 'text-gray-400'">
-                                            Available
                                         </span>
 
                                     </button>

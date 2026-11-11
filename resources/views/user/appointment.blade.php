@@ -426,6 +426,9 @@
 
                                 <label class="block font-semibold text-gray-800 mb-2">
                                     Body Problem / Concern
+                                    <span class="text-xs font-normal text-gray-400">
+                                        (optional)
+                                    </span>
                                 </label>
 
                                 <textarea x-model="body_problem" rows="4"
@@ -1201,10 +1204,11 @@
 
                                 <div>
                                     <p class="text-sm text-gray-600">
-                                        <span class="font-semibold text-gray-800" x-text="selectedService?.name || 'Not selected'"></span>/ 
+                                        <span class="font-semibold text-gray-800"
+                                            x-text="selectedService?.name || 'Not selected'"></span>/
                                         <span x-text="selectedService?.description || 'No description available'"></span>
                                     </p>
-                                    
+
 
                                     <p x-show="selectedService" class="text-xs text-gray-500 mt-1">
                                         <span x-text="selectedService?.duration_minutes || 0"></span>

@@ -27,7 +27,7 @@
     class="min-h-screen bg-[#D6BB9E] flex items-center justify-center p-4"style="background-image: url('{{ asset('images/background.png') }}');">
 
 
-    @include('components.PageLoading')
+    @include('components.AuthLoading')
 
 
 
