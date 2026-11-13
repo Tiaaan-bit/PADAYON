@@ -365,7 +365,7 @@
                         {{-- ================================================= --}}
 
                         @if ($therapists->hasPages())
-                            <div class="mt-5">
+                            <div class="px-5 py-4 border-t border-gray-100 pagination">
 
                                 {{ $therapists->links() }}
 

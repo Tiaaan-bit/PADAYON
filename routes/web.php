@@ -161,6 +161,7 @@ Route::middleware('auth.admin')
         Route::get('/users', [AdminUsersController::class, 'users'])->name('users');
         Route::patch('/users/{user}/status', [AdminUsersController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users.destroy');
+        Route::get('/users/{user}/appointments', [AdminUsersController::class, 'appointments'])->name('users.appointments');
 
         //---Admin Services Controller---//
         Route::get('/services', [AdminServicesController::class, 'services'])->name('services');

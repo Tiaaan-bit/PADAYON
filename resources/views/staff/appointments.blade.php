@@ -443,7 +443,7 @@
 
                                                     <p class="text-xs text-gray-400">
 
-                                                        {{ $appointment->user->email ?? 'N/A' }}
+                                                        {{ $appointment->user->email ?? 'No Email Provided' }}
 
                                                     </p>
 
@@ -822,7 +822,7 @@
                     {{-- ====================================================== --}}
 
                     @if ($appointments->hasPages())
-                        <div class="px-5 py-4 border-t border-gray-100">
+                        <div class="px-5 py-4 border-t border-gray-100 pagination">
 
                             {{ $appointments->links() }}
 

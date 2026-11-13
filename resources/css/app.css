@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Fascinate&family=Oswald:wght@200..700&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Fascinate&family=Oswald:wght@200..700&display=swap");
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,11 +7,12 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'DM Serif Text', Georgia, serif;
+    --font-sans: "DM Serif Text", Georgia, serif;
 }
 
-[x-cloak] { display: none !important; }
-
+[x-cloak] {
+    display: none !important;
+}
 
 /* Hide scrollbar while keeping scrolling enabled */
 .sidebar-scroll {
@@ -21,4 +22,34 @@
 
 .sidebar-scroll::-webkit-scrollbar {
     display: none;
+}
+
+/* Laravel Pagination */
+.pagination nav {
+    @apply flex items-center justify-between;
+}
+
+.pagination nav a,
+.pagination nav span {
+    @apply rounded-lg border border-[#849753]/20;
+}
+
+/* Default pagination links */
+.pagination nav a {
+    @apply bg-[#849753] text-white hover:bg-[#849753] hover:text-white transition;
+}
+
+/* Active page */
+.pagination nav span[aria-current="page"] span {
+    @apply bg-[#6F4E37] text-white border-[#849753];
+}
+
+/* Disabled buttons */
+.pagination nav span[aria-disabled="true"] span {
+    @apply bg-[#849753] text-white border-gray-200;
+}
+
+/* Remove default blue focus ring */
+.pagination nav a:focus {
+    @apply outline-none ring-2 ring-[#849753]/30;
 }

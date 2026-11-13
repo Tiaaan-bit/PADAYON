@@ -599,7 +599,7 @@
                 {{-- ================================================== --}}
 
                 @if ($payments->hasPages())
-                    <div class="px-5 py-4 border-t border-gray-100">
+                    <div class="px-5 py-4 border-t border-gray-100 pagination">
                         {{ $payments->links() }}
                     </div>
                 @endif

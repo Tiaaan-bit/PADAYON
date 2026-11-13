@@ -570,6 +570,9 @@
 
                 setButton('PLEASE WAIT', '⏳');
                 setStatus('Finding your answer...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                await speak("Please wait, I'm finding your answer.");
 
                 messages.push({
                     role: 'user',

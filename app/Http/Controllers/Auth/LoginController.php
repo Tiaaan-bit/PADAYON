@@ -14,6 +14,31 @@ class LoginController extends Controller
      */
     public function showForm()
     {
+
+        // Redirect authenticated therapists to Padayon AI
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        // Redirect authenticated web users
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            // Require email verification for normal users
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
         return view('auth.login');
     }
 

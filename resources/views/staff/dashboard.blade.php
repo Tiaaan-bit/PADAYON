@@ -68,7 +68,7 @@
             return match (strtolower((string) ($type ?? ''))) {
                 'full' => 'Full Payment',
                 'downpayment' => 'Downpayment',
-                default => ucfirst((string) ($type ?? 'Not specified')),
+                default => ucfirst((string) ($type ?? '')),
             };
         };
 
@@ -181,97 +181,15 @@
 
 
             {{-- SCHEDULE --}}
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-1">
 
                 {{-- TODAY'S SCHEDULE --}}
-                <section x-data="{ expanded: false }"
-                    class="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-                        <div>
-                            <h2 class="font-bold text-gray-900">Today's Appointments</h2>
-                        </div>
-
-                        <a href="{{ route('staff.appointments') }}"
-                            class="text-sm font-semibold text-[#718343] hover:underline">
-                            View all
-                        </a>
-                    </div>
-
-                    @if ($todayAppointments->isEmpty())
-                        <div class="px-5 py-12 text-center">
-                            <p class="font-semibold text-gray-800">
-                                No appointments scheduled today
-                            </p>
-                            <p class="mt-1 text-sm text-gray-500">
-                                New bookings will appear here.
-                            </p>
-                        </div>
-                    @else
-                        <div class="divide-y divide-gray-100">
-                            @foreach ($todayAppointments as $appointment)
-                                <div x-show="expanded || {{ $loop->index }} < 5"
-                                    class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                                    <div class="flex items-start gap-3">
-                                        <div class="min-w-19 rounded-xl bg-[#F4EDDB] px-3 py-2 text-center">
-                                            <p class="text-sm font-bold text-[#6F4E37]">
-                                                {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}
-                                                -
-                                                {{ \Carbon\Carbon::parse($appointment->appointment_end_time)->format('g:i A') }}
-                                            </p>
-                                        </div>
-
-                                        <div class="min-w-0">
-                                            <p class="font-semibold text-gray-900">
-                                                {{ $customerName($appointment) }}
-                                            </p>
-
-                                            <p class="mt-1 text-sm text-gray-600">
-                                                {{ $appointment->service?->name ?? 'Service not specified' }} -
-                                                {{ $appointment->service?->description ?? 'Service not specified' }}
-                                            </p>
-
-                                            <p class="mt-1 text-xs text-gray-500">
-                                                Therapist:
-                                                {{ $appointment->therapist?->name ?? 'Not assigned' }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="sm:text-right">
-                                        <span
-                                            class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($appointment->status) }}">
-                                            {{ $statusLabel($appointment) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        @if ($todayAppointments->count() > 5)
-                            <div class="border-t border-gray-100 px-5 py-3">
-                                <button type="button" @click="expanded = !expanded"
-                                    class="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-[#718343] transition hover:bg-[#849753]/10">
-                                    <span
-                                        x-text="expanded ? 'Show less' : 'See all {{ $todayAppointments->count() }} appointments'"></span>
-
-                                    <svg class="h-4 w-4 transition-transform duration-200"
-                                        :class="{ 'rotate-180': expanded }" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </button>
-                            </div>
-                        @endif
-                    @endif
-                </section>
-
                 {{-- TODAY'S TRANSACTIONS --}}
                 <section x-data="{ expanded: false }"
                     class="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
-                            <h2 class="font-bold text-gray-900">Today's Transaction</h2>
+                            <h2 class="font-bold text-gray-900">Today's Appointments and Transactions</h2>
                         </div>
 
                         <a href="{{ route('staff.transactions') }}"
@@ -337,6 +255,10 @@
                                         {{-- Payment Status --}}
                                         <div>
                                             <div>
+                                                <span
+                                                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($appointment->status) }}">
+                                                    {{ $statusLabel($appointment) }}
+                                                </span>
                                                 <span
                                                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $paymentStatusClasses($appointment->payment_status) }}">
                                                     {{ $paymentStatus }} -

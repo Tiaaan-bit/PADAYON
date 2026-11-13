@@ -363,7 +363,7 @@
                     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
 
                         <h3 class="font-semibold text-gray-800">
-                            
+
                         </h3>
 
                         <button type="button" @click="openAddModal()"
@@ -546,7 +546,7 @@
 
 
                         @if ($services->hasPages())
-                            <div class="px-5 py-4 border-t border-gray-100 flex justify-end">
+                            <div class="px-5 py-4 border-t border-gray-100 pagination">
 
                                 {{ $services->links() }}
 

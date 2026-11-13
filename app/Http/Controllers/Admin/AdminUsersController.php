@@ -40,4 +40,12 @@ class AdminUsersController extends Controller
 
         return back()->with('success', 'User deleted successfully.');
     }
+    public function appointments(
+        int $user,
+        UserRepositoryInterface $userRepository
+    ) {
+        $data = $userRepository->getCustomerAppointmentData($user);
+
+        return response()->json($data);
+    }
 }

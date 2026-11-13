@@ -30,7 +30,7 @@ class AdminAppointmentsController extends Controller
         Gate::authorize('updateStatus', $appointment);
 
         $updateAppointmentStatus->execute($appointment, AppointmentStatus::from($request->validated('status')));
-        
+
         return back()->with('success', 'Appointment status updated successfully.');
     }
 

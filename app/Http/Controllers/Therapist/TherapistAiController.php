@@ -79,8 +79,7 @@ class TherapistAiController extends Controller
         }
 
         try {
-            $appointmentContext = $appointments->contextForQuestion($therapist, $lastMessage['content']);
-
+            $appointmentContext = $appointments->contextForConversation($therapist, $messages);
             $answer = $ai->reply($messages, $appointmentContext);
 
             return response()->json([

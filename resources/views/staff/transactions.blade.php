@@ -267,7 +267,7 @@
                                     </div>
 
                                     <div class="text-xs text-gray-500">
-                                        {{ $transaction->user?->email ?? 'N/A' }}
+                                        {{ $transaction->user?->email ?? 'No Email Provided' }}
                                     </div>
 
                                 </td>
@@ -306,13 +306,13 @@
                                         <p class="text-xs text-gray-500">
 
                                             {{ $transaction->addOn ? $transaction->addOn->duration_minutes . ' mins' : 'No add-on selected' }}
-                                            
+
                                         </p>
 
                                         <p class="text-xs text-gray-500">
 
-                                            ₱{{ $transaction->addOn ? $transaction->addOn->price  : '0.00' }}
-                                            
+                                            ₱{{ $transaction->addOn ? $transaction->addOn->price : '0.00' }}
+
                                         </p>
 
 
@@ -523,7 +523,7 @@
 
             {{-- PAGINATION --}}
             @if (method_exists($transactions, 'links'))
-                <div class="px-4 py-4 border-t border-gray-200">
+                <div class="px-5 py-4 border-t border-gray-100 pagination">
                     {{ $transactions->links() }}
                 </div>
             @endif
