@@ -477,9 +477,9 @@
                                                     'status' => $therapist->status,
                                                     'image' => $therapist->image,
                                                 ]) }})"
-                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">
+                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-[#849753] text-white  hover:bg-[#6F4E37] transition">
 
-                                                Modify
+                                                Update
 
                                             </button>
 
@@ -489,7 +489,7 @@
         {{ $therapist->id }},
         @js($therapist->name)
     )"
-                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition">
+                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-[#849753] text-white  hover:bg-[#6F4E37] transition">
                                                 Feedback
                                             </button>
 
@@ -505,7 +505,7 @@
 
                                                 <button type="submit"
                                                     onclick="return confirm('Delete {{ addslashes($therapist->name) }}? This cannot be undone.')"
-                                                    class="w-full text-xs font-semibold px-3 py-2 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition">
+                                                    class="w-full text-xs font-semibold px-3 py-2 rounded-lg bg-[#6F4E37] text-white hover:bg-red-600 transition">
 
                                                     Delete
 
@@ -570,12 +570,6 @@
                                     Add New Therapist
 
                                 </h3>
-
-                                <p class="text-xs text-gray-400 mt-1">
-
-                                    Create a new therapist profile with login credentials.
-
-                                </p>
 
                             </div>
 
@@ -855,11 +849,7 @@
 
                                 </h3>
 
-                                <p class="text-xs text-gray-400 mt-1">
 
-                                    Update the therapist information and login credentials.
-
-                                </p>
 
                             </div>
 
@@ -1291,21 +1281,22 @@
                                                             'text-gray-300'"
                                                         fill="currentColor" viewBox="0 0 20 20">
 
-                                                        <path d="M9.049 2.927c.3-.921
-                                                                    1.603-.921 1.902 0l1.07
-                                                                    3.292a1 1 0 00.95.69h3.462
-                                                                    c.969 0 1.371 1.24.588
-                                                                    1.81l-2.8 2.034a1 1 0
-                                                                    00-.364 1.118l1.07 3.292
-                                                                    c.3.921-.755 1.688-1.538
-                                                                    1.118l-2.8-2.034a1 1
-                                                                    0 00-1.176 0l-2.8 2.034
-                                                                    c-.783.57-1.838-.197-1.538
-                                                                    -1.118l1.07-3.292a1 1
-                                                                    0 00-.364-1.118L2.98
-                                                                    8.72c-.783-.57-.38-1.81.588
-                                                                    -1.81H7.03a1 1 0 00.95-.69
-                                                                    l1.07-3.292z" />
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921
+                                                                                                                1.603-.921 1.902 0l1.07
+                                                                                                                3.292a1 1 0 00.95.69h3.462
+                                                                                                                c.969 0 1.371 1.24.588
+                                                                                                                1.81l-2.8 2.034a1 1 0
+                                                                                                                00-.364 1.118l1.07 3.292
+                                                                                                                c.3.921-.755 1.688-1.538
+                                                                                                                1.118l-2.8-2.034a1 1
+                                                                                                                0 00-1.176 0l-2.8 2.034
+                                                                                                                c-.783.57-1.838-.197-1.538
+                                                                                                                -1.118l1.07-3.292a1 1
+                                                                                                                0 00-.364-1.118L2.98
+                                                                                                                8.72c-.783-.57-.38-1.81.588
+                                                                                                                -1.81H7.03a1 1 0 00.95-.69
+                                                                                                                l1.07-3.292z" />
 
                                                     </svg>
 

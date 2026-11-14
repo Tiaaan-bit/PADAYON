@@ -21,7 +21,5 @@ interface StaffDashboardRepositoryInterface
 
     public function getNeedsAttention(Carbon $today): Collection;
 
-    public function getPopularServices(Carbon $today): Collection;
-
     public function getRecentActivity(): Collection;
 }

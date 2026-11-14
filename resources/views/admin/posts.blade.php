@@ -35,9 +35,9 @@
                     </button>
 
                     <button type="button" onclick="openImagePostModal()"
-                        class="inline-flex items-center gap-2 rounded-lg bg-[#6F4E37]
+                        class="inline-flex items-center gap-2 rounded-lg bg-[#849753]
                px-5 py-3 font-semibold text-white transition
-               hover:bg-[#849753]">
+               hover:bg-[#6F4E37]">
                         <span class="text-xl">+</span>
                         Post an Image
                     </button>
@@ -80,9 +80,7 @@
                                         Create New Post
                                     </h2>
 
-                                    <p class="text-sm text-gray-500 mt-1">
-                                        Add a title, description, and date and time for the promotion.
-                                    </p>
+
 
                                 </div>
 
@@ -226,10 +224,6 @@
                                     <h2 id="image-post-title" class="text-xl font-bold text-gray-800">
                                         Publish an Image
                                     </h2>
-
-                                    <p class="mt-1 text-sm text-gray-500">
-                                        Share an image with customers and therapists.
-                                    </p>
                                 </div>
 
                                 <button type="button" onclick="closeImagePostModal()"
@@ -348,22 +342,6 @@
                                         {{ $post->published_at->format('M d, Y h:i A') }}
                                     </span>
                                 @endif
-
-                            </div>
-
-
-                            {{-- ========================================= --}}
-                            {{-- AUTHOR --}}
-                            {{-- ========================================= --}}
-
-                            <div class="mt-4 pt-4 border-t border-gray-100">
-
-                                <p class="text-xs text-gray-400">
-
-                                    Created by
-                                    {{ $post->author?->name ?? 'Admin' }}
-
-                                </p>
 
                             </div>
 
@@ -515,10 +493,6 @@
                                     <p class="mb-4 text-xs text-gray-500">
                                         Published
                                         {{ $imagePost->published_at?->format('M d, Y h:i A') }}
-                                    </p>
-
-                                    <p class="mb-4 text-xs text-gray-400">
-                                        Created by {{ $imagePost->author?->name ?? 'Admin' }}
                                     </p>
 
                                     {{-- REPLACE IMAGE --}}

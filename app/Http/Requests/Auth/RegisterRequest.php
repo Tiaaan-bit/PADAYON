@@ -22,9 +22,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'phone' => ['required', 'string', 'starts_with:09', 'digits_between:10,11', 'unique:users'],
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->symbols()],
-
-            'privacy_policy' => ['required', 'accepted'],
-            'terms_conditions' => ['required', 'accepted'],
+            'agreement' => ['required', 'accepted'],
         ];
     }
 }

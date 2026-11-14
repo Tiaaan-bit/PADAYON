@@ -346,7 +346,7 @@
                                                     'status' => $therapist->status,
                                                     'image' => $therapist->image,
                                                 ]) }})"
-                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">
+                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-[#849753] text-white border border-amber-200 hover:bg-[#6F4E37] transition">
                                                 Update Status
                                             </button>
 

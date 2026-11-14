@@ -128,9 +128,6 @@
                     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
                             <h2 class="font-bold text-gray-900"> Today's Appointments</h2>
-                            <p class="mt-1 text-xs text-gray-500">
-                                {{ $now->format('F j, Y') }}
-                            </p>
                         </div>
 
                         <a href="{{ route('admin.appointments') }}"
@@ -404,9 +401,6 @@
                             <h2 class="font-bold text-gray-900">
                                 Therapist Status
                             </h2>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Current calculated availability
-                            </p>
                         </div>
                     </div>
 
@@ -419,9 +413,6 @@
                             {{ $busyTherapistsCount }} Busy
                         </span>
 
-                        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {{ $offlineTherapistsCount }} Unavailable
-                        </span>
                     </div>
 
                     @if ($therapists->isEmpty())
@@ -477,11 +468,9 @@
                 <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                     <div>
                         <h2 class="font-bold text-gray-900">
-                            Popular Services
+                            Popular Services Today
                         </h2>
-                        <p class="mt-1 text-sm text-gray-500">
-                            Most booked services today
-                        </p>
+
                     </div>
 
                     @if ($popularServices->isEmpty())

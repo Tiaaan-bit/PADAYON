@@ -90,12 +90,25 @@ class LoginController extends Controller
                 return redirect()->route('staff.dashboard');
             }
 
+            // Check email verification first
             if (!$user->hasVerifiedEmail()) {
                 return redirect()
                     ->route('verification.notice')
                     ->with('info', 'Please verify your email before accessing your account.');
             }
 
+            // Check customer account status after email verification
+            if (!$user->isActive()) {
+                Auth::guard('web')->logout();
+
+                return back()
+                    ->withErrors([
+                        'email' => 'Your account is currently inactive. Please contact the administrator.',
+                    ])
+                    ->onlyInput('email');
+            }
+
+            // Mark customer online
             if (method_exists($user, 'markOnline')) {
                 $user->markOnline();
             }

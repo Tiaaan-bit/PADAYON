@@ -176,7 +176,7 @@
 
                                     <th
                                         class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
-                                        User
+                                        Customer
                                     </th>
 
                                     <th
@@ -329,8 +329,8 @@
                                                         onclick="return confirm('Change status for {{ addslashes($user->name) }}?')"
                                                         class="text-xs font-semibold px-3 py-1.5 rounded-lg transition whitespace-nowrap
                 {{ $user->status === UserStatus::ACTIVE
-                    ? 'bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100'
-                    : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100' }}">
+                    ? 'bg-[#849753] text-white hover:bg-[#6F4E37]'
+                    : 'bg-[#849753] text-white   hover:bg-[#6F4E37]' }}">
 
                                                         {{ $user->status === UserStatus::ACTIVE ? 'Deactivate' : 'Activate' }}
 
@@ -344,7 +344,7 @@
 
                                                     <button type="submit"
                                                         onclick="return confirm('Delete {{ addslashes($user->name) }}? This cannot be undone.')"
-                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#6F4E37] text-white hover:bg-red-600 transition whitespace-nowrap">
 
                                                         Delete
 

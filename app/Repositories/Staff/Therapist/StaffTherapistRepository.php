@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class StaffTherapistRepository implements StaffTherapistRepositoryInterface
 {
-    public function getTherapists(?string $search = null, ?string $status = null, ?string $specialty = null, int $perPage = 6): LengthAwarePaginator
+    public function getTherapists(?string $search = null, ?string $status = null, ?string $specialty = null, int $perPage = 4): LengthAwarePaginator
     {
         $query = Therapists::query();
 

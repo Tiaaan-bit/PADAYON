@@ -132,8 +132,7 @@
                 {{-- Search / Filter --}}
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
 
-                    <form method="GET" action="{{ route('admin.addons') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form method="GET" action="{{ route('admin.addons') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
                         <div class="md:col-span-3">
 
@@ -173,7 +172,7 @@
                     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
 
                         <h3 class="font-semibold text-gray-800">
-                            
+
                         </h3>
 
                         <button type="button" @click="openAddModal()"
@@ -321,8 +320,8 @@
                                                             'duration_minutes' => $addOn->duration_minutes,
                                                             'status' => $addOn->status,
                                                         ]) }})"
-                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition whitespace-nowrap">
-                                                        Modify
+                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#849753] text-white  hover:bg-[#6F4E37] transition whitespace-nowrap">
+                                                        Update
                                                     </button>
 
 
@@ -335,7 +334,7 @@
 
                                                         <button type="submit"
                                                             onclick="return confirm('Delete {{ addslashes($addOn->name) }}? This cannot be undone.')"
-                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#6F4E37] text-white hover:bg-red-600 transition whitespace-nowrap">
                                                             Delete
                                                         </button>
 
@@ -390,16 +389,10 @@
                             <div>
 
                                 <h3 class="text-lg font-bold text-gray-800"
-                                    x-text="editing ? 'Modify Add On' : 'Add New Add On'"></h3>
+                                    x-text="editing ? 'Update Add On' : 'Add New Add On'"></h3>
 
                                 <p class="text-xs text-gray-500 mt-0.5">
-                                    <span x-show="!editing">
-                                        Create a new appointment add-on.
-                                    </span>
 
-                                    <span x-show="editing">
-                                        Update this appointment add-on.
-                                    </span>
                                 </p>
 
                             </div>

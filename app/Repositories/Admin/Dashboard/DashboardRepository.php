@@ -90,7 +90,10 @@ class DashboardRepository implements DashboardRepositoryInterface
      */
     public function getTherapists(): Collection
     {
-        return Therapists::query()->orderBy('name')->get();
+        return Therapists::query()
+            ->where('status', 'available')
+            ->orderBy('name')
+            ->get();
     }
 
     /**
@@ -127,11 +130,17 @@ class DashboardRepository implements DashboardRepositoryInterface
         return Services::query()
             ->withCount([
                 'appointments as appointments_count' => function ($query) use ($today) {
-                    $query->whereDate('appointment_date', $today->toDateString());
+                    $query->whereDate('appointment_date', $today->toDateString())
+                        ->whereNotIn('status', [
+                            'cancelled',
+                            'rejected',
+                            'failed',
+                            'no show',
+                        ]);
                 },
             ])
             ->orderByDesc('appointments_count')
-            ->limit(5)
+            ->limit(7)
             ->get();
     }
 

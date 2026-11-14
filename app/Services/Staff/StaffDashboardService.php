@@ -41,13 +41,10 @@ class StaffDashboardService
 
             'busyTherapistsCount' => $therapists->where('dashboard_status', 'busy')->count(),
 
-            'offlineTherapistsCount' => $therapists->where('dashboard_status', 'unavailable')->count(),
-
             'needsAttention' => $this->dashboardRepository->getNeedsAttention($today),
 
             'appointmentStatistics' => $appointmentStatistics,
 
-            'popularServices' => $this->dashboardRepository->getPopularServices($today),
 
             'recentActivity' => $this->dashboardRepository->getRecentActivity(),
         ];

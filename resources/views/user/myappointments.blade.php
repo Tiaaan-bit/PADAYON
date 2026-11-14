@@ -383,7 +383,7 @@
                                             ========================================================== --}}
                                             @if ($canReschedule)
                                                 <a href="{{ route('user.appointments.reschedule', $appointment->id) }}"
-                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-[#849753] hover:bg-[#849753] hover:text-white text-sm font-medium transition">
+                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-white bg-[#849753] hover:bg-[#6F4E37] hover:text-white text-sm font-medium transition">
                                                     Reschedule
                                                 </a>
                                             @endif

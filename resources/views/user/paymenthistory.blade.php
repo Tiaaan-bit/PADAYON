@@ -441,8 +441,7 @@
                                                         Down Payment
                                                     </span>
                                                 @else
-                                                    <span
-                                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold rounded-full whitespace-nowrap">
+                                                    <span>
                                                         {{ ucfirst($payment->payment_type ?? 'N/A') }}
                                                     </span>
                                                 @endif

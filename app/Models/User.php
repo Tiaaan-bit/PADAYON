@@ -61,12 +61,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === UserStatus::PENDING;
     }
 
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === UserStatus::ACTIVE;
     }
 
     /*

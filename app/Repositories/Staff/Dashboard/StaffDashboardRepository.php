@@ -3,7 +3,6 @@
 namespace App\Repositories\Staff\Dashboard;
 
 use App\Enums\Admin\Appointment\AppointmentStatus;
-use App\Models\Services;
 use App\Models\Therapists;
 use App\Models\UsersAppointments;
 use Carbon\Carbon;
@@ -38,7 +37,7 @@ class StaffDashboardRepository implements StaffDashboardRepositoryInterface
     {
         return UsersAppointments::query()->whereDate('appointment_date', $today->toDateString())->where('status', AppointmentStatus::PENDING->value)->count();
     }
-    
+
 
     /**
      * Appointment status counts for today.
@@ -53,7 +52,10 @@ class StaffDashboardRepository implements StaffDashboardRepositoryInterface
      */
     public function getTherapists(): Collection
     {
-        return Therapists::query()->orderBy('name')->get();
+        return Therapists::query()
+            ->where('status', 'available')
+            ->orderBy('name')
+            ->get();
     }
 
     /**
@@ -82,21 +84,7 @@ class StaffDashboardRepository implements StaffDashboardRepositoryInterface
             ->get();
     }
 
-    /**
-     * Most-booked services based on appointments scheduled today.
-     */
-    public function getPopularServices(Carbon $today): Collection
-    {
-        return Services::query()
-            ->withCount([
-                'appointments as appointments_count' => function ($query) use ($today) {
-                    $query->whereDate('appointment_date', $today->toDateString());
-                },
-            ])
-            ->orderByDesc('appointments_count')
-            ->limit(5)
-            ->get();
-    }
+
 
     /**
      * Recent activity represented by recently created appointments.

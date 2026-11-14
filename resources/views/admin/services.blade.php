@@ -158,9 +158,7 @@
                                     Add New Service
                                 </h3>
 
-                                <p class="text-xs text-gray-500 mt-0.5">
-                                    Create a new appointment service.
-                                </p>
+
 
                             </div>
 
@@ -511,8 +509,8 @@
                                                             'price' => $service->price,
                                                             'status' => $service->status,
                                                         ]) }})"
-                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition whitespace-nowrap">
-                                                        Modify
+                                                        class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#849753] text-white  hover:bg-[#6F4E37] transition whitespace-nowrap">
+                                                        Update
                                                     </button>
 
 
@@ -525,7 +523,7 @@
 
                                                         <button type="submit"
                                                             onclick="return confirm('Delete {{ addslashes($service->name) }}? This cannot be undone.')"
-                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                                            class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#6F4E37] text-white hover:bg-red-600 transition whitespace-nowrap">
                                                             Delete
                                                         </button>
 
@@ -578,12 +576,8 @@
                             <div>
 
                                 <h3 class="text-lg font-semibold text-gray-800">
-                                    Modify Service
+                                    Update Service
                                 </h3>
-
-                                <p class="text-xs text-gray-500 mt-0.5">
-                                    Update the selected appointment service.
-                                </p>
 
                             </div>
 

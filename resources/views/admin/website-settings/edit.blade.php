@@ -24,11 +24,6 @@
                 Appointment Booking Schedule
             </h3>
 
-            <p class="mt-1 text-sm text-gray-500">
-                Choose a date when appointment bookings should be closed.
-                Other dates will remain available.
-            </p>
-
             @if (session('success'))
                 <div class="mt-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
                     {{ session('success') }}
@@ -52,7 +47,8 @@
 
                     <input type="date" id="booking_closed_date" name="booking_closed_date"
                         min="{{ now('Asia/Manila')->toDateString() }}"
-                        value="{{ old('booking_closed_date', optional($settings->booking_closed_date)->format('Y-m-d')) }}"                        required
+                        value="{{ old('booking_closed_date', optional($settings->booking_closed_date)->format('Y-m-d')) }}"
+                        required
                         class="w-full rounded-xl border border-gray-300 px-4 py-3
                                focus:border-[#849753] focus:outline-none focus:ring-2
                                focus:ring-[#849753]/30" />
@@ -109,10 +105,6 @@
                 <h2 class="text-lg font-semibold text-gray-800">
                     Website Identity
                 </h2>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Change your website name and logo displayed across the website.
-                </p>
 
                 <div class="mt-5 space-y-5">
                     {{-- Website Name --}}
@@ -191,10 +183,6 @@
                     Facebook Page
                 </h2>
 
-                <p class="mt-1 text-sm text-gray-500">
-                    Set the Facebook page name and link.
-                </p>
-
                 <div class="mt-5 space-y-4">
                     <div>
                         <label for="facebook_name" class="mb-2 block text-sm font-medium text-gray-700">
@@ -224,10 +212,6 @@
                 <h2 class="text-lg font-semibold text-gray-800">
                     Location
                 </h2>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Set the business address and the map link customers can open.
-                </p>
 
                 <div class="mt-5 space-y-4">
                     <div>
@@ -279,10 +263,6 @@
                 <h2 class="text-lg font-semibold text-gray-800">
                     Working Hours
                 </h2>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Set the daily opening and closing times.
-                </p>
 
                 <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>

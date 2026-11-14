@@ -252,6 +252,35 @@
                         </button>
                     </div>
 
+                    {{-- Password Requirements --}}
+                    <div id="passwordRequirements" class="hidden mt-3 space-y-2">
+
+                        <p class="text-xs font-semibold text-gray-600">
+                            Password must contain:
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5">
+
+                            <p id="lengthRequirement" class="hidden text-xs text-gray-500">
+                                • At least 8 characters
+                            </p>
+
+                            <p id="numberRequirement" class="hidden text-xs text-gray-500">
+                                • At least one number
+                            </p>
+
+                            <p id="specialRequirement" class="hidden text-xs text-gray-500">
+                                • At least one symbol
+                            </p>
+
+                            <p id="uppercaseRequirement" class="hidden text-xs text-gray-500">
+                                • At least one uppercase letter
+                            </p>
+
+                        </div>
+                    </div>
+
+
                     @error('password')
                         <p class="mt-1.5 text-xs text-red-500">
                             {{ $message }}
@@ -300,63 +329,41 @@
 
 
             {{-- Privacy Policy and Terms & Conditions --}}
-            <div class="flex items-center gap-6">
+            <div>
 
-                {{-- Privacy Policy --}}
-                <div>
-                    <label class="flex 1 items-start gap-2.5 cursor-pointer">
+                <label class="flex items-start gap-2.5 cursor-pointer">
 
-                        <input type="checkbox" name="privacy_policy" value="1" required @checked(old('privacy_policy'))
-                            class="mt-0.5 h-4 w-4 rounded border-gray-300
-                    text-[#849753] focus:ring-[#849753]">
+                    <input type="checkbox" name="agreement" value="1" required @checked(old('agreement'))
+                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300
+            text-[#849753] focus:ring-[#849753]">
 
-                        <span class="text-xs text-gray-600">
-                            I have read and understood the
+                    <span class="text-xs leading-5 text-gray-600">
 
-                            <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer"
-                                class="font-semibold text-[#849753] hover:underline">
-                                Privacy Policy
-                            </a>.
-                        </span>
+                        I have read and agree to the
 
-                    </label>
+                        <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer"
+                            class="font-semibold text-[#849753] hover:underline">
+                            Privacy Policy
+                        </a>
 
-                    @error('privacy_policy')
-                        <p class="ml-6 mt-1 text-xs text-red-500">
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
+                        and
 
-                {{-- Terms and Conditions --}}
-                <div>
-                    <label class="flex 1 items-start gap-2.5 cursor-pointer">
+                        <a href="{{ route('terms-and-conditions') }}" target="_blank" rel="noopener noreferrer"
+                            class="font-semibold text-[#849753] hover:underline">
+                            Terms and Conditions
+                        </a>.
 
-                        <input type="checkbox" name="terms_conditions" value="1" required
-                            @checked(old('terms_conditions'))
-                            class="mt-0.5 h-4 w-4 rounded border-gray-300
-                    text-[#849753] focus:ring-[#849753]">
+                    </span>
 
-                        <span class="text-xs text-gray-600">
-                            I agree to the
+                </label>
 
-                            <a href="{{ route('terms-and-conditions') }}" target="_blank" rel="noopener noreferrer"
-                                class="font-semibold text-[#849753] hover:underline">
-                                Terms and Conditions
-                            </a>.
-                        </span>
-
-                    </label>
-
-                    @error('terms_conditions')
-                        <p class="ml-6 mt-1 text-xs text-red-500">
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
+                @error('agreement')
+                    <p class="ml-6 mt-1 text-xs text-red-500">
+                        {{ $message }}
+                    </p>
+                @enderror
 
             </div>
-
 
             {{-- Password visibility toggle --}}
             <script>
@@ -380,6 +387,63 @@
                         'Show ' + (inputId === 'password' ? 'password' : 'confirm password')
                     );
                 }
+
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    const passwordInput = document.getElementById('password');
+                    const passwordRequirements = document.getElementById('passwordRequirements');
+
+                    if (!passwordInput) return;
+
+                    const lengthRequirement = document.getElementById('lengthRequirement');
+                    const numberRequirement = document.getElementById('numberRequirement');
+                    const specialRequirement = document.getElementById('specialRequirement');
+                    const uppercaseRequirement = document.getElementById('uppercaseRequirement');
+
+                    function updatePasswordRequirements() {
+
+                        const password = passwordInput.value;
+
+                        const requirements = [{
+                                element: lengthRequirement,
+                                passed: password.length >= 8
+                            },
+                            {
+                                element: numberRequirement,
+                                passed: /[0-9]/.test(password)
+                            },
+                            {
+                                element: specialRequirement,
+                                passed: /[^A-Za-z0-9]/.test(password)
+                            },
+                            {
+                                element: uppercaseRequirement,
+                                passed: /[A-Z]/.test(password)
+                            }
+                        ];
+
+                        requirements.forEach(requirement => {
+
+                            requirement.element.classList.toggle(
+                                'hidden',
+                                requirement.passed
+                            );
+
+                        });
+
+                        const hasUnmetRequirement = requirements.some(
+                            requirement => !requirement.passed
+                        );
+
+                        passwordRequirements.classList.toggle(
+                            'hidden',
+                            !password || !hasUnmetRequirement
+                        );
+                    }
+
+                    passwordInput.addEventListener('input', updatePasswordRequirements);
+
+                });
             </script>
 
 

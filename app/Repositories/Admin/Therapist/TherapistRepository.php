@@ -30,7 +30,7 @@ class TherapistRepository implements TherapistRepositoryInterface
 
         return $query
             ->latest()
-            ->paginate(6)
+            ->paginate(4)
             ->withQueryString();
     }
 
