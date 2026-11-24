@@ -338,7 +338,6 @@
 
                                             @php
                                                 $timezone = 'Asia/Manila';
-
                                                 $now = now($timezone);
 
                                                 $canReschedule =
@@ -377,39 +376,118 @@
                                                     $appointment->payment_method === 'branch';
                                             @endphp
 
-
-                                            {{-- =========================================================
-                                                RESCHEDULE
-                                            ========================================================== --}}
+                                            {{-- RESCHEDULE --}}
                                             @if ($canReschedule)
                                                 <a href="{{ route('user.appointments.reschedule', $appointment->id) }}"
-                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-white bg-[#849753] hover:bg-[#6F4E37] hover:text-white text-sm font-medium transition">
+                                                    class="w-full rounded-lg border border-[#849753] px-4 py-2 text-center text-white bg-[#849753] hover:bg-[#6F4E37] text-sm font-medium transition">
                                                     Reschedule
                                                 </a>
                                             @endif
 
-
-                                            {{-- =========================================================
-                                                CANCEL — PAY AT COUNTER ONLY
-                                            ========================================================== --}}
+                                            {{-- CANCEL --}}
                                             @if ($canCancel)
-                                                <form action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('PUT')
+                                                <div x-data="{
+                                                    showCancelModal: false,
+                                                    isCancelling: false
+                                                }">
 
-                                                    <button type="submit"
-                                                        onclick="return confirm('Cancel this appointment?')"
-                                                        class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm transition">
+                                                    <button type="button" @click="showCancelModal = true"
+                                                        class="w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 text-sm font-medium transition">
                                                         Cancel
                                                     </button>
-                                                </form>
+
+                                                    {{-- CANCEL CONFIRMATION MODAL --}}
+                                                    <div x-cloak x-show="showCancelModal" x-transition.opacity
+                                                        @keydown.escape.window="if (!isCancelling) showCancelModal = false"
+                                                        @click.self="if (!isCancelling) showCancelModal = false"
+                                                        class="fixed inset-0 z-100 flex items-center justify-center bg-black/50 px-4">
+
+                                                        <div
+                                                            class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+
+                                                            {{-- LOADING SCREEN --}}
+                                                            <div x-cloak x-show="isCancelling" x-transition.opacity
+                                                                class="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-2xl bg-white/95 p-6">
+
+                                                                <div
+                                                                    class="mb-5 h-14 w-14 animate-spin rounded-full border-4 border-gray-200 border-t-red-600">
+                                                                </div>
+
+                                                                <h3 class="text-lg font-bold text-[#6F4E37]">
+                                                                    Cancelling Appointment
+                                                                </h3>
+
+                                                                <p class="mt-2 text-center text-sm text-gray-500">
+                                                                    Please wait while we process your cancellation.
+                                                                </p>
+
+                                                                <p class="mt-4 text-xs text-gray-400">
+                                                                    Please do not close or refresh this page.
+                                                                </p>
+                                                            </div>
+
+                                                            {{-- WARNING ICON --}}
+                                                            <div
+                                                                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                                                                <svg class="h-8 w-8 text-red-600" fill="none"
+                                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                            </div>
+
+                                                            {{-- TITLE --}}
+                                                            <h3 class="mb-2 text-center text-xl font-bold text-[#6F4E37]">
+                                                                Cancel Appointment?
+                                                            </h3>
+
+                                                            {{-- DESCRIPTION --}}
+                                                            <p
+                                                                class="mb-6 text-center text-sm leading-relaxed text-gray-600">
+                                                                Are you sure you want to cancel this appointment?
+                                                                This action cannot be undone.
+                                                            </p>
+
+                                                            {{-- BUTTONS --}}
+                                                            <div class="flex gap-3">
+
+                                                                <button type="button" @click="showCancelModal = false"
+                                                                    :disabled="isCancelling"
+                                                                    class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition disabled:opacity-50">
+                                                                    Keep Appointment
+                                                                </button>
+
+                                                                <form
+                                                                    action="{{ route('user.my-appointments.cancel', $appointment->id) }}"
+                                                                    method="POST" class="flex-1"
+                                                                    @submit="isCancelling = true">
+
+                                                                    @csrf
+                                                                    @method('PUT')
+
+                                                                    <button type="submit" :disabled="isCancelling"
+                                                                        class="w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition disabled:cursor-not-allowed disabled:opacity-60">
+
+                                                                        <span x-show="!isCancelling">
+                                                                            Yes, Cancel
+                                                                        </span>
+
+                                                                        <span x-show="isCancelling">
+                                                                            Processing...
+                                                                        </span>
+
+                                                                    </button>
+                                                                </form>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
                                             @endif
 
-
-                                            {{-- =========================================================
-                                                NO ACTION
-                                            ========================================================== --}}
+                                            {{-- NO ACTION --}}
                                             @if (!$canReschedule && !$canCancel)
                                                 <span>No Action</span>
                                             @endif
@@ -441,7 +519,8 @@
         {{-- ================================================================ --}}
 
         <div x-show="showAppointmentModal" x-cloak x-transition.opacity class="fixed inset-0 z-50 overflow-y-auto"
-            role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle" @click.self="closeAppointmentModal()">
+            role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle"
+            @click.self="closeAppointmentModal()">
 
             {{-- DARK OVERLAY --}}
             <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="closeAppointmentModal()"></div>

@@ -17,17 +17,9 @@ class StaffTransactionsController extends Controller
     {
         $transactionList = $transactions->getAll($request->input('date'), $request->input('payment_method'), $request->input('amount'));
 
-        $totalServicePrice = $transactions->getTotalServicePrice();
-
-        $totalAddOnPrice = $transactions->getTotalAddOnPrice();
-
-        $totalAmountPaid = $transactions->getTotalAmountPaid();
 
         return view('staff.transactions', [
             'transactions' => $transactionList,
-            'totalServicePrice' => $totalServicePrice,
-            'totalAddOnPrice' => $totalAddOnPrice,
-            'totalAmountPaid' => $totalAmountPaid,
         ]);
     }
 

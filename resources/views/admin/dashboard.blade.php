@@ -33,6 +33,44 @@
         };
 
         $maxAppointmentCount = max(1, (int) $appointmentStatistics->max('count'));
+
+        $paymentStatusLabel = function ($status) {
+            $status = strtolower((string) ($status ?? 'unpaid'));
+
+            return match ($status) {
+                'paid' => 'Paid',
+                'unpaid' => 'Unpaid',
+                'pending' => 'Pending',
+                'failed' => 'Failed',
+                default => ucfirst($status),
+            };
+        };
+
+        $paymentStatusClasses = function ($status) {
+            return match (strtolower((string) ($status ?? 'unpaid'))) {
+                'paid' => 'bg-green-100 text-green-800',
+                'unpaid' => 'bg-orange-100 text-orange-800',
+                'pending' => 'bg-amber-100 text-amber-800',
+                'failed' => 'bg-red-100 text-red-800',
+                default => 'bg-gray-100 text-gray-700',
+            };
+        };
+
+        $paymentMethodLabel = function ($method) {
+            return match (strtolower((string) ($method ?? ''))) {
+                'gcash' => 'GCash',
+                'branch' => 'Pay at Counter',
+                default => ucfirst((string) ($method ?? 'Not specified')),
+            };
+        };
+
+        $paymentTypeLabel = function ($type) {
+            return match (strtolower((string) ($type ?? ''))) {
+                'full' => 'Full Payment',
+                'downpayment' => 'Downpayment',
+                default => ucfirst((string) ($type ?? '')),
+            };
+        };
     @endphp
 
     <div class="min-h-screen bg-[#D6BB9E] px-4 py-6 sm:px-6 lg:px-8">
@@ -55,11 +93,6 @@
                     </p>
                 </div>
 
-                <a href="{{ route('admin.quick-book') }}"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
-                    <span class="text-lg leading-none">+</span>
-                    Quick Book
-                </a>
             </div>
 
             {{-- SUMMARY CARDS --}}
@@ -120,17 +153,18 @@
 
 
             {{-- SCHEDULE + NEEDS ATTENTION --}}
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-1">
 
                 {{-- TODAY'S SCHEDULE --}}
+                {{-- TODAY'S TRANSACTIONS --}}
                 <section x-data="{ expanded: false }"
-                    class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm xl:col-span-2">
+                    class="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
-                            <h2 class="font-bold text-gray-900"> Today's Appointments</h2>
+                            <h2 class="font-bold text-gray-900">Today's Appointments</h2>
                         </div>
 
-                        <a href="{{ route('admin.appointments') }}"
+                        <a href="{{ route('staff.transactions') }}"
                             class="text-sm font-semibold text-[#718343] hover:underline">
                             View all
                         </a>
@@ -139,15 +173,26 @@
                     @if ($todayAppointments->isEmpty())
                         <div class="px-5 py-12 text-center">
                             <p class="font-semibold text-gray-800">
-                                No appointments scheduled today
+                                No appointments Transactions today
                             </p>
                             <p class="mt-1 text-sm text-gray-500">
-                                New bookings will appear here.
+                                New Transactions will appear here.
                             </p>
                         </div>
                     @else
                         <div class="divide-y divide-gray-100">
                             @foreach ($todayAppointments as $appointment)
+                                @php
+                                    $totalAmount =
+                                        (float) $appointment->service_price + (float) $appointment->addons_price;
+
+                                    $amountPaid = (float) ($appointment->amount_paid ?? 0);
+
+                                    $remainingBalance = max(0, $totalAmount - $amountPaid);
+
+                                    $paymentStatus = $paymentStatusLabel($appointment->payment_status);
+                                @endphp
+
                                 <div x-show="expanded || {{ $loop->index }} < 5"
                                     class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div class="flex items-start gap-3">
@@ -176,16 +221,53 @@
                                         </div>
                                     </div>
 
-                                    <div class="sm:text-right">
-                                        <span
-                                            class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($appointment->status) }}">
-                                            {{ $statusLabel($appointment) }}
-                                        </span>
 
-                                        <p class="mt-2 text-sm font-bold text-gray-800">
-                                            {{ $money((float) $appointment->service_price + (float) $appointment->addons_price) }}
+                                    <div class="mt-2 space-y-2 text-sm sm:mt-0 sm:text-right">
+
+                                        {{-- Payment Status --}}
+                                        <div>
+                                            <div>
+                                                <span
+                                                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($appointment->status) }}">
+                                                    {{ $statusLabel($appointment) }}
+                                                </span>
+                                                <span
+                                                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $paymentStatusClasses($appointment->payment_status) }}">
+                                                    {{ $paymentStatus }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+
+                                        <p class="text-gray-600">
+                                            <span class="font-medium">
+                                                {{ $paymentMethodLabel($appointment->payment_method) }}-{{ $paymentTypeLabel($appointment->payment_type) }}
+                                            </span>
                                         </p>
+
+                                        {{-- Payment Paid --}}
+
+                                        <p class="text-gray-600">
+                                            <span class="font-medium">Amount Paid:</span>
+                                            <span class="font-semibold ">
+                                                {{ $money($amountPaid) }}
+                                            </span>
+                                        </p>
+
+
+
+
+                                        {{-- Remaining Balance --}}
+                                        <p class="text-gray-600">
+                                            <span class="font-medium">Remaining Balance:</span>
+                                            <span
+                                                class="font-semibold {{ $remainingBalance > 0 ? 'text-red-600' : 'text-green-700' }}">
+                                                {{ $money($remainingBalance) }}
+                                            </span>
+                                        </p>
+
                                     </div>
+
                                 </div>
                             @endforeach
                         </div>
@@ -209,6 +291,57 @@
                     @endif
                 </section>
 
+
+            </div>
+
+            {{-- REVENUE OVERVIEW + APPOINTMENT STATISTICS --}}
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+
+                {{-- WEEKLY REVENUE --}}
+                <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2">
+                    <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+                        <div>
+                            <h2 class="font-bold text-gray-900">
+                                Revenue Overview This Week
+                            </h2>
+                        </div>
+
+                        <div class="text-left sm:text-right">
+                            <p class="text-xs text-gray-500">Weekly total</p>
+                            <p class="text-xl font-bold text-[#6F4E37]">
+                                {{ $money($weeklyRevenueTotal) }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <div class="flex h-48 items-end justify-around gap-3 border-b border-gray-200 pb-2 sm:gap-5">
+                            @foreach ($weeklyRevenue as $day)
+                                @php
+                                    $barHeight =
+                                        $day['amount'] > 0 ? max(8, ($day['amount'] / $weeklyRevenueMaximum) * 100) : 0;
+                                @endphp
+
+                                <div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
+                                    <p class="text-center text-[10px] font-medium text-gray-600 sm:text-xs">
+                                        {{ $day['amount'] > 0 ? $money($day['amount']) : '₱0' }}
+                                    </p>
+
+                                    <div class="flex h-full w-full items-end justify-center">
+                                        <div class="w-full max-w-12 rounded-t-lg bg-[#849753] transition hover:bg-[#6F4E37]"
+                                            style="height: {{ $barHeight }}%;"
+                                            title="{{ $day['date'] }}: {{ $money($day['amount']) }}"></div>
+                                    </div>
+
+                                    <p class="text-xs font-medium text-gray-500">
+                                        {{ $day['label'] }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+
                 {{-- NEEDS ATTENTION --}}
                 <section x-data="{ expanded: false }"
                     class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
@@ -218,10 +351,6 @@
                                 Needs Attention
                             </h2>
                         </div>
-
-                        <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">
-                            {{ $needsAttention->count() }}
-                        </span>
                     </div>
 
                     @if ($needsAttention->isEmpty())
@@ -300,53 +429,9 @@
                 </section>
             </div>
 
-            {{-- REVENUE OVERVIEW + APPOINTMENT STATISTICS --}}
+            {{-- THERAPIST STATUS + POPULAR SERVICES --}}
             <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
 
-                {{-- WEEKLY REVENUE --}}
-                <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2">
-                    <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-                        <div>
-                            <h2 class="font-bold text-gray-900">
-                                Revenue Overview This Week
-                            </h2>
-                        </div>
-
-                        <div class="text-left sm:text-right">
-                            <p class="text-xs text-gray-500">Weekly total</p>
-                            <p class="text-xl font-bold text-[#6F4E37]">
-                                {{ $money($weeklyRevenueTotal) }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <div class="flex h-48 items-end justify-around gap-3 border-b border-gray-200 pb-2 sm:gap-5">
-                            @foreach ($weeklyRevenue as $day)
-                                @php
-                                    $barHeight =
-                                        $day['amount'] > 0 ? max(8, ($day['amount'] / $weeklyRevenueMaximum) * 100) : 0;
-                                @endphp
-
-                                <div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-                                    <p class="text-center text-[10px] font-medium text-gray-600 sm:text-xs">
-                                        {{ $day['amount'] > 0 ? $money($day['amount']) : '₱0' }}
-                                    </p>
-
-                                    <div class="flex h-full w-full items-end justify-center">
-                                        <div class="w-full max-w-12 rounded-t-lg bg-[#849753] transition hover:bg-[#6F4E37]"
-                                            style="height: {{ $barHeight }}%;"
-                                            title="{{ $day['date'] }}: {{ $money($day['amount']) }}"></div>
-                                    </div>
-
-                                    <p class="text-xs font-medium text-gray-500">
-                                        {{ $day['label'] }}
-                                    </p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </section>
 
                 {{-- APPOINTMENT STATISTICS --}}
                 <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -389,10 +474,6 @@
                         @endforeach
                     </div>
                 </section>
-            </div>
-
-            {{-- THERAPIST STATUS + POPULAR SERVICES --}}
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
                 {{-- THERAPIST STATUS --}}
                 <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">

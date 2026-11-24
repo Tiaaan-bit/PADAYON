@@ -261,27 +261,40 @@
                                                 </span>
                                                 <span
                                                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $paymentStatusClasses($appointment->payment_status) }}">
-                                                    {{ $paymentStatus }} -
-                                                    {{ $paymentMethodLabel($appointment->payment_method) }}-{{ $paymentTypeLabel($appointment->payment_type) }}
+                                                    {{ $paymentStatus }}
                                                 </span>
                                             </div>
                                         </div>
+
+
+
+
+                                        <p class="text-gray-600">
+                                            <span class="font-medium">
+                                                {{ $paymentMethodLabel($appointment->payment_method) }}-{{ $paymentTypeLabel($appointment->payment_type) }}
+                                            </span>
+                                        </p>
+
+                                        {{-- Payment Paid --}}
+
+                                        <p class="text-gray-600">
+                                            <span class="font-medium">Payment Paid:</span>
+                                            <span class="font-semibold ">
+                                                {{ $money($amountPaid) }}
+                                            </span>
+                                        </p>
+
+
+
 
                                         {{-- Remaining Balance --}}
                                         <p class="text-gray-600">
                                             <span class="font-medium">Remaining Balance:</span>
                                             <span
-                                                class="font-semibold
-            {{ $remainingBalance > 0 ? 'text-red-600' : 'text-green-700' }}">
+                                                class="font-semibold {{ $remainingBalance > 0 ? 'text-red-600' : 'text-green-700' }}">
                                                 {{ $money($remainingBalance) }}
                                             </span>
                                         </p>
-
-                                        {{-- Total Appointment Cost --}}
-                                        <p class="border-t border-gray-100 pt-2 font-bold text-gray-900">
-                                            Total: {{ $money($totalAmount) }}
-                                        </p>
-
                                     </div>
 
                                 </div>
@@ -320,10 +333,6 @@
                                 Needs Attention
                             </h2>
                         </div>
-
-                        <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">
-                            {{ $needsAttention->count() }}
-                        </span>
                     </div>
 
                     @if ($needsAttention->isEmpty())

@@ -25,17 +25,6 @@ class StaffAppointmentRepository implements StaffAppointmentRepositoryInterface
         }
 
         return [
-            'totalAppointments' => UsersAppointments::count(),
-
-            'totalConfirmed' => UsersAppointments::where('status', 'confirm')->count(),
-
-            'totalRejected' => UsersAppointments::where('status', 'rejected')->count(),
-
-            'totalPending' => UsersAppointments::where('status', 'pending')->count(),
-
-            'totalCancelled' => UsersAppointments::where('status', 'cancelled')->count(),
-
-            'totalNoShow' => UsersAppointments::where('status', 'no show')->count(),
 
             'appointments' => $query->paginate(5)->withQueryString(),
 

@@ -9,564 +9,248 @@
 
         <div class="flex-1 p-4 sm:p-6">
 
+
+
             {{-- ========================================================= --}}
-            {{-- MAIN ALPINE COMPONENT --}}
+            {{-- PAGE HEADER --}}
             {{-- ========================================================= --}}
 
-            <div x-data="{
-                showEditModal: false,
-            
-                therapistId: null,
-                name: '',
-                description: '',
-                specialty: '',
-                status: 'available',
-                currentImage: null,
-            
-                openEditModal(therapist) {
-            
-                    this.showEditModal = true;
-            
-                    this.therapistId = therapist.id;
-            
-                    this.name = therapist.name ?? '';
-            
-                    this.description = therapist.description ?? '';
-            
-                    this.specialty = therapist.specialty ?? '';
-            
-                    this.status = therapist.status ?? 'available';
-            
-                    this.currentImage = therapist.image ?
-                        '{{ asset('storage') }}/' + therapist.image :
-                        null;
-                },
-            
-                closeModals() {
-            
-                    this.showEditModal = false;
-            
-                    this.therapistId = null;
-            
-                    this.name = '';
-            
-                    this.description = '';
-            
-                    this.specialty = '';
-            
-                    this.status = 'available';
-            
-                    this.currentImage = null;
-                }
-            }" @keydown.escape.window="closeModals()">
+            <div class="mb-6">
 
-                {{-- ========================================================= --}}
-                {{-- PAGE HEADER --}}
-                {{-- ========================================================= --}}
+                <h2 class="text-xl font-bold text-gray-800">
+                    Manage Therapists
+                </h2>
 
-                <div class="mb-6">
+            </div>
 
-                    <h2 class="text-xl font-bold text-gray-800">
-                        Manage Therapists
-                    </h2>
+            {{-- ========================================================= --}}
+            {{-- FILTER --}}
+            {{-- ========================================================= --}}
 
-                </div>
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
 
+                <form method="GET" action="{{ route('staff.therapists') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-                {{-- ========================================================= --}}
-                {{-- SUMMARY CARDS --}}
-                {{-- ========================================================= --}}
+                    {{-- Search --}}
+                    <div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Search Name
+                        </label>
 
-                    {{-- Total --}}
-                    <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
-
-                        <div class="text-center">
-
-                            <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                                {{ $therapists->total() }}
-                            </p>
-
-                            <p class="text-xs text-gray-400 font-medium mt-0.5">
-                                Total Therapists
-                            </p>
-
-                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Search by therapist name"
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
                     </div>
 
 
-                    {{-- Available --}}
-                    <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
+                    {{-- Status --}}
+                    <div>
 
-                        <div class="text-center">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
 
-                            <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                                {{ $therapists->where('status', 'available')->count() }}
-                            </p>
+                        <select name="status"
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
-                            <p class="text-xs text-gray-400 font-medium mt-0.5">
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option value="available" {{ request('status') === 'available' ? 'selected' : '' }}>
                                 Available
-                            </p>
+                            </option>
 
-                        </div>
-
-                    </div>
-
-
-                    {{-- Unavailable --}}
-                    <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5 flex items-center justify-center">
-
-                        <div class="text-center">
-
-                            <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                                {{ $therapists->where('status', 'unavailable')->count() }}
-                            </p>
-
-                            <p class="text-xs text-gray-400 font-medium mt-0.5">
+                            <option value="unavailable" {{ request('status') === 'unavailable' ? 'selected' : '' }}>
                                 Unavailable
-                            </p>
+                            </option>
 
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- ========================================================= --}}
-                {{-- FILTER --}}
-                {{-- ========================================================= --}}
-
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 mb-6">
-
-                    <form method="GET" action="{{ route('staff.therapists') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-                        {{-- Search --}}
-                        <div>
-
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Search Name
-                            </label>
-
-                            <input type="text" name="search" value="{{ request('search') }}"
-                                placeholder="Search by therapist name"
-                                class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-
-                        </div>
-
-
-                        {{-- Status --}}
-                        <div>
-
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Status
-                            </label>
-
-                            <select name="status"
-                                class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-
-                                <option value="">
-                                    All Status
-                                </option>
-
-                                <option value="available" {{ request('status') === 'available' ? 'selected' : '' }}>
-                                    Available
-                                </option>
-
-                                <option value="unavailable" {{ request('status') === 'unavailable' ? 'selected' : '' }}>
-                                    Unavailable
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        {{-- Specialty --}}
-                        <div>
-
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Specialty
-                            </label>
-
-                            <input type="text" name="specialty" value="{{ request('specialty') }}"
-                                placeholder="Search by specialty"
-                                class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-
-                        </div>
-
-
-                        {{-- Buttons --}}
-                        <div class="flex items-center gap-3">
-
-                            <button type="submit"
-                                class="rounded-lg bg-[#849753] px-6 py-2 text-white hover:bg-[#6F4E37] text-sm w-40">
-                                Filter
-                            </button>
-
-                            <a href="{{ route('staff.therapists') }}"
-                                class="rounded-lg border border-gray-300 px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 w-40 text-center">
-                                Reset
-                            </a>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-
-                {{-- ========================================================= --}}
-                {{-- THERAPISTS --}}
-                {{-- ========================================================= --}}
-
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5">
-
-                    <div class="flex items-center justify-between mb-4">
-
-                        <h3 class="font-semibold text-gray-800">
-                            All Therapists
-                        </h3>
+                        </select>
 
                     </div>
 
 
-                    {{-- Empty --}}
-                    @if ($therapists->isEmpty())
+                    {{-- Specialty --}}
+                    <div>
 
-                        <div class="py-16 text-center text-gray-400">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Specialty
+                        </label>
 
-                            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor"
-                                stroke-width="1.5" viewBox="0 0 24 24">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
-                            </svg>
+                        <input type="text" name="specialty" value="{{ request('specialty') }}"
+                            placeholder="Search by specialty"
+                            class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
 
-                            <p class="text-sm">
-                                No therapists found.
-                            </p>
-
-                        </div>
-                    @else
-                        {{-- ================================================= --}}
-                        {{-- THERAPIST CARDS --}}
-                        {{-- ================================================= --}}
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-                            @foreach ($therapists as $therapist)
-                                <div
-                                    class="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
-
-                                    {{-- Image --}}
-                                    <div class="relative h-60 bg-gray-100">
-
-                                        @if ($therapist->image)
-                                            <img src="{{ asset('storage/' . $therapist->image) }}"
-                                                alt="{{ $therapist->name }}" class="w-full h-full object-cover">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center">
-
-                                                <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor"
-                                                    stroke-width="1.5" viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
-                                                </svg>
-
-                                            </div>
-                                        @endif
-
-                                    </div>
+                    </div>
 
 
-                                    {{-- Card Content --}}
-                                    <div class="p-4 sm:p-5">
+                    {{-- Buttons --}}
+                    <div class="flex items-center gap-3">
 
-                                        <div class="flex items-start justify-between gap-3 mb-3">
+                        <button type="submit"
+                            class="rounded-lg bg-[#849753] px-6 py-2 text-white hover:bg-[#6F4E37] text-sm w-40">
+                            Filter
+                        </button>
 
-                                            <div>
+                        <a href="{{ route('staff.therapists') }}"
+                            class="rounded-lg border border-gray-300 px-6 py-2 text-sm text-gray-700 hover:bg-gray-50 w-40 text-center">
+                            Reset
+                        </a>
 
-                                                <h4 class="font-semibold text-gray-800 text-lg">
-                                                    {{ $therapist->name }}
-                                                </h4>
+                    </div>
 
-                                                <p class="text-sm text-[#849753] font-medium">
-                                                    {{ $therapist->specialty }}
-                                                </p>
+                </form>
 
-                                            </div>
-
-
-                                            {{-- Status --}}
-                                            @if ($therapist->status === 'available')
-                                                <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap">
-
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-
-                                                    Available
-
-                                                </span>
-                                            @else
-                                                <span
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-semibold rounded-full whitespace-nowrap">
-
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-
-                                                    Unavailable
-
-                                                </span>
-                                            @endif
-
-                                        </div>
+            </div>
 
 
-                                        {{-- Description --}}
-                                        <p class="text-sm text-gray-600 mb-4 line-clamp-3">
+            {{-- ========================================================= --}}
+            {{-- THERAPISTS --}}
+            {{-- ========================================================= --}}
 
-                                            {{ $therapist->description ?? 'No description available.' }}
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5">
 
-                                        </p>
+                <div class="flex items-center justify-between mb-4">
 
-
-                                        {{-- Actions --}}
-                                        <div class="flex items-center gap-2">
-
-                                            <button type="button"
-                                                @click="openEditModal({{ \Illuminate\Support\Js::from([
-                                                    'id' => $therapist->id,
-                                                    'name' => $therapist->name,
-                                                    'description' => $therapist->description,
-                                                    'specialty' => $therapist->specialty,
-                                                    'status' => $therapist->status,
-                                                    'image' => $therapist->image,
-                                                ]) }})"
-                                                class="flex-1 text-xs font-semibold px-3 py-2 rounded-lg bg-[#849753] text-white border border-amber-200 hover:bg-[#6F4E37] transition">
-                                                Update Status
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            @endforeach
-
-                        </div>
-
-
-                        {{-- ================================================= --}}
-                        {{-- PAGINATION --}}
-                        {{-- ================================================= --}}
-
-                        @if ($therapists->hasPages())
-                            <div class="px-5 py-4 border-t border-gray-100 pagination">
-
-                                {{ $therapists->links() }}
-
-                            </div>
-                        @endif
-
-                    @endif
+                    <h3 class="font-semibold text-gray-800">
+                        All Therapists
+                    </h3>
 
                 </div>
 
 
-                {{-- ========================================================= --}}
-                {{-- UPDATE THERAPIST STATUS MODAL --}}
-                {{-- ========================================================= --}}
+                {{-- Empty --}}
+                @if ($therapists->isEmpty())
 
-                <div x-show="showEditModal" x-transition.opacity style="display: none;"
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="py-16 text-center text-gray-400">
 
-                    {{-- Overlay --}}
-                    <div class="absolute inset-0 bg-black/50" @click="closeModals()"></div>
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor"
+                            stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
 
+                        <p class="text-sm">
+                            No therapists found.
+                        </p>
 
-                    {{-- Modal --}}
-                    <div x-show="showEditModal" x-transition
-                        class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto"
-                        @click.stop>
+                    </div>
+                @else
+                    {{-- ================================================= --}}
+                    {{-- THERAPIST CARDS --}}
+                    {{-- ================================================= --}}
 
-                        {{-- ================================================= --}}
-                        {{-- MODAL HEADER --}}
-                        {{-- ================================================= --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        @foreach ($therapists as $therapist)
+                            <div
+                                class="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
 
-                            <div>
+                                {{-- Image --}}
+                                <div class="relative h-60 bg-gray-100">
 
-                                <h3 class="text-lg font-semibold text-gray-800">
-                                    Update Therapist Status
-                                </h3>
+                                    @if ($therapist->image)
+                                        <img src="{{ asset('storage/' . $therapist->image) }}" alt="{{ $therapist->name }}"
+                                            class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center">
 
-                                <p class="text-sm text-gray-500 mt-0.5">
-                                    Change the therapist's availability.
-                                </p>
-
-                            </div>
-
-
-                            <button type="button" @click="closeModals()"
-                                class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition">
-                                &times;
-                            </button>
-
-                        </div>
-
-
-                        {{-- ================================================= --}}
-                        {{-- FORM --}}
-                        {{-- ================================================= --}}
-
-                        <form :action="`{{ url('/staff/therapists') }}/${therapistId}`" method="POST"
-                            class="p-6 space-y-5">
-
-                            @csrf
-
-                            @method('PUT')
-
-
-                            {{-- ================================================= --}}
-                            {{-- PROFILE IMAGE --}}
-                            {{-- ================================================= --}}
-
-                            <div class="flex justify-center">
-
-                                <div class="text-center">
-
-                                    <p class="text-sm font-medium text-gray-700 mb-3">
-                                        Profile Picture
-                                    </p>
-
-
-                                    {{-- Image --}}
-                                    <template x-if="currentImage">
-
-                                        <img :src="currentImage" alt="Therapist"
-                                            class="w-32 h-32 rounded-2xl object-cover border border-gray-200 shadow-sm mx-auto">
-
-                                    </template>
-
-
-                                    {{-- No Image --}}
-                                    <template x-if="!currentImage">
-
-                                        <div
-                                            class="w-32 h-32 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto">
-
-                                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor"
+                                            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor"
                                                 stroke-width="1.5" viewBox="0 0 24 24">
                                                 <path
                                                     d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" />
                                             </svg>
 
                                         </div>
-
-                                    </template>
-
-                                </div>
-
-                            </div>
-
-
-                            {{-- ================================================= --}}
-                            {{-- NAME + SPECIALTY --}}
-                            {{-- ================================================= --}}
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                                {{-- Name --}}
-                                <div>
-
-                                    <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Name
-                                    </label>
-
-                                    <h4 class="font-semibold text-gray-800 text-lg" x-text="name"></h4>
+                                    @endif
 
                                 </div>
 
 
-                                {{-- Specialty --}}
-                                <div>
+                                {{-- Card Content --}}
+                                <div class="p-4 sm:p-5">
 
-                                    <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Specialty
-                                    </label>
+                                    <div class="flex items-start justify-between gap-3 mb-3">
 
-                                    <p class="text-sm text-[#849753] font-medium" x-text="specialty"></p>
+                                        <div>
+
+                                            <h4 class="font-semibold text-gray-800 text-lg">
+                                                {{ $therapist->name }}
+                                            </h4>
+
+                                            <p class="text-sm text-[#849753] font-medium">
+                                                {{ $therapist->specialty }}
+                                            </p>
+
+                                        </div>
+
+
+                                        {{-- Status Toggle --}}
+                                        <div class="flex flex-col items-end gap-2">
+
+                                            <span
+                                                class="text-xs font-semibold {{ $therapist->status === 'available' ? 'text-green-600' : 'text-gray-500' }}">
+
+                                                {{ ucfirst($therapist->status) }}
+
+                                            </span>
+
+                                            <form action="{{ route('staff.therapist.update', $therapist->id) }}"
+                                                method="POST" onsubmit="this.querySelector('button').disabled = true;">
+
+                                                @csrf
+                                                @method('PUT')
+
+                                                <input type="hidden" name="status"
+                                                    value="{{ $therapist->status === 'available' ? 'unavailable' : 'available' }}">
+
+                                                <button type="submit" aria-label="Toggle therapist availability"
+                                                    title="Change availability"
+                                                    class="relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 {{ $therapist->status === 'available' ? 'bg-green-500' : 'bg-gray-300' }}">
+
+                                                    <span
+                                                        class="inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 {{ $therapist->status === 'available' ? 'translate-x-6' : 'translate-x-1' }}">
+                                                    </span>
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {{-- Description --}}
+                                    <p class="text-sm text-gray-600 mb-4 line-clamp-3">
+
+                                        {{ $therapist->description ?? 'No description available.' }}
+
+                                    </p>
 
                                 </div>
 
                             </div>
-
-
-                            <div>
-
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-
-                                <p class="text-sm text-gray-600" x-text="description || 'No description available.'">
-                                </p>
-
-                            </div>
-
-                            <div>
-
-                                <label for="status" class="mb-2 block text-sm font-medium text-gray-700">
-                                    Status
-                                </label>
-
-                                <select id="status" name="status" x-model="status"
-                                    class="w-full rounded-xl border border-[#849753] bg-white px-4 py-3 text-sm focus:border-[#849753] focus:ring-[#849753]">
-
-                                    <option value="available">
-                                        Available
-                                    </option>
-
-                                    <option value="unavailable">
-                                        Unavailable
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            {{-- ================================================= --}}
-                            {{-- BUTTONS --}}
-                            {{-- ================================================= --}}
-
-                            <div class="flex items-center justify-end gap-3 pt-2">
-
-                                <button type="button" @click="closeModals()"
-                                    class="rounded-xl bg-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 transition">
-                                    Cancel
-                                </button>
-
-
-                                <button type="submit"
-                                    class="rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white hover:bg-[#6F4E37] transition">
-                                    Update Status
-                                </button>
-
-                            </div>
-
-                        </form>
+                        @endforeach
 
                     </div>
 
-                </div>
+                    {{-- ================================================= --}}
+                    {{-- PAGINATION --}}
+                    {{-- ================================================= --}}
+
+                    @if ($therapists->hasPages())
+                        <div class="px-5 py-4 border-t border-gray-100 pagination">
+
+                            {{ $therapists->links() }}
+
+                        </div>
+                    @endif
+
+                @endif
 
             </div>
-
         </div>
 
     </div>

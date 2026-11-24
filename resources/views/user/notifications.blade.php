@@ -7,52 +7,44 @@
     <div class="min-h-screen p-4 sm:p-6 lg:p-8">
         <div class="max-w-5xl mx-auto">
 
-
-            {{-- Header --}}
-
-            {{-- Header Actions --}}
-            <div class="flex flex-wrap items-center gap-3">
-
-                @if ($unreadNotifications->count() > 0)
-                    <form method="POST" action="{{ route('user.notifications.readAll') }}">
-                        @csrf
-
-                        <button type="submit"
-                            class="px-4 py-2 rounded-xl bg-[#849753] text-white text-sm font-medium hover:bg-[#6F4E37] transition">
-                            Mark All as Read
-                        </button>
-                    </form>
-                @endif
-
-                @if ($readNotifications->isNotEmpty())
-                    <form action="{{ route('user.notifications.destroyAll') }}" method="POST"
-                        onsubmit="return confirm('Delete all read notifications?');">
-                        @csrf
-
-                        <button type="submit" class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700">
-                            Delete All Read
-                        </button>
-                    </form>
-                @endif
-
-            </div>
-
-
             {{-- ========================= --}}
             {{-- UNREAD NOTIFICATIONS --}}
             {{-- ========================= --}}
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div
+                    class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-semibold text-gray-800">
+                            Unread Notifications
+                        </h2>
 
-                    <h2 class="font-semibold text-gray-800">
-                        Unread Notifications
-                    </h2>
+                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-[#849753]/10 text-[#849753]">
+                            {{ $unreadNotifications->count() }}
+                        </span>
+                    </div>
 
-                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-[#849753]/10 text-[#849753]">
-                        {{ $unreadNotifications->count() }}
-                    </span>
+                    @if ($unreadNotifications->count() > 0)
+                        <form method="POST" action="{{ route('user.notifications.readAll') }}" x-data="{ loading: false }"
+                            @submit="loading = true">
+
+                            @csrf
+
+                            <button type="submit" :disabled="loading"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#849753] text-white text-sm font-medium hover:bg-[#6F4E37] transition disabled:opacity-60 disabled:cursor-not-allowed">
+
+                                <svg x-show="loading" x-cloak class="animate-spin h-4 w-4"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                </svg>
+
+                                <span x-text="loading ? 'Marking...' : 'Mark All as Read'"></span>
+                            </button>
+                        </form>
+                    @endif
 
                 </div>
 
@@ -140,26 +132,47 @@
                                 {{-- Actions --}}
                                 <div class="flex sm:flex-col items-center sm:items-end gap-3">
 
-                                    <form method="POST"
-                                        action="{{ route('user.notifications.read', $notification->id) }}">
+                                    <form method="POST" action="{{ route('user.notifications.read', $notification->id) }}"
+                                        x-data="{ loading: false }" @submit="loading = true">
                                         @csrf
 
-                                        <button type="submit"
-                                            class="text-sm font-medium text-[#849753] hover:underline whitespace-nowrap">
-                                            Mark as read
+                                        <button type="submit" :disabled="loading"
+                                            class="inline-flex items-center gap-2 text-sm font-medium text-[#849753] hover:underline whitespace-nowrap disabled:opacity-60">
+
+                                            <svg x-show="loading" x-cloak class="animate-spin h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4" />
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                            </svg>
+
+                                            <span x-text="loading ? 'Marking...' : 'Mark as read'"></span>
+
                                         </button>
                                     </form>
 
 
                                     <form method="POST"
                                         action="{{ route('user.notifications.destroy', $notification->id) }}"
-                                        onsubmit="return confirm('Delete this notification?')">
+                                        x-data="{ loading: false }"
+                                        @submit="if (!confirm('Delete this notification?')) { $event.preventDefault(); } else { loading = true; }">
                                         @csrf
                                         @method('DELETE')
 
-                                        <button type="submit"
-                                            class="text-sm font-medium text-red-500 hover:underline whitespace-nowrap">
-                                            Delete
+                                        <button type="submit" :disabled="loading"
+                                            class="inline-flex items-center gap-2 text-sm font-medium text-red-500 hover:underline whitespace-nowrap disabled:opacity-60">
+
+                                            <svg x-show="loading" x-cloak class="animate-spin h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4" />
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                            </svg>
+
+                                            <span x-text="loading ? 'Deleting...' : 'Delete'"></span>
+
                                         </button>
                                     </form>
 
@@ -187,15 +200,40 @@
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div
+                    class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 
-                    <h2 class="font-semibold text-gray-800">
-                        Read Notifications
-                    </h2>
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-semibold text-gray-800">
+                            Read Notifications
+                        </h2>
 
-                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
-                        {{ $readNotifications->count() }}
-                    </span>
+                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                            {{ $readNotifications->count() }}
+                        </span>
+                    </div>
+
+                    @if ($readNotifications->isNotEmpty())
+                        <form action="{{ route('user.notifications.destroyAll') }}" method="POST" x-data="{ loading: false }"
+                            @submit="if (!confirm('Delete all read notifications?')) { $event.preventDefault(); } else { loading = true; }">
+
+                            @csrf
+
+                            <button type="submit" :disabled="loading"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white text-sm font-medium hover:bg-red-700 transition disabled:opacity-60 disabled:cursor-not-allowed">
+
+                                <svg x-show="loading" x-cloak class="animate-spin h-4 w-4"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                </svg>
+
+                                <span x-text="loading ? 'Deleting...' : 'Delete All Read'"></span>
+                            </button>
+                        </form>
+                    @endif
 
                 </div>
 
@@ -272,14 +310,26 @@
 
 
                                 {{-- Delete --}}
-                                <form method="POST" action="{{ route('user.notifications.destroy', $notification->id) }}"
-                                    onsubmit="return confirm('Delete this notification?')">
+                                <form method="POST"
+                                    action="{{ route('user.notifications.destroy', $notification->id) }}"
+                                    x-data="{ loading: false }"
+                                    @submit="if (!confirm('Delete this notification?')) { $event.preventDefault(); } else { loading = true; }">
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="submit"
-                                        class="text-sm font-medium text-red-500 hover:underline whitespace-nowrap">
-                                        Delete
+                                    <button type="submit" :disabled="loading"
+                                        class="inline-flex items-center gap-2 text-sm font-medium text-red-500 hover:underline whitespace-nowrap disabled:opacity-60">
+
+                                        <svg x-show="loading" x-cloak class="animate-spin h-4 w-4"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4" />
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                        </svg>
+
+                                        <span x-text="loading ? 'Deleting...' : 'Delete'"></span>
+
                                     </button>
                                 </form>
 

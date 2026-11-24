@@ -33,19 +33,4 @@ class StaffTransactionRepository implements StaffTransactionRepositoryInterface
             ->latest()
             ->get();
     }
-
-    public function getTotalServicePrice(): float
-    {
-        return $this->getAllForTotals()->sum(fn($transaction) => $transaction->service->price ?? 0);
-    }
-
-    public function getTotalAddOnPrice(): float
-    {
-        return $this->getAllForTotals()->sum(fn($transaction) => $transaction->addons_price ?? 0);
-    }
-
-    public function getTotalAmountPaid(): float
-    {
-        return (float) $this->getAllForTotals()->sum('amount_paid');
-    }
 }

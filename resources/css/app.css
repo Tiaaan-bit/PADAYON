@@ -53,3 +53,30 @@
 .pagination nav a:focus {
     @apply outline-none ring-2 ring-[#849753]/30;
 }
+
+@keyframes aira-caption-toggle {
+    0%,
+    10% {
+        opacity: 0;
+        transform: translateY(5px);
+        visibility: hidden;
+    }
+
+    15%,
+    65% {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+    }
+
+    75%,
+    100% {
+        opacity: 0;
+        transform: translateY(5px);
+        visibility: hidden;
+    }
+}
+
+.aira-caption {
+    animation: aira-caption-toggle 5s ease-in-out infinite;
+}

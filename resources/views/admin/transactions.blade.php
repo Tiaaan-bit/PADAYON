@@ -150,43 +150,52 @@
 
                 <table class="w-full text-sm">
 
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead>
 
                         <tr class="bg-gray-50 text-left">
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ID
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 CUSTOMER
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 SERVICE DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ADDO-ON DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 THERAPIST
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 APPOINTMENT TIME
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 PAYMENT DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 PAYMENT STATUS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ACTION
                             </th>
 

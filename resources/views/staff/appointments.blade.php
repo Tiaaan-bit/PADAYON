@@ -25,139 +25,6 @@
             </div>
 
 
-            {{-- ====================================================== --}}
-            {{-- STATISTICS --}}
-            {{-- ====================================================== --}}
-
-            <div class="flex flex-wrap items-center gap-4 mb-8">
-
-                {{-- Total Appointments --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalAppointments }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            Total Appointments
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {{-- Confirmed --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalConfirmed }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            Confirmed
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {{-- Rejected --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalRejected }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            Rejected
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {{-- Pending --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalPending }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            Pending
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {{-- Cancelled --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalCancelled ?? 0 }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            Cancelled
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {{-- No Show --}}
-
-                <div
-                    class="bg-white rounded-xl border border-gray-200
-                    shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                    <div class="text-center">
-
-                        <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                            {{ $totalNoShow ?? 0 }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 font-medium mt-0.5">
-                            No Show
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
 
             {{-- ====================================================== --}}
             {{-- FILTERS --}}
@@ -166,8 +33,7 @@
             <div class="bg-white rounded-2xl border border-gray-200
                 shadow-sm p-4 sm:p-5 mb-6">
 
-                <form method="GET" action="{{ route('staff.appointments') }}"
-                    class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <form method="GET" action="{{ route('staff.appointments') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
                     {{-- Appointment Date --}}
 

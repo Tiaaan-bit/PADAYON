@@ -578,10 +578,40 @@
                             {{-- LEGEND --}}
 
                             <div x-show="!loadingSlots && appointment_date && availableSlots.length"
-                                class="mb-5 p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center">
-                                <p class="text-xs font-bold text-gray-500 uppercase mb-3">
+                                class="mb-5 p-4 rounded-2xl bg-gray-50 border border-gray-200">
+
+                                <p class="text-xs font-bold text-gray-500 uppercase mb-4 text-center">
                                     Appointment Time
                                 </p>
+
+                                {{-- Slot Color Guide --}}
+                                <div class="flex flex-wrap items-center justify-center gap-4">
+
+                                    {{-- Available --}}
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                        <span class="text-xs font-medium text-gray-600">
+                                            Available
+                                        </span>
+                                    </div>
+
+                                    {{-- Booked --}}
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                        <span class="text-xs font-medium text-gray-600">
+                                            Booked
+                                        </span>
+                                    </div>
+
+                                    {{-- Adjust Time --}}
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                                        <span class="text-xs font-medium text-gray-600">
+                                            Adjust Time
+                                        </span>
+                                    </div>
+
+                                </div>
                             </div>
 
 
@@ -1147,11 +1177,11 @@
 
                             <button type="submit" x-show="step === 4" :disabled="!canGoNext() || submitting"
                                 class="px-6 py-3 rounded-xl
-                                   bg-[#849753] text-white
-                                   font-semibold
-                                   disabled:opacity-50
-                                   disabled:cursor-not-allowed
-                                   hover:bg-[#6f8144]">
+        bg-[#849753] text-white
+        font-semibold
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        hover:bg-[#6f8144]">
 
                                 <span x-show="!submitting">
                                     Confirm Appointment
@@ -1166,6 +1196,27 @@
                         </div>
 
                     </form>
+                    {{-- APPOINTMENT PROCESSING OVERLAY --}}
+                    <div x-cloak x-show="submitting" x-transition.opacity
+                        class="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+
+                        <div class="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl">
+
+                            {{-- SPINNER --}}
+                            <div
+                                class="mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-[#849753]">
+                            </div>
+
+                            <h3 class="text-xl font-bold text-[#6F4E37]">
+                                Processing Appointment
+                            </h3>
+
+                            <p class="mt-4 text-xs text-gray-400">
+                                Please do not close or refresh this page.
+                            </p>
+
+                        </div>
+                    </div>
 
                 </div>
 

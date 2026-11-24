@@ -34,7 +34,6 @@
     @close-sidebar.window="sidebarOpen = false">
 
 
-    @include('components.PageLoading')
     @include('components.userSidebar')
     @include('components.toast-notification')
 

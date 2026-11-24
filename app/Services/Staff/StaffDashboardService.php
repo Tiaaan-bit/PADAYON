@@ -45,7 +45,6 @@ class StaffDashboardService
 
             'appointmentStatistics' => $appointmentStatistics,
 
-
             'recentActivity' => $this->dashboardRepository->getRecentActivity(),
         ];
     }

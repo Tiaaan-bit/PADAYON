@@ -17,66 +17,6 @@
             </h1>
         </div>
 
-        {{-- STATISTICS --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-
-
-            <div class="bg-white rounded-xl border border-gray-200
-            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                <div class="text-center">
-
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalServicePrice, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Service Price
-                    </p>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="bg-white rounded-xl border border-gray-200
-            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                <div class="text-center">
-
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalAddOnPrice, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Add-on Price
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="bg-white rounded-xl border border-gray-200
-            shadow-sm p-4 sm:p-5 flex-1 min-w-35">
-
-                <div class="text-center">
-
-                    <p class="text-xl sm:text-2xl font-bold text-gray-800">
-                        ₱{{ number_format($totalAmountPaid, 2) }}
-                    </p>
-
-                    <p class="text-xs text-gray-400 font-medium mt-0.5">
-                        Total Amount Paid
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
         {{-- FILTERS --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
 
@@ -86,7 +26,7 @@
                 {{-- DATE --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Date
+                        Appointment Date
                     </label>
 
                     <input type="date" name="date" value="{{ request('date') }}"
@@ -128,12 +68,16 @@
                 <div class="flex items-end gap-2">
 
                     <button type="submit"
-                        class="flex-1 px-4 py-2.5 rounded-lg bg-[#849753] text-white font-medium hover:bg-[#718441] transition">
+                        class="rounded-lg bg-[#849753] px-6 py-2
+                            text-white hover:bg-[#6F4E37]
+                            text-sm w-40">
                         Filter
                     </button>
 
                     <a href="{{ route('staff.transactions') }}"
-                        class="px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">
+                        class="rounded-lg border border-gray-300
+                            px-6 py-2 text-sm text-gray-700
+                            hover:bg-gray-50 w-40 text-center">
                         Reset
                     </a>
 
@@ -150,43 +94,52 @@
 
                 <table class="w-full text-sm">
 
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead>
 
                         <tr class="bg-gray-50 text-left">
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ID
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 CUSTOMER
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 SERVICE DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ADDO-ON DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 THERAPIST
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 APPOINTMENT TIME
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 PAYMENT DETAILS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 PAYMENT STATUS
                             </th>
 
-                            <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                            <th
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
                                 ACTION
                             </th>
 
