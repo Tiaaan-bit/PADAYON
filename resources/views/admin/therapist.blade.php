@@ -134,6 +134,16 @@
                         Manage Therapists
                     </h2>
 
+                    <a href="{{ route('admin.users') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                        Customers
+                    </a>
+
+                    <a href="{{ route('admin.therapists') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                        Therapists
+                    </a>
+
                 </div>
 
 
@@ -1283,20 +1293,20 @@
 
                                                         <path
                                                             d="M9.049 2.927c.3-.921
-                                                                                                                1.603-.921 1.902 0l1.07
-                                                                                                                3.292a1 1 0 00.95.69h3.462
-                                                                                                                c.969 0 1.371 1.24.588
-                                                                                                                1.81l-2.8 2.034a1 1 0
-                                                                                                                00-.364 1.118l1.07 3.292
-                                                                                                                c.3.921-.755 1.688-1.538
-                                                                                                                1.118l-2.8-2.034a1 1
-                                                                                                                0 00-1.176 0l-2.8 2.034
-                                                                                                                c-.783.57-1.838-.197-1.538
-                                                                                                                -1.118l1.07-3.292a1 1
-                                                                                                                0 00-.364-1.118L2.98
-                                                                                                                8.72c-.783-.57-.38-1.81.588
-                                                                                                                -1.81H7.03a1 1 0 00.95-.69
-                                                                                                                l1.07-3.292z" />
+                                                                                                                        1.603-.921 1.902 0l1.07
+                                                                                                                        3.292a1 1 0 00.95.69h3.462
+                                                                                                                        c.969 0 1.371 1.24.588
+                                                                                                                        1.81l-2.8 2.034a1 1 0
+                                                                                                                        00-.364 1.118l1.07 3.292
+                                                                                                                        c.3.921-.755 1.688-1.538
+                                                                                                                        1.118l-2.8-2.034a1 1
+                                                                                                                        0 00-1.176 0l-2.8 2.034
+                                                                                                                        c-.783.57-1.838-.197-1.538
+                                                                                                                        -1.118l1.07-3.292a1 1
+                                                                                                                        0 00-.364-1.118L2.98
+                                                                                                                        8.72c-.783-.57-.38-1.81.588
+                                                                                                                        -1.81H7.03a1 1 0 00.95-.69
+                                                                                                                        l1.07-3.292z" />
 
                                                     </svg>
 

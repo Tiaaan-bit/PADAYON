@@ -32,7 +32,7 @@
 
             <div class="w-24 h-1 rounded-full bg-[#849753]"></div>
 
-            <p class="whitespace-pre-line">
+            <p class="whitespace-pre-line text-slate-700 font-bold">
                 {{ $aboutPageSetting->description }}
             </p>
 

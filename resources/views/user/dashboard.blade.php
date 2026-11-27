@@ -10,14 +10,12 @@
 
         @include('components.aira-floating')
 
-
-
-
         {{-- =========================================================
         MAIN DASHBOARD
     ========================================================== --}}
 
-        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-5">
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] 2xl:grid-cols-[minmax(0,1fr)_460px] gap-6">
+
 
 
             {{-- =====================================================
@@ -25,6 +23,7 @@
         ====================================================== --}}
 
             <section class="min-w-0">
+
 
 
                 {{-- =================================================
@@ -49,8 +48,7 @@
                     startSlider() {
                         if (this.images.length > 1) {
                             this.timer = setInterval(() => {
-                                this.currentIndex =
-                                    (this.currentIndex + 1) % this.images.length;
+                                this.currentIndex = (this.currentIndex + 1) % this.images.length;
                             }, 5000);
                         }
                     },
@@ -63,35 +61,36 @@
                     },
                 
                     next() {
-                        this.currentIndex =
-                            (this.currentIndex + 1) % this.images.length;
+                        this.currentIndex = (this.currentIndex + 1) % this.images.length;
                     },
                 
                     previous() {
-                        this.currentIndex =
-                            (this.currentIndex - 1 + this.images.length) %
-                            this.images.length;
+                        this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
                     }
                 }" x-init="startSlider()" @mouseenter="stopSlider()" @mouseleave="startSlider()"
                     @keydown.left.prevent="previous()" @keydown.right.prevent="next()" tabindex="0"
                     aria-label="Padayon image announcements slider"
-                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
-                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]">
-                    {{-- Display the posted images --}}
+                    class="relative w-full h-70 sm:h-87.5 md:h-105 lg:h-120
+           xl:h-[calc(100vh-260px)] min-h-87.5 max-h-162.5
+           overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+
+                    {{-- Posted Images --}}
                     <template x-if="images.length > 0">
                         <div class="absolute inset-0">
+
                             <template x-for="(image, index) in images" :key="image.url">
+
                                 <img x-show="currentIndex === index" x-transition.opacity.duration.500ms
-                                    :src="image.url" :alt="image.alt"
-                                    class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
-                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]"
-                                    :loading="index === 0 ? 'eager' : 'lazy'">
+                                    :src="image.url" :alt="image.alt" :loading="index === 0 ? 'eager' : 'lazy'"
+                                    class="absolute inset-0 w-full h-full object-fill">
+
                             </template>
 
-                            {{-- Slide indicators --}}
+                            {{-- Slide Indicators --}}
                             <div x-show="images.length > 1"
                                 class="absolute bottom-4 left-0 right-0 z-10 flex justify-center gap-2">
                                 <template x-for="(image, index) in images" :key="image.url">
+
                                     <button type="button" @click.stop="currentIndex = index"
                                         :aria-label="'Show image ' + (index + 1)"
                                         :aria-current="currentIndex === index ? 'true' : 'false'"
@@ -99,18 +98,21 @@
                                             'w-6 bg-white' :
                                             'w-2 bg-white/60 hover:bg-white'"
                                         class="h-2 rounded-full transition-all"></button>
+
                                 </template>
                             </div>
+
                         </div>
                     </template>
 
-                    {{-- Fallback when the admin has not posted any images --}}
+                    {{-- Fallback Image --}}
                     <template x-if="images.length === 0">
+
                         <img src="{{ asset('images/Welcome.webp') }}" alt="Welcome to Padayon Massage Center"
-                            loading="eager"
-                            class="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm
-                       h-48 sm:h-64 md:h-80 lg:h-20 xl:h-[calc(100vh-200px)]">
+                            loading="eager" class="absolute inset-0 w-full h-full object-cover">
+
                     </template>
+
                 </div>
 
 
@@ -128,8 +130,8 @@
 
                         <div class="flex items-center gap-2">
 
-                            <h2 class="text-sm font-semibold text-gray-900">
-                                Duty for today
+                            <h2 class="text-base font-bold text-gray-800 truncate border-b-2 border-[#849753]">
+                                Duty For Today
                             </h2>
 
                         </div>
@@ -144,7 +146,7 @@
 
                             @forelse($therapists as $therapist)
                                 <div
-                                    class="rounded-xl border border-gray-200 bg-white shadow-sm
+                                    class="rounded-xl border-2 border-[#849753] bg-white shadow-sm
                                     overflow-hidden hover:shadow-md transition">
 
                                     {{-- Therapist Image --}}
@@ -174,16 +176,14 @@
 
                                     {{-- Therapist Information --}}
 
-                                    <div class="p-2">
-
-                                        <h3 class="text-xs font-semibold text-gray-800 truncate">
+                                    <div class="p-3">
+                                        <h3 class="text-base font-bold text-gray-800 truncate">
                                             {{ $therapist->name }}
                                         </h3>
 
-                                        <p class="text-[10px] text-[#849753] font-medium truncate">
+                                        <p class="text-xs text-[#849753] font-semibold truncate mt-1">
                                             {{ $therapist->specialty }}
                                         </p>
-
                                     </div>
 
                                 </div>
@@ -224,7 +224,7 @@
                     <div class="px-4 py-3">
 
                         <div class="flex items-center gap-2">
-                            <h2 class="text-sm font-semibold text-gray-900">
+                            <h2 class="text-base font-bold text-gray-800 truncate border-b-2 border-[#849753]">
                                 Calendar
                             </h2>
                         </div>
@@ -242,7 +242,7 @@
                             </button>
 
                             {{-- Current Month --}}
-                            <p class="text-sm font-semibold text-gray-700" x-text="monthName"></p>
+                            <p class="text-sm font-bold text-gray-700" x-text="monthName"></p>
 
                             {{-- Next Month --}}
                             <button type="button" @click="nextMonth()"
@@ -264,8 +264,8 @@
                         <div class="grid grid-cols-7 mb-1">
 
                             <template x-for="day in weekdays" :key="day">
-                                <div class="text-center text-[10px] font-semibold
-                       text-gray-400 uppercase"
+                                <div class="text-center text-sm font-bold
+                       text-gray-700 uppercase"
                                     x-text="day.charAt(0)"></div>
                             </template>
 
@@ -277,8 +277,7 @@
 
                             <template x-for="(day, index) in calendarDays" :key="index">
 
-                                <div class="calendar-day relative border-r border-b
-                       border-gray-100 p-1"
+                                <div class="calendar-day relative border-r border-b border-l border-t border-[#849753] p-1"
                                     :class="{
                                         'bg-gray-50': !day.currentMonth,
                                         'bg-[#F4EDDB]': day.isToday,
@@ -290,7 +289,7 @@
 
                                         <span
                                             class="inline-flex items-center justify-center
-                               w-5 h-5 rounded-full text-[9px]"
+                               w-5 h-5 rounded-full text-sm font-bold"
                                             :class="{
                                                 'text-gray-400': !day.currentMonth,
                                                 'text-gray-700': day.currentMonth && !day.isToday,
@@ -331,10 +330,10 @@
 
                                             <div>
 
-                                                <p class="text-xs font-semibold text-gray-900"
+                                                <p class="text-sm font-semibold text-gray-900"
                                                     x-text="formatDate(day.date)"></p>
 
-                                                <p class="text-[9px] text-gray-400 mt-0.5"
+                                                <p class="text-sm text-gray-800 mt-0.5"
                                                     x-text="
                                     day.events.length +
                                     ' appointment' +
@@ -349,7 +348,7 @@
                                    justify-center min-w-5 h-5 px-1
                                    rounded-full
                                    bg-[#849753]/10 text-[#526333]
-                                   text-[9px] font-semibold"
+                                   text-sm font-semibold"
                                                 x-text="day.events.length"></span>
 
                                         </div>
@@ -375,11 +374,11 @@
                                                         class="flex items-center
                                            justify-between gap-2">
 
-                                                        <p class="text-[10px] font-semibold text-[#849753]"
+                                                        <p class="text-sm font-semibold text-gray-800"
                                                             x-text="event.time + ' - ' + event.end_time"></p>
 
                                                         <span
-                                                            class="text-[8px] px-1.5 py-0.5
+                                                            class="text-sm px-1.5 py-0.5
                                                rounded-full
                                                bg-[#849753]/10
                                                text-[#526333]"
@@ -391,20 +390,13 @@
 
 
                                                     {{-- Service --}}
-                                                    <p class="text-[10px] font-semiboldtext-gray-800 mt-1 truncate"
+                                                    <p class="text-sm font-semibold text-gray-800 mt-1 truncate"
                                                         x-text="event.title + ' - ' + event.description">
 
                                                     </p>
 
-
-                                                    {{-- Client --}}
-                                                    <p class="text-[9px] text-gray-500
-                                           truncate"
-                                                        x-text="event.user"></p>
-
-
                                                     {{-- Therapist --}}
-                                                    <p class="text-[9px] text-gray-400
+                                                    <p class="text-sm text-gray-800
                                            truncate"
                                                         x-text="
                                         'Therapist: ' +
@@ -426,18 +418,6 @@
 
                         </div>
 
-
-                        {{-- Calendar Footer --}}
-                        <div class="flex items-center justify-between mt-1">
-
-                            <button type="button" @click="goToToday()"
-                                class="text-[10px] text-[#849753]
-                   hover:text-[#6F4E37] transition">
-                                Today
-                            </button>
-
-                        </div>
-
                     </div>
 
                 </section>
@@ -454,23 +434,23 @@
 
                         {{-- Header --}}
                         <div class="flex items-center gap-2">
-                            <h2 class="text-sm font-semibold text-gray-900">
+                            <h2 class="text-base font-bold text-gray-800 truncate border-b-2 border-[#849753]">
                                 Announcements
                             </h2>
                         </div>
 
                         {{-- Announcements --}}
-                        <div class="mt-4">
+                        <div class="mt-4 space-y-1">
 
                             @forelse($posts as $index => $post)
                                 <article x-show="showAllAnnouncements || {{ $index }} < 3" x-transition
-                                    class="py-2">
-                                    <h3 class="text-xs font-medium text-gray-900">
+                                    class="py-2 rounded-lg bg-gray-50 border-2 border-[#849753] px-3">
+                                    <h3 class="text-base font-bold text-gray-800 truncate">
                                         {{ $post->title }}
                                     </h3>
 
                                     @if ($post->content)
-                                        <p class="text-[11px] text-gray-600 mt-1 line-clamp-2">
+                                        <p class="text-base font-bold text-gray-800 truncate">
                                             {{ $post->content }}
                                         </p>
                                     @endif
@@ -527,41 +507,39 @@
                         {{-- Header --}}
                         <div class="flex items-center justify-between">
                             <div>
-                                <h2 class="text-sm font-semibold text-gray-900">
+                                <h2 class="text-base font-bold text-gray-800 truncate border-b-2 border-[#849753]">
                                     Today's Appointment
                                 </h2>
                             </div>
                         </div>
 
                         {{-- Appointments --}}
-                        <div class="mt-3 space-y-2">
+                        <div class="mt-3 space-y-1">
 
                             @forelse($todayAppointments as $index => $appointment)
                                 <div x-show="showAllToday || {{ $index }} < 3" x-transition
-                                    class="rounded-lg bg-gray-50 border border-gray-100 px-3 py-3">
+                                    class="rounded-lg bg-gray-50 border-2 border-[#849753] px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
                                         <div class="min-w-0">
 
                                             {{-- Service --}}
-                                            <p
-                                                class="text-xs font-semibold
-                                       text-gray-900 truncate">
+                                            <p class="text-sm font-bold text-gray-800 truncate">
                                                 {{ $appointment->service->name ?? 'Service' }} -
                                                 {{ $appointment->service->description ?? 'Description' }}
                                             </p>
 
                                             {{-- Therapist --}}
                                             @if ($appointment->therapist)
-                                                <p class="text-[10px] text-gray-500 mt-1">
+                                                <p class="text-sm font-bold text-gray-800 truncate">
                                                     Therapist:
                                                     {{ $appointment->therapist->name }}
                                                 </p>
                                             @endif
 
                                             {{-- Time --}}
-                                            <p class="text-[10px] text-gray-500 mt-1">
+                                            <p class="text-sm font-bold text-gray-800 truncate">
                                                 {{ $appointment->start_datetime->format('h:i A') }}
 
                                                 @if ($appointment->end_datetime)
@@ -591,13 +569,6 @@
                                             </span>
                                         @endif
 
-                                    </div>
-
-                                    {{-- Today Label --}}
-                                    <div class="mt-2">
-                                        <span class="text-[9px] text-[#849753] font-medium">
-                                            Today
-                                        </span>
                                     </div>
 
                                 </div>
@@ -658,46 +629,46 @@
                     <div class="px-4 py-4">
 
                         {{-- Header --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between   ">
                             <div>
-                                <h2 class="text-sm font-semibold text-gray-900">
+                                <h2 class="text-base font-bold text-gray-800 truncate border-b-2 border-[#849753]">
                                     Upcoming Appointment
                                 </h2>
                             </div>
                         </div>
 
                         {{-- Appointments --}}
-                        <div class="mt-3 space-y-2">
+                        <div class="mt-3 space-y-1">
 
                             @forelse($upcomingAppointments as $index => $appointment)
                                 <div x-show="showAll || {{ $index }} < 3" x-transition
-                                    class="rounded-lg bg-gray-50 border border-gray-100 px-3 py-3">
+                                    class="rounded-lg bg-gray-50 border-2 border-[#849753] px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
                                         <div class="min-w-0">
 
                                             {{-- Service Name --}}
-                                            <p class="text-xs font-semibold text-gray-900 truncate">
+                                            <p class="text-sm font-bold text-gray-800 truncate">
                                                 {{ $appointment->service->name ?? 'Service' }} -
                                                 {{ $appointment->service->description ?? 'Description' }}
                                             </p>
 
                                             {{-- Therapist --}}
                                             @if ($appointment->therapist)
-                                                <p class="text-[10px] text-gray-500 mt-1">
+                                                <p class="text-sm font-bold text-gray-800 truncate">
                                                     Therapist:
                                                     {{ $appointment->therapist->name }}
                                                 </p>
                                             @endif
 
                                             {{-- Date --}}
-                                            <p class="text-[10px] text-gray-500 mt-1">
+                                            <p class="text-sm font-bold text-gray-800 truncate">
                                                 {{ $appointment->start_datetime->format('D, M d, Y') }}
                                             </p>
 
                                             {{-- Time --}}
-                                            <p class="text-[10px] text-gray-500 mt-1">
+                                            <p class="text-sm font-bold text-gray-800 truncate">
                                                 {{ $appointment->start_datetime->format('h:i A') }}
 
                                                 @if ($appointment->end_datetime)
@@ -805,10 +776,10 @@
         }
 
         /*
-                                                        |--------------------------------------------------------------------------
-                                                        | Appointment Hover Popup
-                                                        |--------------------------------------------------------------------------
-                                                        */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Appointment Hover Popup
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        */
 
         .calendar-popup {
             visibility: hidden;
@@ -826,10 +797,10 @@
         }
 
         /*
-                                                        |--------------------------------------------------------------------------
-                                                        | Hover Highlight
-                                                        |--------------------------------------------------------------------------
-                                                        */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Hover Highlight
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        */
 
         .calendar-highlight {
             opacity: 0;

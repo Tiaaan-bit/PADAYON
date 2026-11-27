@@ -4,7 +4,7 @@
 
 @section('content')
 
-<section class="relative bg-transparent py-20 px-4 overflow-hidden">
+    <section class="relative bg-transparent py-20 px-4 overflow-hidden">
 
         <div class="max-w-6xl mx-auto relative z-10">
 
@@ -13,7 +13,7 @@
 
                 <h1 class="text-5xl md:text-6xl font-extrabold bg-[#849753] bg-clip-text text-transparent uppercase">
 
-                    Our Services
+                    Our Services And Prices
 
                 </h1>
 
@@ -71,22 +71,7 @@
 
                                     {{-- TABLE HEADER --}}
                                     <thead>
-                                        <tr class="bg-gray-50 border-b border-gray-200">
 
-
-                                            <th class="px-8 py-4 text-left text-sm font-bold uppercase text-gray-600">
-                                                Description
-                                            </th>
-
-                                            <th class="px-8 py-4 text-center text-sm font-bold uppercase text-gray-600">
-                                                Price
-                                            </th>
-
-                                            <th class="px-8 py-4 text-center text-sm font-bold uppercase text-gray-600">
-                                                Duration
-                                            </th>
-
-                                        </tr>
                                     </thead>
 
 
@@ -95,7 +80,7 @@
 
                                         @foreach ($serviceItems as $service)
                                             <tr class="border-b border-gray-200 last:border-b-0">
-  
+
 
 
                                                 {{-- DESCRIPTION --}}
@@ -194,22 +179,6 @@
 
                             {{-- HEADER --}}
                             <thead>
-
-                                <tr class="bg-gray-50 border-b border-gray-200">
-
-                                    <th class="px-8 py-5 text-left text-sm font-bold uppercase text-gray-600">
-                                        Add-On
-                                    </th>
-
-                                    <th class="px-8 py-5 text-center text-sm font-bold uppercase text-gray-600">
-                                        Price
-                                    </th>
-
-                                    <th class="px-8 py-5 text-center text-sm font-bold uppercase text-gray-600">
-                                        Duration
-                                    </th>
-
-                                </tr>
 
                             </thead>
 

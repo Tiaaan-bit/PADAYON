@@ -124,61 +124,74 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
 
-                {{-- Name --}}
-                <div>
+                {{-- First Name and Last Name --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                    <label for="name" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
-                        Full Name
-                    </label>
+                    {{-- First Name --}}
+                    <div>
+                        <label for="first_name"
+                            class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                            First Name
+                        </label>
 
-                    <input type="text" id="name" name="name"
-                        value="{{ old('name', $walkInCustomer?->name ?? '') }}"
-                        @if ($walkInCustomer) readonly @endif placeholder="Juan dela Cruz" required
-                        autocomplete="name"
-                        class="w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 outline-none transition
-                        focus:ring-2 focus:ring-[#849753]
-                        focus:border-[#849753]
-                        focus:bg-white
-                        @error('name')
-                            border-red-400 bg-red-50
-                        @else
-                        @enderror">
+                        <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}"
+                            placeholder="Juan" required autocomplete="given-name"
+                            oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')"
+                            class="w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 outline-none transition
+            focus:ring-2 focus:ring-[#849753] focus:border-[#849753]
+            @error('first_name') border-red-400 bg-red-50 @enderror">
 
-                    @error('name')
-                        <p class="mt-1.5 text-xs text-red-500">
-                            {{ $message }}
-                        </p>
-                    @enderror
+                        @error('first_name')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Last Name --}}
+                    <div>
+                        <label for="last_name"
+                            class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
+                            Last Name
+                        </label>
+
+                        <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}"
+                            placeholder="Dela Cruz" required autocomplete="family-name"
+                            oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')"
+                            class="w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 outline-none transition
+            focus:ring-2 focus:ring-[#849753] focus:border-[#849753]
+            @error('last_name') border-red-400 bg-red-50 @enderror">
+
+                        @error('last_name')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                 </div>
 
 
                 {{-- Phone --}}
                 <div>
-
                     <label for="phone" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                         Phone Number
                     </label>
 
-                    <input type="tel" id="phone" name="phone"
+                    <input type="text" id="phone" name="phone"
                         value="{{ old('phone', $walkInCustomer?->phone ?? '') }}"
                         @if ($walkInCustomer) readonly @endif placeholder="09XX XXX XXXX" required
-                        autocomplete="tel"
+                        autocomplete="tel" inputmode="numeric" pattern="[0-9]*" maxlength="11"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         class="w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 outline-none transition
-                        focus:ring-2 focus:ring-[#849753]
-                        focus:border-[#849753]
-                        focus:bg-white
-                        @error('phone')
-                            border-red-400 bg-red-50
-                        @else
-                        @enderror">
+        focus:ring-2 focus:ring-[#849753]
+        focus:border-[#849753]
+        focus:bg-white
+        @error('phone')
+            border-red-400 bg-red-50
+        @enderror">
 
                     @error('phone')
                         <p class="mt-1.5 text-xs text-red-500">
                             {{ $message }}
                         </p>
                     @enderror
-
                 </div>
 
             </div>

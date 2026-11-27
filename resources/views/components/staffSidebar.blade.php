@@ -39,7 +39,7 @@
         {{-- DASHBOARD --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('staff.dashboard') }}" wire:navigate
+        <a href="{{ route('staff.dashboard') }}" wire:navigate data-sidebar-tooltip="Dashboard"
             class="flex items-center rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('staff.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
@@ -60,7 +60,7 @@
         </a>
 
 
-        <a href="{{ route('staff.quick-book') }}" wire:navigate
+        <a href="{{ route('staff.quick-book') }}" wire:navigate data-sidebar-tooltip="Quick Book"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -91,13 +91,13 @@
         {{-- APPOINTMENTS --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('staff.appointments') }}" wire:navigate
+        <a href="{{ route('staff.appointments') }}" wire:navigate data-sidebar-tooltip="Bookings"
             class="flex items-center
                    rounded-xl
                    text-sm
                    font-medium
                    transition-all
-                   {{ request()->routeIs('staff.appointments*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+                   {{ request()->routeIs('staff.appointments*', 'staff.transactions') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
@@ -117,37 +117,8 @@
 
         </a>
 
-        {{-- ===================================================== --}}
-        {{-- TRANSACTIONS --}}
-        {{-- ===================================================== --}}
 
-        <a href="{{ route('staff.transactions') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('staff.transactions*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="14" rx="2" />
-
-                <path d="M3 10h18" />
-                <path d="M7 15h4" />
-            </svg>
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Transactions
-            </span>
-
-        </a>
-
-
-        <a href="{{ route('staff.calendar') }}" wire:navigate
+        <a href="{{ route('staff.calendar') }}" wire:navigate data-sidebar-tooltip="Calendar"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -181,7 +152,7 @@
         {{-- THERAPIST --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('staff.therapists') }}" wire:navigate
+        <a href="{{ route('staff.therapists') }}" wire:navigate data-sidebar-tooltip="Therapist"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -611,4 +582,80 @@
         }
 
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('aside.fixed.top-0.left-0');
+
+        if (!sidebar) return;
+
+        const tooltip = document.createElement('div');
+
+        tooltip.textContent = '';
+        tooltip.style.cssText = `
+        position: fixed;
+        display: none;
+        z-index: 99999;
+        padding: 9px 13px;
+        background: #6F4E37;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: opacity 150ms ease, transform 150ms ease;
+    `;
+
+        document.body.appendChild(tooltip);
+
+        let hideTimer;
+
+        function hideTooltip() {
+            clearTimeout(hideTimer);
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateX(-4px)';
+
+            hideTimer = setTimeout(() => {
+                tooltip.style.display = 'none';
+            }, 150);
+        }
+
+        document.querySelectorAll('[data-sidebar-tooltip]').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+
+                // Only show when the desktop sidebar is collapsed.
+                if (window.innerWidth < 1024 || sidebar.offsetWidth > 100) {
+                    hideTooltip();
+                    return;
+                }
+
+                const rect = this.getBoundingClientRect();
+
+                tooltip.textContent = this.dataset.sidebarTooltip;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${rect.right + 12}px`;
+                tooltip.style.top = `${rect.top + rect.height / 2}px`;
+                tooltip.style.transform = 'translateY(-50%) translateX(0)';
+
+                requestAnimationFrame(() => {
+                    tooltip.style.opacity = '1';
+                });
+            });
+
+            link.addEventListener('mouseleave', hideTooltip);
+        });
+
+        // Hide the tooltip when the sidebar expands or the page resizes.
+        window.addEventListener('resize', hideTooltip);
+
+        document.addEventListener('click', hideTooltip);
+    });
 </script>

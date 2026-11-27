@@ -14,8 +14,39 @@ use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
+
+    private function redirectAuthenticatedUser()
+    {
+        if (Auth::guard('therapist')->check()) {
+            return redirect()->route('therapist.ai.index');
+        }
+
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isStaff()) {
+                return redirect()->route('staff.dashboard');
+            }
+
+            if (!$user->hasVerifiedEmail() || !$user->isActive()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->route('user.dashboard');
+        }
+
+        return null;
+    }
     public function showHomePage()
     {
+
+        if ($redirect = $this->redirectAuthenticatedUser()) {
+            return $redirect;
+        }
         // Redirect authenticated therapists to Padayon AI
         if (Auth::guard('therapist')->check()) {
             return redirect()->route('therapist.ai.index');
@@ -62,6 +93,10 @@ class PageController extends Controller
 
     public function showAboutPage()
     {
+
+        if ($redirect = $this->redirectAuthenticatedUser()) {
+            return $redirect;
+        }
         // Redirect authenticated therapists to Padayon AI
         if (Auth::guard('therapist')->check()) {
             return redirect()->route('therapist.ai.index');
@@ -102,6 +137,10 @@ class PageController extends Controller
 
     public function showContactPage()
     {
+
+        if ($redirect = $this->redirectAuthenticatedUser()) {
+            return $redirect;
+        }
         // Redirect authenticated therapists to Padayon AI
         if (Auth::guard('therapist')->check()) {
             return redirect()->route('therapist.ai.index');
@@ -145,6 +184,10 @@ class PageController extends Controller
 
     public function showServicesPage()
     {
+
+        if ($redirect = $this->redirectAuthenticatedUser()) {
+            return $redirect;
+        }
         // Redirect authenticated therapists to Padayon AI
         if (Auth::guard('therapist')->check()) {
             return redirect()->route('therapist.ai.index');

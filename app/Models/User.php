@@ -30,6 +30,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verification_code_expires_at' => 'datetime',
         'role' => UserRole::class,
         'status' => UserStatus::class,
+        'requires_admin_reactivation' => 'boolean',
+
     ];
 
     /*

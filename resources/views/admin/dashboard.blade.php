@@ -152,14 +152,14 @@
             </div>
 
 
-            {{-- SCHEDULE + NEEDS ATTENTION --}}
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-1">
+            {{-- SCHEDULE --}}
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
                 {{-- TODAY'S SCHEDULE --}}
                 {{-- TODAY'S TRANSACTIONS --}}
-                <section x-data="{ expanded: false }"
-                    class="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+                <section
+                    class="flex h-130 min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                    <div class="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
                         <div>
                             <h2 class="font-bold text-gray-900">Today's Appointments</h2>
                         </div>
@@ -180,7 +180,7 @@
                             </p>
                         </div>
                     @else
-                        <div class="divide-y divide-gray-100">
+                        <div class="min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100 scrollbar-hide">
                             @foreach ($todayAppointments as $appointment)
                                 @php
                                     $totalAmount =
@@ -193,8 +193,7 @@
                                     $paymentStatus = $paymentStatusLabel($appointment->payment_status);
                                 @endphp
 
-                                <div x-show="expanded || {{ $loop->index }} < 5"
-                                    class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div class="flex items-start gap-3">
                                         <div class="min-w-19 rounded-xl bg-[#F4EDDB] px-3 py-2 text-center">
                                             <p class="text-sm font-bold text-[#6F4E37]">
@@ -239,6 +238,8 @@
                                         </div>
 
 
+
+
                                         <p class="text-gray-600">
                                             <span class="font-medium">
                                                 {{ $paymentMethodLabel($appointment->payment_method) }}-{{ $paymentTypeLabel($appointment->payment_type) }}
@@ -248,7 +249,7 @@
                                         {{-- Payment Paid --}}
 
                                         <p class="text-gray-600">
-                                            <span class="font-medium">Amount Paid:</span>
+                                            <span class="font-medium">Payment Paid:</span>
                                             <span class="font-semibold ">
                                                 {{ $money($amountPaid) }}
                                             </span>
@@ -265,40 +266,73 @@
                                                 {{ $money($remainingBalance) }}
                                             </span>
                                         </p>
-
                                     </div>
 
                                 </div>
                             @endforeach
                         </div>
-
-                        @if ($todayAppointments->count() > 5)
-                            <div class="border-t border-gray-100 px-5 py-3">
-                                <button type="button" @click="expanded = !expanded"
-                                    class="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-[#718343] transition hover:bg-[#849753]/10">
-                                    <span
-                                        x-text="expanded ? 'Show less' : 'See all {{ $todayAppointments->count() }} appointments'"></span>
-
-                                    <svg class="h-4 w-4 transition-transform duration-200"
-                                        :class="{ 'rotate-180': expanded }" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </button>
-                            </div>
-                        @endif
                     @endif
                 </section>
 
 
+                {{-- RECENT ACTIVITY --}}
+                {{-- RECENT ACTIVITY --}}
+                <section
+                    class="flex h-130 min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+
+                    <div class="shrink-0 border-b border-gray-100 px-5 py-4">
+                        <h2 class="font-bold text-gray-900">
+                            Recent Activity
+                        </h2>
+                    </div>
+
+                    @if ($recentActivity->isEmpty())
+                        <div class="flex flex-1 items-center justify-center px-5 text-center">
+                            <p class="text-sm text-gray-500">
+                                No recent activity available.
+                            </p>
+                        </div>
+                    @else
+                        <div class="min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100 scrollbar-hide">
+
+                            @foreach ($recentActivity as $activity)
+                                <div class="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div class="flex items-start gap-3">
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">
+                                                {{ $customerName($activity) }}
+
+                                                <span class="font-normal text-gray-600">
+                                                    booked {{ $activity->service?->name ?? 'a service' }} -
+                                                    {{ $activity->service?->description ?? 'a description' }} -
+                                                    {{ $activity->service?->duration_minutes ?? 'a service' }} Minutes
+                                                </span>
+                                            </p>
+
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                {{ $activity->created_at?->timezone('Asia/Manila')->format('M j, Y g:i A') }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <span
+                                        class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($activity->status) }}">
+                                        {{ $statusLabel($activity) }}
+                                    </span>
+                                </div>
+                            @endforeach
+
+                        </div>
+                    @endif
+                </section>
             </div>
 
             {{-- REVENUE OVERVIEW + APPOINTMENT STATISTICS --}}
             <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
 
                 {{-- WEEKLY REVENUE --}}
-                <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2">
+                <section
+                    class="h-90 overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2">
                     <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
                         <div>
                             <h2 class="font-bold text-gray-900">
@@ -343,24 +377,24 @@
                 </section>
 
                 {{-- NEEDS ATTENTION --}}
-                <section x-data="{ expanded: false }"
-                    class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-                        <div>
-                            <h2 class="font-bold text-gray-900">
-                                Needs Attention
-                            </h2>
-                        </div>
+                <section
+                    class="flex h-90 min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+
+                    <div class="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
+                        <h2 class="font-bold text-gray-900">
+                            Needs Attention
+                        </h2>
                     </div>
 
                     @if ($needsAttention->isEmpty())
-                        <div class="px-5 py-10 text-center">
-                            <p class="mt-1 text-sm text-gray-500">
+                        <div class="flex flex-1 items-center justify-center px-5 text-center">
+                            <p class="text-sm text-gray-500">
                                 No pending bookings or payment issues found.
                             </p>
                         </div>
                     @else
-                        <div class="divide-y divide-gray-100">
+                        <div class="min-h-0 flex-1 overflow-y-auto divide-y divide-gray-100 scrollbar-hide">
+
                             @foreach ($needsAttention as $item)
                                 @php
                                     $paymentStatus = strtolower((string) $item->payment_status);
@@ -371,15 +405,16 @@
                                         $item->status === \App\Enums\Admin\Appointment\AppointmentStatus::PENDING;
                                 @endphp
 
-                                <div x-show="expanded || {{ $loop->index }} < 5" class="px-5 py-4">
+                                <div class="px-5 py-4">
                                     <div class="flex items-start gap-3">
                                         <div
                                             class="mt-0.5 rounded-lg p-2
-                                        {{ $isFailedPayment
-                                            ? 'bg-red-50 text-red-700'
-                                            : ($isPendingPayment
-                                                ? 'bg-amber-50 text-amber-700'
-                                                : 'bg-[#849753]/10 text-[#718343]') }}">
+                            {{ $isFailedPayment
+                                ? 'bg-red-50 text-red-700'
+                                : ($isPendingPayment
+                                    ? 'bg-amber-50 text-amber-700'
+                                    : 'bg-[#849753]/10 text-[#718343]') }}">
+
                                             @if ($isFailedPayment)
                                                 <svg class="h-5 w-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -424,6 +459,7 @@
                                     </div>
                                 </div>
                             @endforeach
+
                         </div>
                     @endif
                 </section>
@@ -591,50 +627,7 @@
                 </section>
             </div>
 
-            {{-- RECENT ACTIVITY --}}
-            <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                <div class="border-b border-gray-100 px-5 py-4">
-                    <h2 class="font-bold text-gray-900">
-                        Recent Activity
-                    </h2>
-                </div>
 
-                @if ($recentActivity->isEmpty())
-                    <div class="px-5 py-10 text-center">
-                        <p class="text-sm text-gray-500">
-                            No recent activity available.
-                        </p>
-                    </div>
-                @else
-                    <div class="divide-y divide-gray-100">
-                        @foreach ($recentActivity as $activity)
-                            <div class="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div class="flex items-start gap-3">
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900">
-                                            {{ $customerName($activity) }}
-                                            <span class="font-normal text-gray-600">
-                                                booked {{ $activity->service?->name ?? 'a service' }} -
-                                                {{ $activity->service?->description ?? 'a description' }} -
-                                                {{ $activity->service?->duration_minutes ?? 'a service' }} Minutes
-                                            </span>
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            {{ $activity->created_at?->timezone('Asia/Manila')->format('M j, Y g:i A') }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <span
-                                    class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses($activity->status) }}">
-                                    {{ $statusLabel($activity) }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </section>
 
         </div>
     </div>

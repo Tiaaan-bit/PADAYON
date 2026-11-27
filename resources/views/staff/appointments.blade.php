@@ -22,6 +22,16 @@
                     Manage Appointments
                 </h2>
 
+                <a href="{{ route('staff.appointments') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Manage Appointments
+                </a>
+
+                <a href="{{ route('staff.transactions') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Manage Transactions
+                </a>
+
             </div>
 
 
@@ -33,7 +43,8 @@
             <div class="bg-white rounded-2xl border border-gray-200
                 shadow-sm p-4 sm:p-5 mb-6">
 
-                <form method="GET" action="{{ route('staff.appointments') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <form method="GET" action="{{ route('staff.appointments') }}"
+                    class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
                     {{-- Appointment Date --}}
 
@@ -192,48 +203,48 @@
                                 <tr class="bg-gray-50 text-left">
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         ID
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Customer
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Service Details
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Add-on Details
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Condition
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Therapist
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Appointment Time
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Appointment Status
 
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border">
                                         Action
                                     </th>
 
@@ -242,7 +253,7 @@
                             </thead>
 
 
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 border">
 
                                 @forelse($appointments as $appointment)
                                     {{-- ================================================= --}}
@@ -285,7 +296,7 @@
 
                                         {{-- ID --}}
 
-                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap border">
 
                                             {{ $appointment->id }}
 
@@ -294,7 +305,7 @@
 
                                         {{-- USER --}}
 
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 border">
 
                                             <div class="flex items-center gap-3">
                                                 <div>
@@ -322,7 +333,7 @@
 
                                         {{-- SERVICE --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border">
 
                                             <div class="space-y-1">
 
@@ -356,7 +367,7 @@
 
                                         {{-- ADD-ON --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border">
 
                                             <div class="space-y-1">
 
@@ -380,7 +391,7 @@
 
                                         {{-- CONDITION --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border">
 
                                             <div class="space-y-1">
 
@@ -419,7 +430,7 @@
 
                                         <td
                                             class="px-5 py-4 text-gray-600
-                                            whitespace-nowrap">
+                                            whitespace-nowrap border">
 
                                             {{ $appointment->therapist->name ?? 'N/A' }}
 
@@ -430,7 +441,7 @@
 
                                         <td
                                             class="px-5 py-4 text-gray-600
-                                            whitespace-nowrap">
+                                            whitespace-nowrap border">
 
                                             <div class="space-y-1">
 
@@ -463,7 +474,7 @@
                                         {{-- STATUS --}}
                                         {{-- ================================================= --}}
 
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 border">
                                             @if ($appointment->status === AppointmentStatus::CONFIRMED)
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -584,7 +595,7 @@
 
 
 
-                                        <td class="px-5 py-4" onclick="event.stopPropagation()">
+                                        <td class="px-5 py-4 border" onclick="event.stopPropagation()">
 
                                             @php
                                                 $canUpdateStatus =

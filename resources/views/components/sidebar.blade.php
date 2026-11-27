@@ -38,7 +38,7 @@
         {{-- DASHBOARD --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.dashboard') }}" wire:navigate
+        <a href="{{ route('admin.dashboard') }}" wire:navigate data-sidebar-tooltip="Dashboard"
             class="flex items-center rounded-xl text-sm font-medium transition-all
                 {{ request()->routeIs('admin.dashboard') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
@@ -58,7 +58,7 @@
 
         </a>
 
-        <a href="{{ route('admin.quick-book') }}" wire:navigate
+        <a href="{{ route('admin.quick-book') }}" wire:navigate data-sidebar-tooltip="Quick Book"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -85,16 +85,18 @@
 
 
         {{-- ===================================================== --}}
-        {{-- APPOINTMENTS --}}
+        {{-- BOOKINGS --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.appointments') }}" wire:navigate
+        <a href="{{ route('admin.appointments') }}" wire:navigate data-sidebar-tooltip="Bookings"
             class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.appointments*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+           rounded-xl
+           text-sm
+           font-medium
+           transition-all
+           {{ request()->routeIs('admin.appointments*', 'admin.transactions*')
+               ? 'bg-[#6F4E37] text-white'
+               : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
@@ -102,48 +104,18 @@
 
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="17" rx="2" />
-
                 <path d="M16 2v4M8 2v4M3 10h18" />
-
                 <path d="M12 13v4M10 15h4" />
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                Appointments
+                Bookings
             </span>
 
         </a>
 
-        {{-- ===================================================== --}}
-        {{-- TRANSACTIONS --}}
-        {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.transactions') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.transactions*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="14" rx="2" />
-
-                <path d="M3 10h18" />
-                <path d="M7 15h4" />
-            </svg>
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Transactions
-            </span>
-
-        </a>
-
-        <a href="{{ route('admin.calendar') }}" wire:navigate
+        <a href="{{ route('admin.calendar') }}" wire:navigate data-sidebar-tooltip="Calendar"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -173,7 +145,7 @@
         {{-- ANNOUNCEMENTS --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.posts') }}" wire:navigate
+        <a href="{{ route('admin.posts') }}" wire:navigate data-sidebar-tooltip="Announcements"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -199,16 +171,16 @@
 
 
         {{-- ===================================================== --}}
-        {{-- CUSTOMERS --}}
+        {{-- People Management --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.users') }}" wire:navigate
+        <a href="{{ route('admin.users') }}" wire:navigate data-sidebar-tooltip="People Management"
             class="flex items-center
                    rounded-xl
                    text-sm
                    font-medium
                    transition-all
-                   {{ request()->routeIs('admin.users*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+                   {{ request()->routeIs('admin.users*', 'admin.therapist*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
@@ -225,7 +197,7 @@
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                Customers
+                People Management
             </span>
 
         </a>
@@ -235,89 +207,28 @@
         {{-- SERVICES --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.services') }}" wire:navigate
+        <a href="{{ route('admin.services') }}" wire:navigate data-sidebar-tooltip="Service Management"
             class="flex items-center
                    rounded-xl
                    text-sm
                    font-medium
                    transition-all
-                   {{ request()->routeIs('admin.services*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+                   {{ request()->routeIs('admin.services*', 'admin.addons*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
                 'justify-center px-2 py-3'">
 
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                viewBox="0 0 24 24">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path d="M6 3h12v18H6z" />
                 <path d="M9 7h6M9 11h6M9 15h4" />
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                Services
+                Service Management
             </span>
 
         </a>
-
-
-        {{-- ===================================================== --}}
-        {{-- ADD-ONS --}}
-        {{-- ===================================================== --}}
-
-        <a href="{{ route('admin.addons') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.addons*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 8v8M8 12h8" />
-            </svg>
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Add-Ons
-            </span>
-
-        </a>
-
-
-        {{-- ===================================================== --}}
-        {{-- THERAPIST --}}
-        {{-- ===================================================== --}}
-
-        <a href="{{ route('admin.therapists') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.therapists*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
-            :class="sidebarOpen
-                ?
-                'gap-3 px-3 py-2.5' :
-                'justify-center px-2 py-3'">
-
-            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="3" />
-
-                <path d="M5 21a7 7 0 0114 0" />
-            </svg>
-
-            <span x-show="sidebarOpen" x-cloak class="truncate">
-                Therapist
-            </span>
-
-        </a>
-
 
 
 
@@ -325,7 +236,7 @@
         {{-- REPORTS --}}
         {{-- ===================================================== --}}
 
-        <a href="{{ route('admin.reports') }}" wire:navigate
+        <a href="{{ route('admin.reports') }}" wire:navigate data-sidebar-tooltip="Reports"
             class="flex items-center
                    rounded-xl
                    text-sm
@@ -354,116 +265,40 @@
 
         </a>
 
-        <a href="{{ route('admin.ai.index') }}" wire:navigate
-            class="flex items-center
-                   rounded-xl
-                   text-sm
-                   font-medium
-                   transition-all
-                   {{ request()->routeIs('admin.ai.index*') ? 'bg-[#6F4E37] text-white' : 'text-white hover:bg-white/10' }}"
+
+
+
+        {{-- ===================================================== --}}
+        {{-- SETTINGS --}}
+        {{-- ===================================================== --}}
+
+        <a href="{{ route('admin.website-settings.edit') }}" wire:navigate data-sidebar-tooltip="Settings"
+            class="flex items-center rounded-xl text-sm font-medium transition-all
+    {{ request()->routeIs(
+        'admin.profile*',
+        'admin.website-settings.*',
+        'admin.home-slider.*',
+        'admin.about-settings.*',
+    )
+        ? 'bg-[#6F4E37] text-white'
+        : 'text-white hover:bg-white/10' }}"
             :class="sidebarOpen
                 ?
                 'gap-3 px-3 py-2.5' :
                 'justify-center px-2 py-3'">
 
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-
-                <!-- Analytics Chart -->
-                <path d="M3 3v18h18" />
-                <path d="m7 14 4-4 4 3 5-7" />
-
-                <!-- AI Sparkle -->
-                <path d="M17 3l.8 2.2L20 6l-2.2.8L17 9l-.8-2.2L14 6l2.2-.8L17 3Z" />
-
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
             </svg>
 
             <span x-show="sidebarOpen" x-cloak class="truncate">
-                AI Analytics
+                Settings
             </span>
 
         </a>
-
-
-        {{-- ===================================================== --}}
-        {{-- SETTINGS WITH SUBMENU --}}
-        {{-- ===================================================== --}}
-
-        <div x-data="{
-            settingsOpen: {{ request()->routeIs('admin.profile*', 'admin.website-settings.*', 'admin.home-slider.*') ? 'true' : 'false' }}
-        }" class="space-y-1">
-            {{-- SETTINGS BUTTON --}}
-            <button type="button"
-                @click="
-    if (!sidebarOpen) {
-        sidebarOpen = true;
-        settingsOpen = true;
-    } else {
-        settingsOpen = !settingsOpen;
-    }
-"
-                :aria-expanded="settingsOpen.toString()"
-                class="w-full flex items-center rounded-xl text-sm font-medium transition-all
-    {{ request()->routeIs('admin.profile*', 'admin.website-settings.*', 'admin.home-slider.*')
-        ? 'bg-[#6F4E37] text-white'
-        : 'text-white hover:bg-white/10' }}"
-                :class="sidebarOpen
-                    ?
-                    'gap-3 px-3 py-2.5' :
-                    'justify-center px-2 py-3'"
-                title="Settings">
-                {{-- SETTINGS ICON --}}
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3" />
-                    <path
-                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-                </svg>
-
-                <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">
-                    Settings
-                </span>
-
-                {{-- ARROW --}}
-                <svg x-show="sidebarOpen" x-cloak class="w-4 h-4 shrink-0 transition-transform duration-200"
-                    :class="settingsOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
-                </svg>
-            </button>
-
-            {{-- SUBMENU --}}
-            <div x-cloak x-show="settingsOpen && sidebarOpen" x-transition
-                class="ml-5 space-y-1 border-l border-white/30 pl-3">
-
-                {{-- WEBSITE SETTINGS --}}
-                <a href="{{ route('admin.website-settings.edit') }}" wire:navigate
-                    class="block rounded-lg px-3 py-2.5 text-sm transition
-        {{ request()->routeIs('admin.website-settings.*')
-            ? 'bg-[#6F4E37] text-white'
-            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                    Website Settings
-                </a>
-
-                {{-- HOME PAGE SLIDER --}}
-                <a href="{{ route('admin.home-slider.index') }}" wire:navigate
-                    class="block rounded-lg px-3 py-2.5 text-sm transition
-        {{ request()->routeIs('admin.home-slider.*')
-            ? 'bg-[#6F4E37] text-white'
-            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                    Home Page Settings
-                </a>
-
-                {{-- About Page --}}
-                <a href="{{ route('admin.about-settings.edit') }}" wire:navigate
-                    class="block rounded-lg px-3 py-2.5 text-sm transition
-        {{ request()->routeIs('admin.about-settings.*')
-            ? 'bg-[#6F4E37] text-white'
-            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                    About Page Settings
-                </a>
-            </div>
-        </div>
 
 
     </nav>
@@ -553,10 +388,10 @@
                 </svg>
 
                 <span class="text-[10px] font-medium leading-tight">
-                    Appointments
+                    Bookings
                 </span>
 
-                @if (request()->routeIs('admin.appointments*'))
+                @if (request()->routeIs('admin.appointments*', 'admin.transactions*'))
                     <span
                         class="w-1 h-1
                                rounded-full
@@ -568,36 +403,7 @@
             </a>
 
 
-            <a href="{{ route('admin.transactions') }}"
-                class="flex flex-col items-center gap-0.5
-                   px-3 py-1.5
-                   rounded-xl
-                   transition-all
-                   min-w-0
-                   text-white">
 
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-
-                    <path d="M3 10h18" />
-                    <path d="M7 15h4" />
-                </svg>
-
-                <span class="text-[10px] font-medium leading-tight">
-                    Transactions
-                </span>
-
-                @if (request()->routeIs('admin.transactions*'))
-                    <span
-                        class="w-1 h-1
-                           rounded-full
-                           bg-[#6F4E37]
-                           mt-0.5">
-                    </span>
-                @endif
-
-            </a>
 
             <a href="{{ route('admin.calendar') }}"
                 class="flex flex-col items-center gap-0.5
@@ -815,11 +621,16 @@
 
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                     viewBox="0 0 24 24">
-                    <path d="M4 5h16v14H4z" />
-                    <path d="M7 9h10M7 13h7" />
+                    <circle cx="9" cy="8" r="3" />
+
+                    <path d="M3 21a6 6 0 0112 0" />
+
+                    <path d="M16 11a3 3 0 100-6" />
+
+                    <path d="M16 14a5 5 0 015 5" />
                 </svg>
 
-                Customers
+                People Management
 
             </a>
 
@@ -842,55 +653,11 @@
                     <path d="M9 7h6M9 11h6M9 15h4" />
                 </svg>
 
-                Services
+                Service Management
 
             </a>
 
 
-            {{-- Add-Ons --}}
-            <a href="{{ route('admin.addons') }}" onclick="toggleAdminMoreDrawer()"
-                class="inline-flex items-center gap-3
-                       px-4 py-3
-                       rounded-xl
-                       text-sm
-                       font-medium
-                       text-white
-                       hover:bg-white/10
-                       transition-all
-                       w-full">
-
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 8v8M8 12h8" />
-                </svg>
-
-                Add-Ons
-
-            </a>
-
-
-            {{-- Therapist --}}
-            <a href="{{ route('admin.therapists') }}" onclick="toggleAdminMoreDrawer()"
-                class="inline-flex items-center gap-3
-                       px-4 py-3
-                       rounded-xl
-                       text-sm
-                       font-medium
-                       text-white
-                       hover:bg-white/10
-                       transition-all
-                       w-full">
-
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
-                    viewBox="0 0 24 24">
-                    <circle cx="12" cy="8" r="3" />
-                    <path d="M5 21a7 7 0 0114 0" />
-                </svg>
-
-                Therapist
-
-            </a>
         </div>
 
     </div>
@@ -962,4 +729,80 @@
         }
 
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('aside.fixed.top-0.left-0');
+
+        if (!sidebar) return;
+
+        const tooltip = document.createElement('div');
+
+        tooltip.textContent = '';
+        tooltip.style.cssText = `
+        position: fixed;
+        display: none;
+        z-index: 99999;
+        padding: 9px 13px;
+        background: #6F4E37;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: opacity 150ms ease, transform 150ms ease;
+    `;
+
+        document.body.appendChild(tooltip);
+
+        let hideTimer;
+
+        function hideTooltip() {
+            clearTimeout(hideTimer);
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateX(-4px)';
+
+            hideTimer = setTimeout(() => {
+                tooltip.style.display = 'none';
+            }, 150);
+        }
+
+        document.querySelectorAll('[data-sidebar-tooltip]').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+
+                // Only show when the desktop sidebar is collapsed.
+                if (window.innerWidth < 1024 || sidebar.offsetWidth > 100) {
+                    hideTooltip();
+                    return;
+                }
+
+                const rect = this.getBoundingClientRect();
+
+                tooltip.textContent = this.dataset.sidebarTooltip;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${rect.right + 12}px`;
+                tooltip.style.top = `${rect.top + rect.height / 2}px`;
+                tooltip.style.transform = 'translateY(-50%) translateX(0)';
+
+                requestAnimationFrame(() => {
+                    tooltip.style.opacity = '1';
+                });
+            });
+
+            link.addEventListener('mouseleave', hideTooltip);
+        });
+
+        // Hide the tooltip when the sidebar expands or the page resizes.
+        window.addEventListener('resize', hideTooltip);
+
+        document.addEventListener('click', hideTooltip);
+    });
 </script>

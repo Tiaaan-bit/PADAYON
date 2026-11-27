@@ -33,6 +33,17 @@
             <h2 class="text-lg sm:text-xl font-bold text-gray-800">
                 Payment Overview
             </h2>
+
+            <a href="{{ route('user.my-appointments') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Appointment Overview
+            </a>
+
+            <a href="{{ route('user.payment-history') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Payment Overview
+
+            </a>
         </div>
 
         {{-- ====================================================== --}}

@@ -18,10 +18,16 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s\'-]+$/u'],
+
+            'last_name' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s\'-]+$/u'],
+
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+
             'phone' => ['required', 'string', 'starts_with:09', 'digits_between:10,11', 'unique:users'],
+
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->symbols()],
+
             'agreement' => ['required', 'accepted'],
         ];
     }

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\AboutPageSettingController;
 use App\Http\Controllers\Admin\AdminAddOnsController;
-use App\Http\Controllers\Admin\AdminAiController;
 use App\Http\Controllers\Admin\AdminAppointmentsController;
 use App\Http\Controllers\Admin\AdminCalendarController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -162,6 +161,8 @@ Route::middleware('auth.admin')
         Route::patch('/users/{user}/status', [AdminUsersController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users.destroy');
         Route::get('/users/{user}/appointments', [AdminUsersController::class, 'appointments'])->name('users.appointments');
+        Route::get('/users/{user}/edit', [AdminUsersController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [AdminUsersController::class, 'update'])->name('users.update');
 
         //---Admin Services Controller---//
         Route::get('/services', [AdminServicesController::class, 'services'])->name('services');
@@ -226,9 +227,6 @@ Route::middleware('auth.admin')
 
         Route::post('/website-settings/close-bookings-today', [WebsiteSettingController::class, 'closeBookingsToday'])->name('website-settings.close-bookings-today');
         Route::post('/website-settings/reopen-bookings-today', [WebsiteSettingController::class, 'reopenBookingsToday'])->name('website-settings.reopen-bookings-today');
-
-        Route::get('/ai', [AdminAiController::class, 'index'])->name('ai.index');
-        Route::post('/ai/chat', [AdminAiController::class, 'chat'])->name('ai.chat');
     });
 
 Route::middleware('auth.therapist')

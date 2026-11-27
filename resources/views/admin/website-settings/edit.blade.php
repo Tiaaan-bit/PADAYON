@@ -18,6 +18,22 @@
             <h1 class="text-2xl font-bold text-gray-800">
                 Website Settings
             </h1>
+
+            <a href="{{ route('admin.website-settings.edit') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Website Settings
+            </a>
+
+            <a href="{{ route('admin.home-slider.index') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Home Page Settings
+            </a>
+
+            <a href="{{ route('admin.about-settings.edit') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                About Page Settings
+            </a>
+
         </div>
         <div class="rounded-2xl border border-[#849753]/20 bg-white p-5 shadow-sm">
             <h3 class="text-lg font-semibold text-[#2F2420]">

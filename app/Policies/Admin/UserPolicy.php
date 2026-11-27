@@ -15,4 +15,9 @@ class UserPolicy
     {
         return $admin->isAdmin() && !$user->isAdmin();
     }
+
+    public function update(User $admin, User $user): bool
+    {
+        return $admin->isAdmin() && !$user->isAdmin();
+    }
 }

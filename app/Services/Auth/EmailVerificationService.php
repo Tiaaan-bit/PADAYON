@@ -2,11 +2,12 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\Admin\User\UserStatus;
 use App\Models\User;
 
 class EmailVerificationService
 {
-    public function resend(User $user)
+    public function resend(User $user): bool
     {
         if ($user->hasVerifiedEmail()) {
             return false;
@@ -17,20 +18,28 @@ class EmailVerificationService
         return true;
     }
 
-    public function verify(User $user, string $code)
+    public function verify(User $user, string $code): bool
     {
-        if (!$user->email_verification_code || !$user->email_verification_code_expires_at || now()->greaterThan($user->email_verification_code_expires_at) || $code !== $user->email_verification_code) {
+        if (
+            !$user->email_verification_code ||
+            !$user->email_verification_code_expires_at ||
+            now()->greaterThan($user->email_verification_code_expires_at) ||
+            $code !== $user->email_verification_code
+        ) {
             return false;
         }
 
-        $user
-            ->forceFill([
-                'email_verified_at' => now(),
-                'status' => 'active',
-                'email_verification_code' => null,
-                'email_verification_code_expires_at' => null,
-            ])
-            ->save();
+        $user->forceFill([
+            'email_verified_at' => now(),
+
+            // Only activate accounts that do not require admin approval
+            'status' => $user->requires_admin_reactivation
+                ? UserStatus::PENDING
+                : UserStatus::ACTIVE,
+
+            'email_verification_code' => null,
+            'email_verification_code_expires_at' => null,
+        ])->save();
 
         return true;
     }

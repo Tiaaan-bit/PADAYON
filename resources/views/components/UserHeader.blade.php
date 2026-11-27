@@ -1,6 +1,6 @@
 <header class="sticky top-0 z-40 bg-[#D6BB9E]">
 
-    <div class="flex items-center justify-between gap-3 h-20 px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between gap-3 h-20 px-3 sm:px-6 lg:px-8 ">
 
         {{-- LOGO + BRAND --}}
         <a href="{{ route('user.dashboard') }}" wire:navigate class="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\User\DeleteUser;
 use App\Actions\Admin\User\ToggleUserStatus;
+use App\Actions\Admin\User\UpdateUser;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Requests\Admin\UserFilterRequest;
 use App\Models\User;
 use App\Repositories\Admin\User\UserRepositoryInterface;
@@ -40,10 +42,17 @@ class AdminUsersController extends Controller
 
         return back()->with('success', 'User deleted successfully.');
     }
-    public function appointments(
-        int $user,
-        UserRepositoryInterface $userRepository
-    ) {
+
+    public function update(UpdateUserRequest $request, User $user, UpdateUser $updateUser): RedirectResponse
+    {
+        Gate::authorize('update', $user);
+
+        $updateUser->execute($user, $request->validated());
+
+        return redirect()->route('admin.users')->with('success', 'Customer information updated successfully.');
+    }
+    public function appointments(int $user, UserRepositoryInterface $userRepository)
+    {
         $data = $userRepository->getCustomerAppointmentData($user);
 
         return response()->json($data);

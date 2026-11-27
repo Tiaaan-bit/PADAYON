@@ -889,7 +889,12 @@ class UserAppointmentController extends Controller
             'payment_method' => ['required', 'in:branch,gcash'],
 
             'payment_type' => ['nullable', 'required_if:payment_method,gcash', 'in:full,downpayment'],
+
+            'terms_accepted' => ['required', 'accepted'],
+
         ]);
+
+
 
         if ($this->isBookingClosedForDate($validated['appointment_date'])) {
             throw ValidationException::withMessages([

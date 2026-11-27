@@ -21,6 +21,15 @@
                 <h2 class="text-xl font-bold text-gray-800">
                     Manage Appointments
                 </h2>
+                <a href="{{ route('admin.appointments') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Appointments
+                </a>
+
+                <a href="{{ route('admin.transactions') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Transactions
+                </a>
 
             </div>
 

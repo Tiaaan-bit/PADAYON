@@ -111,16 +111,6 @@
             {{-- ========================================================= --}}
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5">
-
-                <div class="flex items-center justify-between mb-4">
-
-                    <h3 class="font-semibold text-gray-800">
-                        All Therapists
-                    </h3>
-
-                </div>
-
-
                 {{-- Empty --}}
                 @if ($therapists->isEmpty())
 

@@ -70,6 +70,16 @@
                         <h2 class="text-xl font-bold text-gray-800">
                             Manage Services
                         </h2>
+
+                        <a href="{{ route('admin.services') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                            Services
+                        </a>
+
+                        <a href="{{ route('admin.addons') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                            Add Ons
+                        </a>
                     </div>
 
 

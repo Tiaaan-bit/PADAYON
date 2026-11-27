@@ -26,10 +26,17 @@ class RegisterController extends Controller
             $token = session('walk_in_registration_token');
             $tokenHash = hash('sha256', $token);
 
-            $walkInCustomer = WalkInCustomer::query()->where('registration_token', $tokenHash)->first();
+            $walkInCustomer = WalkInCustomer::query()
+                ->where('registration_token', $tokenHash)
+                ->first();
 
             // Validate invitation again.
-            if (!$walkInCustomer || $walkInCustomer->registered_user_id || !$walkInCustomer->registration_token_expires_at || $walkInCustomer->registration_token_expires_at->isPast()) {
+            if (
+                !$walkInCustomer ||
+                $walkInCustomer->registered_user_id ||
+                !$walkInCustomer->registration_token_expires_at ||
+                $walkInCustomer->registration_token_expires_at->isPast()
+            ) {
                 session()->forget('walk_in_registration_token');
 
                 $walkInCustomer = null;
@@ -52,6 +59,16 @@ class RegisterController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Combine first name and last name
+        |--------------------------------------------------------------------------
+        */
+
+        $fullName = trim(
+            $data['first_name'] . ' ' . $data['last_name']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
         | Find walk-in invitation
         |--------------------------------------------------------------------------
         */
@@ -63,7 +80,9 @@ class RegisterController extends Controller
         if ($walkInToken) {
             $tokenHash = hash('sha256', $walkInToken);
 
-            $walkInCustomer = WalkInCustomer::query()->where('registration_token', $tokenHash)->first();
+            $walkInCustomer = WalkInCustomer::query()
+                ->where('registration_token', $tokenHash)
+                ->first();
 
             /*
             |--------------------------------------------------------------------------
@@ -71,10 +90,17 @@ class RegisterController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if (!$walkInCustomer || $walkInCustomer->registered_user_id || !$walkInCustomer->registration_token_expires_at || $walkInCustomer->registration_token_expires_at->isPast()) {
+            if (
+                !$walkInCustomer ||
+                $walkInCustomer->registered_user_id ||
+                !$walkInCustomer->registration_token_expires_at ||
+                $walkInCustomer->registration_token_expires_at->isPast()
+            ) {
                 session()->forget('walk_in_registration_token');
 
-                return redirect()->route('register')->with('error', 'Your walk-in registration invitation is invalid or has expired.');
+                return redirect()
+                    ->route('register')
+                    ->with('error', 'Your walk-in registration invitation is invalid or has expired.');
             }
 
             /*
@@ -84,7 +110,9 @@ class RegisterController extends Controller
             */
 
             if (strtolower($data['email']) !== strtolower($walkInCustomer->email)) {
-                return back()->withInput()->with('error', 'The email address must match the email address used for your walk-in booking.');
+                return back()
+                    ->withInput()
+                    ->with('error', 'The email address must match the email address used for your walk-in booking.');
             }
 
             /*
@@ -94,7 +122,9 @@ class RegisterController extends Controller
             */
 
             if ($data['phone'] !== $walkInCustomer->phone) {
-                return back()->withInput()->with('error', 'The phone number must match the phone number used for your walk-in booking.');
+                return back()
+                    ->withInput()
+                    ->with('error', 'The phone number must match the phone number used for your walk-in booking.');
             }
         }
 
@@ -104,15 +134,19 @@ class RegisterController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        [$user, $linkedWalkInCustomer] = DB::transaction(function () use ($data, $walkInCustomer) {
+        [$user, $linkedWalkInCustomer] = DB::transaction(function () use (
+            $data,
+            $fullName,
+            $walkInCustomer
+        ) {
             /*
-                |--------------------------------------------------------------------------
-                | Create user account
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Create user account
+            |--------------------------------------------------------------------------
+            */
 
             $user = User::create([
-                'name' => $data['name'],
+                'name' => $fullName,
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'password' => Hash::make($data['password']),
@@ -121,42 +155,49 @@ class RegisterController extends Controller
             ]);
 
             /*
-                |--------------------------------------------------------------------------
-                | Normal registration
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Normal registration
+            |--------------------------------------------------------------------------
+            */
 
             if (!$walkInCustomer) {
                 return [$user, null];
             }
 
             /*
-                |--------------------------------------------------------------------------
-                | Re-fetch walk-in customer inside transaction
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Re-fetch walk-in customer inside transaction
+            |--------------------------------------------------------------------------
+            */
 
-            $customer = WalkInCustomer::query()->where('id', $walkInCustomer->id)->lockForUpdate()->first();
+            $customer = WalkInCustomer::query()
+                ->where('id', $walkInCustomer->id)
+                ->lockForUpdate()
+                ->first();
 
             if (!$customer) {
-                throw new \RuntimeException('Walk-in customer record could not be found.');
+                throw new \RuntimeException(
+                    'Walk-in customer record could not be found.'
+                );
             }
 
             /*
-                |--------------------------------------------------------------------------
-                | Prevent duplicate registration
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Prevent duplicate registration
+            |--------------------------------------------------------------------------
+            */
 
             if ($customer->registered_user_id) {
-                throw new \RuntimeException('This walk-in customer is already linked to an account.');
+                throw new \RuntimeException(
+                    'This walk-in customer is already linked to an account.'
+                );
             }
 
             /*
-                |--------------------------------------------------------------------------
-                | Link walk-in customer to newly created user
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Link walk-in customer to newly created user
+            |--------------------------------------------------------------------------
+            */
 
             $customer->registered_user_id = $user->id;
             $customer->registration_token = null;
@@ -165,24 +206,10 @@ class RegisterController extends Controller
             $customer->save();
 
             /*
-                |--------------------------------------------------------------------------
-                | Link existing walk-in appointments to the new user
-                |--------------------------------------------------------------------------
-                |
-                | Before registration:
-                |
-                | user_id = NULL
-                | walk_in_customer_id = 7
-                |
-                | After registration:
-                |
-                | user_id = 21
-                | walk_in_customer_id = 7
-                |
-                | This allows the appointment to appear in the user's
-                | normal appointment history.
-                |
-                */
+            |--------------------------------------------------------------------------
+            | Link existing walk-in appointments to the new user
+            |--------------------------------------------------------------------------
+            */
 
             UsersAppointments::query()
                 ->where('walk_in_customer_id', $customer->id)
@@ -192,10 +219,10 @@ class RegisterController extends Controller
                 ]);
 
             /*
-                |--------------------------------------------------------------------------
-                | Refresh customer
-                |--------------------------------------------------------------------------
-                */
+            |--------------------------------------------------------------------------
+            | Refresh customer
+            |--------------------------------------------------------------------------
+            */
 
             $customer->refresh();
 
@@ -222,6 +249,11 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account.');
+        return redirect()
+            ->route('verification.notice')
+            ->with(
+                'success',
+                'Registration successful! Please check your email to verify your account.'
+            );
     }
 }

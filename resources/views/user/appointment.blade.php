@@ -384,6 +384,7 @@
                             </div>
 
 
+
                             {{-- PREVIOUS OPERATIONS --}}
 
                             <div class="mt-8">
@@ -402,10 +403,10 @@
                                                 x-model="has_previous_operations" class="peer sr-only">
 
                                             <div
-                                                class="text-center border-2 border-gray-200
-                                                   rounded-xl p-3
-                                                   peer-checked:border-[#849753]
-                                                   peer-checked:bg-[#849753]/5">
+                                                class="text-center border-2 border-gray-200 rounded-xl p-3
+                    peer-checked:border-[#849753]
+                    peer-checked:bg-[#849753]/5
+                    transition">
 
                                                 <span x-text="item.label"></span>
 
@@ -422,7 +423,7 @@
 
                             {{-- BODY PROBLEM --}}
 
-                            <div class="mt-8">
+                            <div class="mt-8" x-show="has_previous_operations === 'yes'" x-transition x-cloak>
 
                                 <label class="block font-semibold text-gray-800 mb-2">
                                     Body Problem / Concern
@@ -433,12 +434,12 @@
 
                                 <textarea x-model="body_problem" rows="4"
                                     class="w-full rounded-xl border-gray-300
-                                       focus:border-[#849753]
-                                       focus:ring-[#849753]"
-                                    placeholder="Tell us about any pain, discomfort or body concern..."></textarea>
+        focus:border-[#849753]
+        focus:ring-[#849753]"
+                                    placeholder="Tell us about your previous operation, pain, discomfort or body concern...">
+    </textarea>
 
                             </div>
-
                         </div>
 
 
@@ -648,17 +649,17 @@
                                             <button type="button" @click="selectSlot(slot)"
                                                 class="w-full h-full text-left border-2 rounded-2xl p-4 transition duration-200"
                                                 :class="appointment_time === slot.start ?
-                                                    'border-[#849753] bg-[#849753]/10 ring-2 ring-[#849753]/20' :
-                                                    'border-green-200 bg-green-50 hover:border-[#849753] hover:shadow-sm'">
+                                                    'border-[#849753] bg-green-500 ring-2 ring-[#849753]/20' :
+                                                    'border-green-200 bg-green-500 hover:border-[#849753] hover:shadow-sm'">
                                                 <div class="w-full">
-                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                    <p class="w-full text-center text-sm font-bold text-white"
                                                         x-text="slot.label"></p>
                                                 </div>
 
                                                 <div x-show="appointment_time === slot.start" x-transition
                                                     class="mt-2 flex w-full justify-center">
                                                     <span
-                                                        class="inline-flex items-center rounded-full bg-[#849753] px-2.5 py-1 text-xs font-semibold text-white">
+                                                        class="inline-flex items-center rounded-full bg-[#6F4E37] px-2.5 py-1 text-sm font-semibold text-white">
                                                         Selected
                                                     </span>
                                                 </div>
@@ -671,9 +672,9 @@
                                         ====================================================== --}}
                                         <template x-if="slot.status === 'booked'">
                                             <div
-                                                class="w-full h-full border-2 border-red-200 rounded-2xl bg-red-50 p-4 opacity-80">
+                                                class="w-full h-full border-2 border-red-200 rounded-2xl bg-red-500 p-4 opacity-80 cursor-not-allowed">
                                                 <div class="w-full">
-                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                    <p class="w-full text-center text-sm font-bold text-white"
                                                         x-text="slot.label"></p>
                                                 </div>
                                             </div>
@@ -689,9 +690,9 @@
                                                     selectedAdjustSlot = slot;
                                                     showAdjustServiceModal = true;
                                                 "
-                                                class="w-full h-full text-left border-2 border-amber-300 rounded-2xl bg-amber-50 p-4 transition duration-200 hover:border-amber-500 hover:shadow-sm">
+                                                class="w-full h-full text-left border-2 border-amber-300 rounded-2xl bg-amber-500 p-4 transition duration-200 hover:border-amber-500 hover:shadow-sm">
                                                 <div class="w-full">
-                                                    <p class="w-full text-center text-xs font-bold text-gray-800"
+                                                    <p class="w-full text-center text-sm font-bold text-white"
                                                         x-text="slot.label"></p>
                                                 </div>
 
@@ -1144,6 +1145,146 @@
 
                             </div>
 
+                            {{-- TERMS AND CONDITIONS --}}
+
+
+                            <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5" x-data="{ showTerms: false }">
+
+                                {{-- Toggle Header --}}
+                                <button type="button" @click="showTerms = !showTerms"
+                                    class="flex w-full items-center justify-between gap-3 text-left">
+
+                                    <div class="flex items-center gap-2">
+                                        <svg class="h-5 w-5 text-[#849753]" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955
+                                                11.955 0 0112 2.944a11.955
+                                                11.955 0 01-8.618 3.04A12.02
+                                                12.02 0 003 9c0 5.591 3.824
+                                                10.29 9 11.622 5.176-1.332
+                                                9-6.03 9-11.622 0-1.042-.133
+                                                -2.052-.382-3.016z" />
+                                        </svg>
+
+                                        <div>
+                                            <h3 class="font-bold text-gray-800">
+                                                Terms and Conditions
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-semibold text-[#6F4E37]"
+                                            x-text="showTerms ? 'Hide Terms' : 'View Terms'"></span>
+
+                                        <svg class="h-5 w-5 text-gray-500 transition-transform duration-200"
+                                            :class="{ 'rotate-180': showTerms }" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {{-- Expandable Terms --}}
+                                <div x-show="showTerms" x-collapse x-cloak class="mt-5 border-t border-gray-200 pt-5">
+
+                                    <div class="space-y-4 text-sm text-gray-600">
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">1. Payment Policy</p>
+                                            <p class="mt-1">
+                                                Payments are subject to the center's refund policy.
+                                                Payments are generally non-refundable once the service
+                                                has been provided or the appointment has been used,
+                                                except where a refund is required by applicable law or
+                                                the center is unable to provide the booked service.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">2. Appointment Confirmation</p>
+                                            <p class="mt-1">
+                                                Submitting an appointment request does not automatically
+                                                guarantee confirmation. Please wait for confirmation
+                                                from Padayon Massage Center.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">3. Cancellation and No-Show Policy</p>
+                                            <p class="mt-1">
+                                                Please inform the center as early as possible if you
+                                                cannot attend your scheduled appointment. Failure to
+                                                attend without prior notice may affect your booking
+                                                and payment according to the center's policy.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">4. Rescheduling Policy</p>
+                                            <p class="mt-1">
+                                                Rescheduling requests are subject to therapist and
+                                                appointment availability. Please contact the center
+                                                to request a schedule change.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">5. Therapist Availability</p>
+                                            <p class="mt-1">
+                                                If your selected therapist becomes unavailable, the
+                                                center will contact you to discuss an alternative
+                                                therapist or a rescheduled appointment. Your therapist
+                                                will not be changed without your agreement.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">6. Customer Information and Safety</p>
+                                            <p class="mt-1">
+                                                Please provide accurate contact information and disclose
+                                                relevant health concerns or previous operations before
+                                                receiving the massage service.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold text-gray-800">7. Late Arrival</p>
+                                            <p class="mt-1">
+                                                Arriving late may affect the duration of your massage
+                                                session to avoid delaying other scheduled appointments.
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                {{-- Agreement Checkbox (always visible) --}}
+                                <div class="mt-5 border-t border-gray-200 pt-4">
+
+                                    <label class="flex cursor-pointer items-start gap-3">
+
+                                        <input type="checkbox" name="terms_accepted" value="1"
+                                            x-model="terms_accepted" required
+                                            class="h-5 w-5 rounded border-gray-300
+                       text-[#849753] focus:ring-[#849753]">
+
+                                        <span class="text-sm text-gray-700">
+                                            I have read and agree to the
+                                            <strong class="text-[#6F4E37]">
+                                                Terms and Conditions
+                                            </strong>
+                                            of Padayon Massage Center.
+                                            <span class="text-red-500">*</span>
+                                        </span>
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
                         </div>
 
 
@@ -1561,6 +1702,8 @@
                 payment_method: oldPaymentMethod || '',
 
                 payment_type: oldPaymentType || '',
+
+                terms_accepted: false,
 
                 /*
                 |--------------------------------------------------------------------------
@@ -2100,18 +2243,13 @@
 
                     if (this.step === 4) {
 
-                        if (
-                            this.payment_method === 'gcash'
-                        ) {
-
-                            return Boolean(
-                                this.payment_method &&
-                                this.payment_type
-                            );
-                        }
-
                         return Boolean(
-                            this.payment_method
+                            this.payment_method &&
+                            (
+                                this.payment_method !== 'gcash' ||
+                                this.payment_type
+                            ) &&
+                            this.terms_accepted
                         );
                     }
 
@@ -2586,6 +2724,17 @@
                         event.preventDefault();
 
                         this.step = 4;
+
+                        return;
+                    }
+
+                    if (!this.terms_accepted) {
+
+                        event.preventDefault();
+
+                        this.step = 4;
+
+                        alert('Please accept the Terms and Conditions before booking.');
 
                         return;
                     }

@@ -12,15 +12,15 @@ class LoginController extends Controller
     /**
      * Show login form.
      */
+
     public function showForm()
     {
-
-        // Redirect authenticated therapists to Padayon AI
+        // Therapist
         if (Auth::guard('therapist')->check()) {
             return redirect()->route('therapist.ai.index');
         }
 
-        // Redirect authenticated web users
+        // User / Admin / Staff
         if (Auth::guard('web')->check()) {
             $user = Auth::guard('web')->user();
 
@@ -32,20 +32,19 @@ class LoginController extends Controller
                 return redirect()->route('staff.dashboard');
             }
 
-            // Require email verification for normal users
-            if (!$user->hasVerifiedEmail()) {
+            if (!$user->hasVerifiedEmail() || !$user->isActive()) {
                 return redirect()->route('verification.notice');
             }
 
             return redirect()->route('user.dashboard');
         }
-        return view('auth.login');
+
+        return response()->view('auth.login')->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')->header('Pragma', 'no-cache')->header('Expires', '0');
     }
 
     /**
      * Handle login.
      */
-
 
     public function login(LoginRequest $request)
     {
@@ -60,13 +59,15 @@ class LoginController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        if (Auth::guard('web')->attempt(
-            [
-                'email' => $email,
-                'password' => $password,
-            ],
-            $request->boolean('remember')
-        )) {
+        if (
+            Auth::guard('web')->attempt(
+                [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+                $request->boolean('remember'),
+            )
+        ) {
             // Clear any previous therapist authentication.
             Auth::guard('therapist')->logout();
 
@@ -92,12 +93,15 @@ class LoginController extends Controller
 
             // Check email verification first
             if (!$user->hasVerifiedEmail()) {
-                return redirect()
-                    ->route('verification.notice')
-                    ->with('info', 'Please verify your email before accessing your account.');
+                // Generate and send a new verification code if missing or expired
+                if (!$user->email_verification_code || !$user->email_verification_code_expires_at || now()->greaterThan($user->email_verification_code_expires_at)) {
+                    $user->sendEmailVerificationNotification();
+                }
+
+                return redirect()->route('verification.notice')->with('info', 'A verification code has been sent to your registered email and phone number.');
             }
 
-            // Check customer account status after email verification
+            // Check account status
             if (!$user->isActive()) {
                 Auth::guard('web')->logout();
 
@@ -107,7 +111,6 @@ class LoginController extends Controller
                     ])
                     ->onlyInput('email');
             }
-
             // Mark customer online
             if (method_exists($user, 'markOnline')) {
                 $user->markOnline();
@@ -122,13 +125,15 @@ class LoginController extends Controller
     |--------------------------------------------------------------------------
     */
 
-        if (Auth::guard('therapist')->attempt(
-            [
-                'email' => $email,
-                'password' => $password,
-            ],
-            true // Automatically enable Remember Me
-        )) {
+        if (
+            Auth::guard('therapist')->attempt(
+                [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+                true, // Automatically enable Remember Me
+            )
+        ) {
             // Clear any previous web authentication.
             Auth::guard('web')->logout();
 
@@ -155,7 +160,6 @@ class LoginController extends Controller
             ])
             ->onlyInput('email');
     }
-
 
     /**
      * Logout.
@@ -205,8 +209,6 @@ class LoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()
-            ->route('login')
-            ->with('success', 'You have been logged out.');
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

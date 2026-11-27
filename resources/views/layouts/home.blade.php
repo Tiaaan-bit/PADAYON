@@ -41,6 +41,14 @@
     @stack('scripts')
 
     <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {

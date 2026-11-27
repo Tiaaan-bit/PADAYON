@@ -15,7 +15,7 @@
                 alt="{{ $websiteSettings?->website_name ?? 'Padayon Massage Center' }}"
                 class="h-40 w-auto mx-auto object-contain mb-4">
 
-                <h1 class="text-2xl font-bold text-gray-800">Verify Your Email</h1>
+            <h1 class="text-2xl font-bold text-gray-800">Verify Your Email</h1>
             <p class="text-sm text-gray-500 mt-1">One more step before you get started</p>
         </div>
 
@@ -27,13 +27,6 @@
                     <path d="M5 13l4 4L19 7" />
                 </svg>
                 {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- Errors --}}
-        @if ($errors->any())
-            <div class="mb-5 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
-                {{ $errors->first() }}
             </div>
         @endif
 
@@ -55,27 +48,94 @@
             </span>
         </div>
 
-        {{-- Verify code form --}}
-        <form method="POST" action="{{ route('verification.verify-code') }}" class="space-y-4">
+
+        {{-- Verify Code Form --}}
+        <form method="POST" action="{{ route('verification.verify-code') }}" class="space-y-6" x-data="{
+            digits: ['', '', '', '', '', ''],
+        
+            updateDigit(index, event) {
+                const input = event.target;
+                const value = input.value.replace(/\D/g, '').slice(-1);
+        
+                this.digits[index] = value;
+                input.value = value;
+        
+                // Automatically focus the next box
+                if (value && index < 5) {
+                    const inputs = input.closest('[data-otp]').querySelectorAll('input');
+                    inputs[index + 1]?.focus();
+                }
+            },
+        
+            handleBackspace(index, event) {
+                if (event.key === 'Backspace' && !this.digits[index] && index > 0) {
+                    const inputs = event.target.closest('[data-otp]').querySelectorAll('input');
+                    inputs[index - 1]?.focus();
+                }
+            },
+        
+            handlePaste(event) {
+                event.preventDefault();
+        
+                const pasted = event.clipboardData.getData('text')
+                    .replace(/\D/g, '')
+                    .slice(0, 6);
+        
+                this.digits = ['', '', '', '', '', ''];
+        
+                [...pasted].forEach((digit, index) => {
+                    this.digits[index] = digit;
+                });
+        
+                const inputs = event.target.closest('[data-otp]').querySelectorAll('input');
+        
+                inputs.forEach((input, index) => {
+                    input.value = this.digits[index];
+                });
+        
+                this.$nextTick(() => {
+                    const nextEmpty = this.digits.findIndex(digit => !digit);
+                    inputs[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
+                });
+            }
+        }"
+            x-init="$nextTick(() => $el.querySelector('[data-otp] input')?.focus())">
+
             @csrf
 
             <div>
-                <label for="code" class="block text-sm font-medium text-gray-700 mb-2">
-                    Verification Code
+                <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
+                    Enter your 6-digit verification code
                 </label>
-                <input type="text" name="code" id="code" maxlength="6" inputmode="numeric"
-                    autocomplete="one-time-code" placeholder="Enter 6-digit code" value="{{ old('code') }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#849753] focus:border-[#849753]">
+
+                {{-- Six OTP Boxes --}}
+                <div data-otp class="flex justify-center gap-2 sm:gap-3">
+
+                    <template x-for="(digit, index) in digits" :key="index">
+                        <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" x-model="digits[index]"
+                            @input="updateDigit(index, $event)" @keydown="handleBackspace(index, $event)"
+                            @paste="handlePaste($event)"
+                            class="w-11 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold text-gray-800 border border-gray-300 rounded-lg outline-none transition focus:ring-2 focus:ring-[#849753] focus:border-[#849753]">
+                    </template>
+
+                </div>
+
+                {{-- Combined Code --}}
+                <input type="hidden" name="code" :value="digits.join('')">
+
                 @error('code')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm text-red-600 text-center">{{ $message }}</p>
                 @enderror
             </div>
 
-            <button type="submit"
-                class="w-full py-3 bg-[#849753] hover:bg-[#6F4E37] active:scale-[.99] text-white font-semibold rounded-lg text-sm transition-all">
+            {{-- Verify Button --}}
+            <button type="submit" :disabled="digits.join('').length !== 6"
+                class="w-full py-3 bg-[#849753] hover:bg-[#6F4E37] active:scale-[.99] text-white font-semibold rounded-lg text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                 Verify Code
             </button>
+
         </form>
+
 
         {{-- Resend button --}}
         <form method="POST" action="{{ route('verification.resend-code') }}" class="mt-4">

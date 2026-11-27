@@ -7,7 +7,7 @@
     <div class="max-w-5xl w-full mx-auto p-10 text-gray-800 pt-20 pb-32">
 
         {{-- Header --}}
-        <span class="px-2 py-1 text-xs border border-gray-300 rounded-full">
+        <span class="px-2 py-1 text-lg border border-gray-300 rounded-full font-bold">
             Reach Out To Us
         </span>
 
@@ -17,7 +17,7 @@
 
         </h1>
 
-        <p class="text-left mt-4">
+        <p class="text-left mt-4 font-bold">
 
             We would love to hear from you and assist you with your needs.
             Whether you have questions, feedback, suggestions, or would like
@@ -47,17 +47,9 @@
                     Facebook Page
                 </p>
 
-                <p class="text-gray-500 mt-1 mb-4">
-                    Our team can respond in real time.
-                </p>
-
-                <a
-                href="{{ $settings->facebook_url }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                {{ $settings->facebook_name }}
-            </a>
+                <a href="{{ $settings->facebook_url }}" target="_blank" rel="noopener noreferrer">
+                    {{ $settings->facebook_name }}
+                </a>
 
             </div>
 
@@ -77,21 +69,13 @@
                     Visit Our Place
                 </p>
 
-                <p class="text-gray-500 mt-1 mb-4">
-                    Visit our location in real life.
-                </p>
-
                 @if ($settings->location_url)
-    <a
-        href="{{ $settings->location_url }}"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        {{ $settings->business_address }}
-    </a>
-@else
-    <span>{{ $settings->business_address }}</span>
-@endif
+                    <a href="{{ $settings->location_url }}" target="_blank" rel="noopener noreferrer">
+                        {{ $settings->business_address }}
+                    </a>
+                @else
+                    <span>{{ $settings->business_address }}</span>
+                @endif
 
             </div>
 
@@ -109,10 +93,6 @@
 
                 <p class="text-lg font-bold mt-2">
                     Call Us Directly
-                </p>
-
-                <p class="text-gray-500 mt-1 mb-4">
-                    Available during working hours.
                 </p>
 
                 <a href="tel:{{ preg_replace('/[^\d+]/', '', $settings->phone_number) }}">
@@ -135,10 +115,6 @@
 
                 <p class="text-lg font-bold mt-2">
                     Working Hours
-                </p>
-
-                <p class="text-gray-500 mt-1 mb-4">
-                    We’re here for you every day of the week!
                 </p>
 
                 <p>

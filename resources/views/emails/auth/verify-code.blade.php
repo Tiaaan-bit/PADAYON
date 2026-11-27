@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,12 +12,11 @@
     @php
         $websiteName = $websiteSettings?->website_name ?? 'Padayon Massage Center';
 
-        $websiteSubname = $websiteSettings?->website_subname
-            ?? 'Blind Massage Specialists | Powered by DiverseCare Wellness Hub';
+        $websiteSubname =
+            $websiteSettings?->website_subname ?? 'Blind Massage Specialists | Powered by DiverseCare Wellness Hub';
     @endphp
 
-    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-        style="background-color:#f4eddb;padding:30px 15px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4eddb;padding:30px 15px;">
         <tr>
             <td align="center">
 
@@ -53,7 +51,6 @@
                             <p style="margin:0;color:#6f4e37;font-size:14px;line-height:1.8;">
                                 Hello {{ $notifiable->name ?? 'Valued Customer' }},
                                 <br><br>
-                                Thank you for registering with {{ $websiteName }}.
                                 Please use the verification code below to verify
                                 your email address.
                             </p>
@@ -70,11 +67,13 @@
                                 <tr>
                                     <td align="center" style="padding:25px 15px;">
 
-                                        <p style="margin:0 0 12px;color:#6f4e37;font-size:12px;font-weight:bold;letter-spacing:1px;">
+                                        <p
+                                            style="margin:0 0 12px;color:#6f4e37;font-size:12px;font-weight:bold;letter-spacing:1px;">
                                             YOUR VERIFICATION CODE
                                         </p>
 
-                                        <p style="margin:0;color:#2f2420;font-size:32px;font-weight:bold;letter-spacing:8px;">
+                                        <p
+                                            style="margin:0;color:#2f2420;font-size:32px;font-weight:bold;letter-spacing:8px;">
                                             {{ $code }}
                                         </p>
 
@@ -93,7 +92,8 @@
                     <tr>
                         <td style="padding:0 25px 30px;">
 
-                            <div style="background-color:#faf8f2;border:1px solid #e3dcc9;border-radius:8px;padding:18px;">
+                            <div
+                                style="background-color:#faf8f2;border:1px solid #e3dcc9;border-radius:8px;padding:18px;">
 
                                 <h3 style="margin:0 0 10px;color:#2f2420;font-size:15px;">
                                     Keep Your Code Safe
@@ -139,4 +139,5 @@
     </table>
 
 </body>
+
 </html>

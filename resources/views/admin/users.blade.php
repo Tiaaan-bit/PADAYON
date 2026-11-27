@@ -8,8 +8,8 @@
         use App\Enums\Admin\User\UserStatus;
     @endphp
 
-    <div class="min-h-screen flex flex-col" x-data="customerModal()" @keydown.escape.window="closeModal()">
-
+    <div class="min-h-screen flex flex-col" x-data="customerModal()"
+        @keydown.escape.window="showEditModal ? closeEditModal() : closeModal()">
         <div class="flex-1 p-4 sm:p-6">
 
             {{-- Page Header --}}
@@ -17,6 +17,15 @@
                 <h2 class="text-xl font-bold text-gray-800">
                     Manage Customers
                 </h2>
+                <a href="{{ route('admin.users') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Customers
+                </a>
+
+                <a href="{{ route('admin.therapists') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                    Therapists
+                </a>
             </div>
 
             {{-- Statistics --}}
@@ -319,6 +328,22 @@
 
                                             <div class="flex items-center gap-2">
 
+                                                {{-- Update Customer --}}
+                                                <button type="button"
+                                                    @click.stop="openEdit({
+        id: '{{ $user->id }}',
+        name: {{ Js::from($user->name) }},
+        email: {{ Js::from($user->email) }},
+        phone: {{ Js::from($user->phone ?? '') }},
+        updateUrl: '{{ route('admin.users.update', $user) }}'
+    })"
+                                                    class="text-xs font-semibold px-3 py-1.5 rounded-lg
+        bg-[#849753] text-white hover:bg-[#6F4E37]
+        transition whitespace-nowrap">
+
+                                                    Update
+                                                </button>
+
                                                 {{-- Toggle Status --}}
                                                 <form method="POST"
                                                     action="{{ route('admin.users.toggle-status', $user) }}">
@@ -376,6 +401,183 @@
             </div>
 
         </div>
+
+
+
+        {{-- ================================================= --}}
+        {{-- EDIT CUSTOMER MODAL --}}
+        {{-- ================================================= --}}
+
+        <div x-cloak x-show="showEditModal" x-transition.opacity
+            class="fixed inset-0 z-110 flex items-center justify-center p-3 sm:p-6">
+
+            {{-- Backdrop --}}
+            <div class="absolute inset-0 bg-black/50" @click="closeEditModal()">
+            </div>
+
+            {{-- Modal Container --}}
+            <div x-show="showEditModal" x-transition @click.stop
+                class="relative bg-white w-full max-w-xl max-h-[90vh]
+            rounded-2xl shadow-xl flex flex-col overflow-hidden">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+
+                    <div>
+                        <h2 class="text-lg font-bold text-[#6F4E37]">
+                            Update Customer
+                        </h2>
+                    </div>
+
+                    <button type="button" @click="closeEditModal()"
+                        class="w-9 h-9 flex items-center justify-center
+                    rounded-full text-gray-500 hover:bg-gray-100 text-2xl">
+
+                        &times;
+                    </button>
+
+                </div>
+
+                {{-- Form Body --}}
+                <form method="POST" :action="editForm.updateUrl" class="flex flex-col min-h-0">
+
+                    @csrf
+                    @method('PUT')
+
+                    <input type="hidden" name="edit_user_id" x-model="editForm.id">
+
+                    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+
+                        {{-- Customer Information --}}
+                        <div class="space-y-4">
+
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800">
+                                    Customer Information
+                                </h3>
+
+                            </div>
+
+                            {{-- Name --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    Full Name
+                                </label>
+
+                                <input type="text" name="name" x-model="editForm.name" required maxlength="255"
+                                    class="w-full rounded-xl border border-gray-300 px-4 py-3
+                                focus:border-[#849753] focus:ring-[#849753]">
+
+                                @error('name')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Email --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    Email Address
+                                </label>
+
+                                <input type="email" name="email" x-model="editForm.email" required maxlength="255"
+                                    class="w-full rounded-xl border border-gray-300 px-4 py-3
+                                focus:border-[#849753] focus:ring-[#849753]">
+
+                                @error('email')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Phone --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    Phone Number
+                                </label>
+
+                                <input type="tel" name="phone" x-model="editForm.phone" maxlength="20"
+                                    placeholder="09XX XXX XXXX"
+                                    class="w-full rounded-xl border border-gray-300 px-4 py-3
+                                focus:border-[#849753] focus:ring-[#849753]">
+
+                                @error('phone')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                        </div>
+
+                        {{-- Account Security --}}
+                        <div class="border-t border-gray-100 pt-5 space-y-4">
+
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800">
+                                    Account Security
+                                </h3>
+
+                                <p class="text-xs text-gray-400 mt-1">
+                                    Leave password fields empty if you don't want to change the password.
+                                </p>
+                            </div>
+
+                            {{-- New Password --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    New Password
+                                </label>
+
+                                <input type="password" name="password" x-model="editForm.password" minlength="8"
+                                    autocomplete="new-password" placeholder="Enter new password"
+                                    class="w-full rounded-xl border border-gray-300 px-4 py-3
+                                focus:border-[#849753] focus:ring-[#849753]">
+
+                                @error('password')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Confirm Password --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                    Confirm New Password
+                                </label>
+
+                                <input type="password" name="password_confirmation"
+                                    x-model="editForm.password_confirmation" minlength="8" autocomplete="new-password"
+                                    placeholder="Confirm new password"
+                                    class="w-full rounded-xl border border-gray-300 px-4 py-3
+                                focus:border-[#849753] focus:ring-[#849753]">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {{-- Footer --}}
+                    <div
+                        class="flex flex-col-reverse sm:flex-row justify-end gap-3
+                px-5 py-4 border-t border-gray-200 bg-gray-50">
+
+                        <button type="button" @click="closeEditModal()"
+                            class="rounded-xl border border-gray-300 px-5 py-2.5
+                        text-sm font-semibold text-gray-600 hover:bg-gray-100">
+
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                            class="rounded-xl bg-[#849753] px-5 py-2.5
+                        text-sm font-semibold text-white hover:bg-[#5B3F2D]">
+
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
 
         {{-- ================================================= --}}
         {{-- CUSTOMER APPOINTMENTS MODAL --}}
@@ -679,6 +881,20 @@
     <script>
         function customerModal() {
             return {
+
+
+                showEditModal: false,
+
+                editForm: {
+                    id: '',
+                    name: '',
+                    email: '',
+                    phone: '',
+                    updateUrl: '',
+                    password: '',
+                    password_confirmation: ''
+                },
+
                 showModal: false,
                 loading: false,
                 error: '',
@@ -811,6 +1027,38 @@
                         'no show': 'No Show',
                         failed: 'Failed'
                     } [status] || status;
+                },
+
+                openEdit(customer) {
+                    this.editForm = {
+                        id: customer.id,
+                        name: customer.name,
+                        email: customer.email,
+                        phone: customer.phone || '',
+                        updateUrl: customer.updateUrl,
+                        password: '',
+                        password_confirmation: ''
+                    };
+
+                    this.showEditModal = true;
+
+                    document.body.classList.add('overflow-hidden');
+                },
+
+                closeEditModal() {
+                    this.showEditModal = false;
+
+                    this.editForm = {
+                        id: '',
+                        name: '',
+                        email: '',
+                        phone: '',
+                        updateUrl: '',
+                        password: '',
+                        password_confirmation: ''
+                    };
+
+                    document.body.classList.remove('overflow-hidden');
                 },
 
                 closeModal() {

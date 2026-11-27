@@ -13,7 +13,8 @@
         </div>
 
         {{-- CALENDAR --}}
-        <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+        <div class="mx-auto w-full max-w-6xl rounded-lg border border-gray-100 bg-white p-3 shadow-sm sm:p-4">
+
             <div id="calendar"></div>
         </div>
 
@@ -58,15 +59,14 @@
 @endsection
 
 @push('styles')
-
     <style>
         #calendar {
             width: 100%;
-            min-height: 400px;
+            min-height: 350px;
         }
 
         /* Hide individual appointments inside the calendar cells.
-                       Appointment data is still used for counts and details. */
+                                                                               Appointment data is still used for counts and details. */
         #calendar .fc-daygrid-event,
         #calendar .fc-timegrid-event,
         #calendar .fc-daygrid-more-link,
@@ -81,7 +81,7 @@
         }
 
         #calendar .fc-toolbar-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #111827;
         }
@@ -565,8 +565,7 @@
                         {
                             label: 'Duration',
                             value: props.service_duration_minutes ?
-                                `${props.service_duration_minutes} minutes` :
-                                'Not specified'
+                                `${props.service_duration_minutes} minutes` : 'Not specified'
                         },
                         {
                             label: 'Therapist',
@@ -792,7 +791,6 @@
                     month: 'Month',
                     week: 'Week',
                     day: 'Day',
-                    list: 'List'
                 },
 
                 /*

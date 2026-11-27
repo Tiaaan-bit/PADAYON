@@ -10,6 +10,22 @@
                 Home Page Slider Images
             </h1>
 
+            <a href="{{ route('admin.website-settings.edit') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Website Settings
+            </a>
+
+            <a href="{{ route('admin.home-slider.index') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                Home Page Settings
+            </a>
+
+            <a href="{{ route('admin.about-settings.edit') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#849753] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#718343]">
+                About Page Settings
+            </a>
+
+
         </div>
 
 
