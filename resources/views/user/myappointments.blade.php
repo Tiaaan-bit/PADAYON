@@ -156,38 +156,38 @@
                             <tr class="bg-gray-50 text-left">
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     #
                                 </th>
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Appointment Date
                                 </th>
 
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Service
                                 </th>
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Add-on
                                 </th>
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Therapist
                                 </th>
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Appointment Status
                                 </th>
 
                                 <th
-                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                    class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                     Action
                                 </th>
 
@@ -222,12 +222,12 @@
                                 })">
 
                                     {{-- ID --}}
-                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap border-b-2 border-[#849753]">
                                         {{ $appointment->id }}
                                     </td>
 
                                     {{-- DATE --}}
-                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                    <td class="px-5 py-4 text-gray-600 whitespace-nowrap border-b-2 border-[#849753]">
                                         {{ $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d') : 'N/A' }}
                                         <p>{{ $appointment->appointment_time
                                             ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A')
@@ -241,7 +241,7 @@
                                     </td>
 
                                     {{-- SERVICE --}}
-                                    <td class="px-5 py-4 text-gray-600">
+                                    <td class="px-5 py-4 text-gray-600 border-b-2 border-[#849753]">
 
                                         <div class="space-y-1 min-w-0">
 
@@ -265,7 +265,7 @@
                                     </td>
 
                                     {{-- ADD-ON --}}
-                                    <td class="px-5 py-4 text-gray-600">
+                                    <td class="px-5 py-4 text-gray-600 border-b-2 border-[#849753]">
 
                                         <div class="space-y-1 min-w-0">
 
@@ -282,7 +282,7 @@
                                     </td>
 
                                     {{-- THERAPIST --}}
-                                    <td class="px-5 py-4">
+                                    <td class="px-5 py-4 border-b-2 border-[#849753]">
 
                                         <div class="flex items-center gap-3 min-w-0">
 
@@ -299,7 +299,7 @@
                                     </td>
 
                                     {{-- STATUS --}}
-                                    <td class="px-5 py-4">
+                                    <td class="px-5 py-4 border-b-2 border-[#849753]">
 
                                         @if ($status === AppointmentStatus::CONFIRMED)
                                             <span
@@ -342,7 +342,7 @@
                                     </td>
 
                                     {{-- ACTION --}}
-                                    <td class="px-5 py-4" @click.stop>
+                                    <td class="px-5 py-4 border-b-2 border-[#849753]" @click.stop>
                                         <div class="flex flex-col gap-2">
 
                                             @php
@@ -377,7 +377,8 @@
                                                         $end->addDay();
                                                     }
 
-                                                    $canReschedule = $now->lt($end);
+                                                    // Only allow rescheduling before the appointment starts.
+                                                    $canReschedule = $now->lt($start);
                                                 }
 
                                                 $canCancel =
@@ -498,7 +499,10 @@
 
                                             {{-- NO ACTION --}}
                                             @if (!$canReschedule && !$canCancel)
-                                                <span>No Action</span>
+                                                <button type="button" disabled
+                                                    class="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-center text-sm font-medium text-gray-400 opacity-80">
+                                                    No Action
+                                                </button>
                                             @endif
 
                                         </div>

@@ -418,12 +418,12 @@ class RescheduleAppointment
             ]);
         }
 
-        // 5. Verify original appointment has not ended.
+        // 5. Verify original appointment has not started.
         $range = $this->getAppointmentRange($appointment);
 
-        if ($this->manilaNow()->greaterThanOrEqualTo($range['end'])) {
+        if ($this->manilaNow()->greaterThanOrEqualTo($range['start'])) {
             throw ValidationException::withMessages([
-                'appointment' => 'This appointment has already ended and can no longer be rescheduled.',
+                'appointment' => 'This appointment has already started or passed and can no longer be rescheduled.',
             ]);
         }
     }

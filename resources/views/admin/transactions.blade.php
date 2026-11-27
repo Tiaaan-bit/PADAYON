@@ -165,47 +165,47 @@
                         <tr class="bg-gray-50 text-left">
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 ID
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 CUSTOMER
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 SERVICE DETAILS
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 ADDO-ON DETAILS
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 THERAPIST
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 APPOINTMENT TIME
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 PAYMENT DETAILS
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 PAYMENT STATUS
                             </th>
 
                             <th
-                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                 ACTION
                             </th>
 
@@ -273,12 +273,12 @@
                                 data-status="{{ $status }}">
 
                                 {{-- ID --}}
-                                <td class="px-4 py-4 text-gray-700 font-medium">
+                                <td class="px-4 py-4 text-gray-700 font-medium border-b-2 border-[#849753]">
                                     {{ $transaction->id }}
                                 </td>
 
                                 {{-- USER --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
 
                                     <div class="font-medium text-gray-800">
                                         {{ $transaction->walkInCustomer?->name ?? ($transaction->user?->name ?? 'N/A') }}
@@ -292,7 +292,7 @@
                                 </td>
 
                                 {{-- SERVICE --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
 
                                     <div class="font-medium text-gray-800">
                                         {{ $transaction->service?->name ?? 'N/A' }}
@@ -311,7 +311,7 @@
                                 </td>
 
                                 {{-- ADD-ON --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
 
 
                                     <div class="space-y-1">
@@ -340,12 +340,12 @@
                                 </td>
 
                                 {{-- THERAPIST --}}
-                                <td class="px-4 py-4 text-gray-700">
+                                <td class="px-4 py-4 text-gray-700 border-b-2 border-[#849753]">
                                     {{ $transaction->therapist?->name ?? 'N/A' }}
                                 </td>
 
                                 {{-- APPOINTMENT TIME --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
 
                                     <div class="font-medium text-gray-800">
                                         {{ $transaction->appointment_date?->format('Y-m-d') ?? 'N/A' }}
@@ -366,7 +366,7 @@
 
 
                                 {{-- PAYMENT DETAILS --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
                                     <div class="font-medium text-gray-800">
                                         {{ $paymentMethodLabel }}
                                     </div>
@@ -406,7 +406,7 @@
 
 
                                 {{-- PAYMENT STATUS --}}
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
 
                                     <div class="mt-2">
                                         @if ($paymentStatus === 'paid')
@@ -475,8 +475,7 @@
                                 </td>
 
 
-                                <td>
-
+                                <td class="px-4 py-4 border-b-2 border-[#849753]">
                                     @php
                                         $isConfirmed = $transaction->status === AppointmentStatus::CONFIRMED;
 
@@ -490,35 +489,133 @@
                                             $isConfirmed &&
                                             $remainingBalance > 0 &&
                                             ($isCounterPayment || $isDownpayment);
+
+                                        $actionLabel = match (true) {
+                                            $isDownpayment => 'Full Paid',
+                                            $isCounterPayment => 'Paid at Counter',
+                                            default => 'Mark as Paid',
+                                        };
+
+                                        $paymentDescription = $isDownpayment
+                                            ? 'the remaining balance'
+                                            : 'the counter payment';
                                     @endphp
 
+                                    <div x-data="{
+                                        showConfirm: false,
+                                        loading: false,
+                                    
+                                        submitPayment() {
+                                            if (this.loading) return;
+                                    
+                                            this.loading = true;
+                                            this.$refs.paymentForm.submit();
+                                        }
+                                    }" @click.stop>
 
-                                    {{-- PAYMENT ACTION --}}
-                                    @if ($canCompletePayment)
-                                        <form method="POST"
-                                            action="{{ route('admin.transactions.mark-paid', $transaction) }}"
-                                            class="mt-3" onclick="event.stopPropagation()"
-                                            onsubmit="return confirmPaymentAction('{{ $isDownpayment ? 'the remaining balance' : 'the counter payment' }}')">
-
-                                            @csrf
-
-                                            <button type="submit"
-                                                class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#849753] 
-                                                text-white text-xs font-semibold hover:bg-[#718441] transition">
-
-                                                @if ($isDownpayment)
-                                                    Full Paid
-                                                @elseif ($isCounterPayment)
-                                                    Paid at Counter
-                                                @else
-                                                    Mark as Paid
-                                                @endif
+                                        @if ($canCompletePayment)
+                                            {{-- MARK AS PAID BUTTON --}}
+                                            <button type="button" @click="showConfirm = true"
+                                                class="mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-[#849753] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#718441]">
+                                                {{ $actionLabel }}
                                             </button>
-                                        </form>
-                                    @else
-                                        <span> No Action</span>
-                                    @endif
 
+                                            {{-- PAYMENT FORM --}}
+                                            <form x-ref="paymentForm" method="POST"
+                                                action="{{ route('admin.transactions.mark-paid', $transaction) }}"
+                                                class="hidden">
+                                                @csrf
+                                            </form>
+
+                                            {{-- CONFIRMATION MODAL --}}
+                                            <div x-cloak x-show="showConfirm" x-transition.opacity
+                                                class="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4">
+                                                <div @click.outside="if (!loading) showConfirm = false" x-transition.scale
+                                                    class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+
+                                                    {{-- NORMAL CONFIRMATION CONTENT --}}
+                                                    <div x-show="!loading">
+
+                                                        {{-- ICON --}}
+                                                        <div
+                                                            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F4EDDB]">
+
+                                                            <svg class="h-7 w-7 text-[#849753]" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2" d="M5 13l4 4L19 7" />
+                                                            </svg>
+
+                                                        </div>
+
+                                                        {{-- TITLE --}}
+                                                        <h3 class="text-center text-lg font-bold text-gray-800">
+                                                            Confirm Payment
+                                                        </h3>
+
+                                                        {{-- DESCRIPTION --}}
+                                                        <p class="mt-2 text-center text-sm text-gray-500">
+                                                            Are you sure you want to mark
+                                                            <span class="font-semibold text-[#849753]">
+                                                                {{ $paymentDescription }}
+                                                            </span>
+                                                            as fully paid?
+                                                        </p>
+
+                                                        <p class="mt-2 text-center text-xs text-gray-400">
+                                                            This will update the payment record.
+                                                        </p>
+
+                                                        {{-- ACTION BUTTONS --}}
+                                                        <div class="mt-6 flex gap-3">
+
+                                                            {{-- CANCEL --}}
+                                                            <button type="button" @click="showConfirm = false"
+                                                                class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100">
+                                                                Cancel
+                                                            </button>
+
+                                                            {{-- CONFIRM --}}
+                                                            <button type="button" @click="submitPayment()"
+                                                                class="flex-1 rounded-lg bg-[#849753] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#718441]">
+                                                                Confirm
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    {{-- LOADING CONTENT INSIDE THE SAME MODAL --}}
+                                                    <div x-cloak x-show="loading" x-transition.opacity
+                                                        class="py-5 text-center">
+
+                                                        {{-- SPINNER --}}
+                                                        <div
+                                                            class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-[#849753]">
+                                                        </div>
+
+                                                        {{-- LOADING TITLE --}}
+                                                        <h3 class="mt-5 text-base font-bold text-gray-800">
+                                                            Processing Payment
+                                                        </h3>
+
+                                                        {{-- LOADING DESCRIPTION --}}
+                                                        <p class="mt-2 text-sm text-gray-500">
+                                                            Please wait while we update the payment status...
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        @else
+                                            {{-- DISABLED BUTTON --}}
+                                            <button type="button" disabled
+                                                class="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-400 opacity-80">
+                                                {{ $actionLabel }}
+                                            </button>
+                                        @endif
+
+                                    </div>
                                 </td>
 
                             </tr>

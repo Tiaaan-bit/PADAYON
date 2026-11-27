@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('appointments:send-reminders')->everyMinute()->timezone('Asia/Manila')->withoutOverlapping();
+
 Schedule::command('appointments:expire-pending-payments')->everyMinute();
 
 Route::view('/privacy-policy', 'policies.privacy-policy')

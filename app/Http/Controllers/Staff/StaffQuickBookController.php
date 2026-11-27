@@ -36,18 +36,15 @@ class StaffQuickBookController extends Controller
      */
     private function isBookingClosedForDate(string $date): bool
     {
-        $closedDate = WebsiteSetting::query()
-            ->whereKey(1)
-            ->value('booking_closed_date');
-    
+        $closedDate = WebsiteSetting::query()->whereKey(1)->value('booking_closed_date');
+
         if (empty($closedDate)) {
             return false;
         }
-    
+
         $timezone = 'Asia/Manila';
-    
-        return Carbon::parse($closedDate, $timezone)->toDateString()
-            === Carbon::parse($date, $timezone)->toDateString();
+
+        return Carbon::parse($closedDate, $timezone)->toDateString() === Carbon::parse($date, $timezone)->toDateString();
     }
 
     /**
@@ -247,7 +244,7 @@ class StaffQuickBookController extends Controller
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
 
-            'phone' => ['required', 'string', 'max:11', 'unique:users','min:10'],
+            'phone' => ['required', 'string', 'max:11', 'unique:users', 'min:10'],
 
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users'],
 
@@ -266,6 +263,8 @@ class StaffQuickBookController extends Controller
             'appointment_date' => ['required', 'date', 'date_format:Y-m-d'],
 
             'appointment_time' => ['required', 'date_format:H:i'],
+
+            'payment_method' => ['required', 'string', 'in:gcash,branch'],
         ]);
 
         if ($this->isBookingClosedForDate($validated['appointment_date'])) {
@@ -418,7 +417,8 @@ class StaffQuickBookController extends Controller
                 |--------------------------------------------------------------------------
                 | Lock therapist
                 |--------------------------------------------------------------------------
-                */ if ($this->isBookingClosedForDate($validated['appointment_date'])) {
+                */
+            if ($this->isBookingClosedForDate($validated['appointment_date'])) {
                 throw ValidationException::withMessages([
                     'appointment_date' => 'Walk-in bookings for today are temporarily closed. Please select a future date.',
                 ]);
@@ -477,11 +477,14 @@ class StaffQuickBookController extends Controller
             }
 
             /*
-                |--------------------------------------------------------------------------
-                | Payment
-                |--------------------------------------------------------------------------
-                */
+|--------------------------------------------------------------------------
+| Payment
+|--------------------------------------------------------------------------
+*/
 
+            $paymentMethod = $validated['payment_method'];
+
+            // Staff confirms that payment has already been received.
             $paymentStatus = 'paid';
             $amountPaid = $totalAmount;
             $paidAt = Carbon::now($this->timezone);
@@ -525,7 +528,7 @@ class StaffQuickBookController extends Controller
 
                 'appointment_end_time' => $appointmentEnd->format('H:i:s'),
 
-                'payment_method' => 'branch',
+                'payment_method' => $paymentMethod,
 
                 'payment_type' => 'full',
 
@@ -533,7 +536,7 @@ class StaffQuickBookController extends Controller
 
                 'amount_paid' => $amountPaid,
 
-                'payment_status' => 'paid',
+                'payment_status' => $paymentStatus,
 
                 'paid_at' => $paidAt,
 

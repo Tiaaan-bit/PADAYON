@@ -16,7 +16,7 @@ class AppointmentReminderNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public UsersAppointments $appointment) {}
+    public function __construct(public UsersAppointments $appointment, public string $reminderLabel) {}
 
     public function via(object $notifiable): array
     {
@@ -27,7 +27,7 @@ class AppointmentReminderNotification extends Notification
     {
         return [
             'title' => 'Appointment Reminder',
-            'message' => 'Your massage appointment is coming up within 30 Minutes.',
+            'message' => "Your massage appointment is coming up in {$this->reminderLabel}.",
             'appointment_id' => $this->appointment->id,
             'service' => $this->appointment->service?->name ?? 'N/A',
             'description' => $this->appointment->service?->description ?? 'N/A',
@@ -80,7 +80,7 @@ class AppointmentReminderNotification extends Notification
 
         $therapist = $appointment->therapist?->name ?? 'To be assigned';
 
-        $message = 'Padayon Massage Center: Reminder: Your Upcoming Padayon Massage Appointment ' . "Your massage appointment is coming up within 30 Minutes." . "#: {$appointment_id} " . "Service: {$service}-{$description} " . "Therapist: {$therapist}. " . "Date: {$date}. Time: {$time}-{$endtime} " . 'Thank you for choosing Padayon!';
+        $message = 'Padayon Massage Center: Reminder: Your Upcoming Padayon Massage Appointment ' . 'Your massage appointment is coming up in ' . $this->reminderLabel . '. ' . "#: {$appointment_id} " . "Service: {$service}-{$description} " . "Therapist: {$therapist}. " . "Date: {$date}. Time: {$time}-{$endtime} " . 'Thank you for choosing Padayon!';
 
         $sent = app(SmsService::class)->send($phone, $message);
 

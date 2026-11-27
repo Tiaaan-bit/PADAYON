@@ -444,7 +444,7 @@
 
                             @forelse($posts as $index => $post)
                                 <article x-show="showAllAnnouncements || {{ $index }} < 3" x-transition
-                                    class="py-2 rounded-lg bg-gray-50 border-2 border-[#849753] px-3">
+                                    class="py-2 rounded-lg bg-gray-50 border-b-2 border-[#849753] px-3">
                                     <h3 class="text-base font-bold text-gray-800 truncate">
                                         {{ $post->title }}
                                     </h3>
@@ -518,7 +518,7 @@
 
                             @forelse($todayAppointments as $index => $appointment)
                                 <div x-show="showAllToday || {{ $index }} < 3" x-transition
-                                    class="rounded-lg bg-gray-50 border-2 border-[#849753] px-3 py-3">
+                                    class="rounded-lg bg-gray-50 border-b-2 border-[#849753] px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
@@ -642,7 +642,7 @@
 
                             @forelse($upcomingAppointments as $index => $appointment)
                                 <div x-show="showAll || {{ $index }} < 3" x-transition
-                                    class="rounded-lg bg-gray-50 border-2 border-[#849753] px-3 py-3">
+                                    class="rounded-lg bg-gray-50 border-b-2 border-[#849753] px-3 py-3">
                                     <div class="flex items-start justify-between gap-2">
 
                                         {{-- Appointment Information --}}
@@ -776,10 +776,10 @@
         }
 
         /*
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Appointment Hover Popup
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Appointment Hover Popup
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    */
 
         .calendar-popup {
             visibility: hidden;
@@ -797,10 +797,10 @@
         }
 
         /*
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Hover Highlight
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |--------------------------------------------------------------------------
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Hover Highlight
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |--------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    */
 
         .calendar-highlight {
             opacity: 0;

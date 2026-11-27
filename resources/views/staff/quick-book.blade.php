@@ -540,39 +540,65 @@
 
                         </div>
 
+
                         {{-- =================================================
-                        PAYMENT
-                    ================================================== --}}
+    PAYMENT
+================================================== --}}
                         <div class="rounded-2xl bg-white p-6 shadow-sm">
 
-                            <div class="mb-6 flex items-start gap-4">
-                                <div>
-                                    <h2 class="text-lg font-bold text-[#2F2420]">
-                                        Payment
-                                    </h2>
-                                </div>
-
+                            <div class="mb-6">
+                                <h2 class="text-lg font-bold text-[#2F2420]">
+                                    Payment
+                                </h2>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Select your preferred payment method.
+                                </p>
                             </div>
 
-                            {{-- Payment method --}}
-                            <div class="rounded-xl border border-[#849753]/20 bg-[#849753]/5 px-4 py-4">
+                            {{-- PAYMENT METHOD --}}
+                            <div class="space-y-3">
 
-                                <div class="flex items-center gap-3">
+                                {{-- GCASH --}}
+                                <label
+                                    class="flex cursor-pointer items-center justify-between rounded-xl border border-[#849753]/20 bg-[#849753]/5 px-4 py-4 transition hover:bg-[#849753]/10">
 
-                                    <div>
-                                        <p class="text-sm font-bold text-[#2F2420]">
-                                            Pay at Counter
-                                        </p>
+                                    <div class="flex items-center gap-3">
+
+                                        <input type="radio" name="payment_method" value="gcash"
+                                            class="h-4 w-4 accent-[#849753]" required>
+
+                                        <div>
+                                            <p class="text-sm font-bold text-[#2F2420]">
+                                                GCash
+                                            </p>
+                                        </div>
+
                                     </div>
+                                </label>
 
-                                </div>
+                                {{-- PAY AT COUNTER --}}
+                                <label
+                                    class="flex cursor-pointer items-center justify-between rounded-xl border border-[#849753]/20 bg-[#849753]/5 px-4 py-4 transition hover:bg-[#849753]/10">
+
+                                    <div class="flex items-center gap-3">
+
+                                        <input type="radio" name="payment_method" value="branch"
+                                            class="h-4 w-4 accent-[#849753]" required>
+
+                                        <div>
+                                            <p class="text-sm font-bold text-[#2F2420]">
+                                                Pay at Counter
+                                            </p>
+                                        </div>
+                                    </div>
+                                </label>
 
                             </div>
 
                             {{-- =================================================
-                            PAYMENT STATUS
-                            PAID ONLY
-                        ================================================== --}}
+        PAYMENT STATUS
+        PAID ONLY
+    ================================================== --}}
                             <div class="mt-5">
 
                                 <label class="mb-3 block text-sm font-semibold text-gray-700">
@@ -581,16 +607,9 @@
 
                                 <div class="rounded-xl border border-[#849753]/30 bg-[#849753]/10 px-4 py-4">
 
-                                    <div class="flex items-start gap-3">
-                                        <div>
-
-                                            <p class="text-sm font-bold text-[#2F2420]">
-                                                Paid
-                                            </p>
-
-                                        </div>
-
-                                    </div>
+                                    <p class="text-sm font-bold text-[#2F2420]">
+                                        Paid
+                                    </p>
 
                                 </div>
 
@@ -600,6 +619,7 @@
                             </div>
 
                         </div>
+
 
                     </div>
 

@@ -335,48 +335,48 @@
                                 <tr class="bg-gray-50 text-left">
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         ID
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Customer
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Service Details
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Add-on Details
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Condition
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Therapist
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Appointment Time
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Appointment Status
 
                                     </th>
 
                                     <th
-                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                        class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b-2 border-[#849753]">
                                         Action
                                     </th>
 
@@ -428,7 +428,7 @@
 
                                         {{-- ID --}}
 
-                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
+                                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap border-b-2 border-[#849753]">
 
                                             {{ $appointment->id }}
 
@@ -437,7 +437,7 @@
 
                                         {{-- USER --}}
 
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 border-b-2 border-[#849753]">
 
                                             <div class="flex items-center gap-3">
                                                 <div>
@@ -465,7 +465,7 @@
 
                                         {{-- SERVICE --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border-b-2 border-[#849753]">
 
                                             <div class="space-y-1">
 
@@ -499,7 +499,7 @@
 
                                         {{-- ADD-ON --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border-b-2 border-[#849753]">
 
                                             <div class="space-y-1">
 
@@ -523,7 +523,7 @@
 
                                         {{-- CONDITION --}}
 
-                                        <td class="px-5 py-4 text-gray-600">
+                                        <td class="px-5 py-4 text-gray-600 border-b-2 border-[#849753]">
 
                                             <div class="space-y-1">
 
@@ -562,7 +562,7 @@
 
                                         <td
                                             class="px-5 py-4 text-gray-600
-                                            whitespace-nowrap">
+                                            whitespace-nowrap border-b-2 border-[#849753]">
 
                                             {{ $appointment->therapist->name ?? 'N/A' }}
 
@@ -573,7 +573,7 @@
 
                                         <td
                                             class="px-5 py-4 text-gray-600
-                                            whitespace-nowrap">
+                                            whitespace-nowrap border-b-2 border-[#849753]">
 
                                             <div class="space-y-1">
 
@@ -606,7 +606,7 @@
                                         {{-- STATUS --}}
                                         {{-- ================================================= --}}
 
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 border-b-2 border-[#849753]">
                                             @if ($appointment->status === AppointmentStatus::CONFIRMED)
                                                 <span
                                                     class="inline-flex items-center gap-1.5
@@ -727,7 +727,9 @@
 
 
 
-                                        <td class="px-5 py-4" onclick="event.stopPropagation()">
+
+                                        <td class="px-5 py-4 border-b-2 border-[#849753]"
+                                            onclick="event.stopPropagation()">
 
                                             @php
                                                 $canUpdateStatus =
@@ -735,56 +737,152 @@
                                                     $appointment->payment_method === 'branch';
                                             @endphp
 
-                                            <div x-data="{ showOptions: false }" class="relative w-full max-w-35">
+                                            <div x-data="{
+                                                showOptions: false,
+                                                showConfirm: false,
+                                                loading: false,
+                                                selectedStatus: '',
+                                                selectedLabel: '',
+                                            
+                                                openConfirm(status, label) {
+                                                    this.selectedStatus = status;
+                                                    this.selectedLabel = label;
+                                                    this.showOptions = false;
+                                                    this.showConfirm = true;
+                                                },
+                                            
+                                                submitStatus() {
+                                                    if (this.loading) return;
+                                            
+                                                    this.loading = true;
+                                                    this.$refs.statusForm.submit();
+                                                }
+                                            }" class="relative w-full max-w-35">
+
                                                 @if ($canUpdateStatus)
-                                                    {{-- Update button opens the status options --}}
+                                                    {{-- UPDATE BUTTON --}}
                                                     <button type="button" @click="showOptions = !showOptions"
-                                                        class="rounded-lg bg-[#849753] px-4 py-2
-                       text-white hover:bg-[#6F4E37]
-                       text-sm w-full">
+                                                        class="w-full rounded-lg bg-[#849753] px-4 py-2 text-sm text-white hover:bg-[#6F4E37] transition">
                                                         Update
                                                         <span x-text="showOptions ? '▲' : '▼'"></span>
                                                     </button>
 
-                                                    {{-- Status options --}}
+                                                    {{-- STATUS OPTIONS --}}
                                                     <div x-cloak x-show="showOptions" @click.outside="showOptions = false"
                                                         x-transition
-                                                        class="absolute right-0 top-full z-50 mt-2
-                       w-44 rounded-xl border border-gray-200
-                       bg-white p-2 shadow-lg">
+                                                        class="absolute right-0 top-full z-50 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
                                                         @foreach ([AppointmentStatus::CONFIRMED, AppointmentStatus::REJECTED, AppointmentStatus::CANCELLED, AppointmentStatus::NO_SHOW] as $statusOption)
-                                                            <form
-                                                                action="{{ route('admin.appointments.updateStatus', $appointment->id) }}"
-                                                                method="POST" class="w-full"
-                                                                onsubmit="return confirm('Change appointment status to {{ $statusOption->value }}?')">
-                                                                @csrf
-                                                                @method('PUT')
+                                                            @php
+                                                                $label = match ($statusOption) {
+                                                                    AppointmentStatus::CONFIRMED => 'Confirm',
+                                                                    AppointmentStatus::REJECTED => 'Reject',
+                                                                    AppointmentStatus::CANCELLED => 'Cancel',
+                                                                    AppointmentStatus::NO_SHOW => 'No Show',
+                                                                    default => $statusOption->value,
+                                                                };
+                                                            @endphp
 
-                                                                <input type="hidden" name="status"
-                                                                    value="{{ $statusOption->value }}">
-
-                                                                <button type="submit"
-                                                                    class="w-full rounded-lg px-3 py-2
-                                   text-left text-sm text-gray-700
-                                   hover:bg-[#F4EDDB]
-                                   hover:text-[#6F4E37]">
-                                                                    {{ match ($statusOption) {
-                                                                        AppointmentStatus::CONFIRMED => 'Confirm',
-                                                                        AppointmentStatus::REJECTED => 'Reject',
-                                                                        AppointmentStatus::CANCELLED => 'Cancel',
-                                                                        AppointmentStatus::NO_SHOW => 'No Show',
-                                                                        default => $statusOption->value,
-                                                                    } }}
-                                                                </button>
-                                                            </form>
+                                                            <button type="button"
+                                                                @click="openConfirm('{{ $statusOption->value }}', '{{ $label }}')"
+                                                                class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-[#F4EDDB] hover:text-[#6F4E37] transition">
+                                                                {{ $label }}
+                                                            </button>
                                                         @endforeach
                                                     </div>
+
+                                                    {{-- HIDDEN STATUS FORM --}}
+                                                    <form x-ref="statusForm"
+                                                        action="{{ route('admin.appointments.updateStatus', $appointment->id) }}"
+                                                        method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('PUT')
+
+                                                        <input type="hidden" name="status" :value="selectedStatus">
+                                                    </form>
+
+                                                    {{-- CONFIRMATION MODAL --}}
+                                                    <div x-cloak x-show="showConfirm" x-transition.opacity
+                                                        class="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4">
+                                                        <div @click.outside="if (!loading) showConfirm = false"
+                                                            x-transition.scale
+                                                            class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+
+                                                            {{-- NORMAL CONFIRMATION CONTENT --}}
+                                                            <div x-show="!loading">
+
+                                                                {{-- ICON --}}
+                                                                <div
+                                                                    class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F4EDDB]">
+
+                                                                    <svg class="h-7 w-7 text-[#849753]" fill="none"
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M12 9v3m0 4h.01M10.3 3.86L1.82 18a2 2 0 001.7 3h16.96a2 2 0 001.7-3L13.7 3.86a2 2 0 00-3.4 0z" />
+                                                                    </svg>
+
+                                                                </div>
+
+                                                                {{-- TITLE --}}
+                                                                <h3 class="text-center text-lg font-bold text-gray-800">
+                                                                    Confirm Status Change
+                                                                </h3>
+
+                                                                {{-- DESCRIPTION --}}
+                                                                <p class="mt-2 text-center text-sm text-gray-500">
+                                                                    Are you sure you want to change this appointment status
+                                                                    to
+                                                                    <span class="font-semibold text-[#849753]"
+                                                                        x-text="selectedLabel"></span>?
+                                                                </p>
+
+                                                                <p class="mt-2 text-center text-xs text-gray-400">
+                                                                    This action will update the appointment record.
+                                                                </p>
+
+                                                                {{-- ACTION BUTTONS --}}
+                                                                <div class="mt-6 flex gap-3">
+
+                                                                    <button type="button" @click="showConfirm = false"
+                                                                        class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 transition">
+                                                                        Cancel
+                                                                    </button>
+
+                                                                    <button type="button" @click="submitStatus()"
+                                                                        class="flex-1 rounded-lg bg-[#849753] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#6F4E37] transition">
+                                                                        Confirm
+                                                                    </button>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            {{-- LOADING CONTENT INSIDE THE SAME MODAL --}}
+                                                            <div x-cloak x-show="loading" x-transition.opacity
+                                                                class="py-5 text-center">
+
+                                                                {{-- SPINNER --}}
+                                                                <div
+                                                                    class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-[#849753]">
+                                                                </div>
+
+                                                                {{-- LOADING TITLE --}}
+                                                                <h3 class="mt-5 text-base font-bold text-gray-800">
+                                                                    Updating Appointment
+                                                                </h3>
+
+                                                                {{-- LOADING DESCRIPTION --}}
+                                                                <p class="mt-2 text-sm text-gray-500">
+                                                                    Please wait while we update the status...
+                                                                </p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                 @else
-                                                    {{-- Show the current status when updates are not allowed --}}
+                                                    {{-- CURRENT STATUS --}}
                                                     <button type="button" disabled
-                                                        class="rounded-lg bg-gray-300 px-4 py-2
-                       text-gray-600 text-sm w-full
-                       cursor-not-allowed">
+                                                        class="w-full cursor-not-allowed rounded-lg bg-gray-300 px-4 py-2 text-sm text-gray-600">
                                                         {{ match ($appointment->status) {
                                                             AppointmentStatus::PENDING => 'Pending',
                                                             AppointmentStatus::CONFIRMED => 'Confirmed',
@@ -795,6 +893,7 @@
                                                         } }}
                                                     </button>
                                                 @endif
+
                                             </div>
 
                                         </td>
